@@ -1,2 +1,2 @@
 FROM nginx
-COPY  ./dist/ /usr/share/nginx/
+COPY  ./dist/ /usr/local/nginx/html/static
