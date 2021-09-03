@@ -1,2 +1,2 @@
 FROM nginx:latest
-COPY  ./dist/ /usr
+COPY  dist/ /usr/local/nginx/html
