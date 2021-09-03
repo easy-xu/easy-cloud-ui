@@ -211,7 +211,7 @@ class PickGame extends Component {
                                     label="高"
                                     name="heigth"
                                     initialValue={4}>
-                                    <InputNumber min={1} max={10} />
+                                    <InputNumber min={1} max={6} />
                                 </Form.Item>
                                 <Form.Item
                                     label="时间"
