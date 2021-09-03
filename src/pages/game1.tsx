@@ -166,8 +166,7 @@ class PickGame extends Component {
         let percent = this.state.remainTime / toatlTime * 100;
         let isStart = this.state.isStart;
         return (
-            <div className="main-div">
-
+            <div className='main-div'>
                 {isStart ?
                     <div>
                         <Progress style={{ "width": "500px" }} size="small" strokeColor="#52c41a" percent={percent} format={() => ''} />
@@ -192,41 +191,41 @@ class PickGame extends Component {
                             })}
                         </div>
                     </div> :
-                    <div>
-                        <Form
-                            name="basic"
-                            labelCol={{ span: 8 }}
-                            wrapperCol={{ span: 16 }}
-                            onFinish={this.onSet}
-                            autoComplete="off"
-                        >
-                            <Form.Item
-                                label="宽"
-                                name="width"
-                                initialValue={4}>
-                                <InputNumber min={1} max={10} />
-                            </Form.Item>
+                    <div className="form-div">
+                        <Card >
+                            <Form
+                                name="basic"
+                                labelCol={{ span: 8 }}
+                                wrapperCol={{ span: 16 }}
+                                onFinish={this.onSet}
+                                autoComplete="off"
+                            >
+                                <Form.Item
+                                    label="宽"
+                                    name="width"
+                                    initialValue={4}>
+                                    <InputNumber min={1} max={10} />
+                                </Form.Item>
 
-                            <Form.Item
-                                label="高"
-                                name="heigth"
-                                initialValue={4}>
-                                <InputNumber min={1} max={10} />
-                            </Form.Item>
-                            <Form.Item
-                                label="时间"
-                                name="timeset"
-                                initialValue={100}>
-                                <InputNumber min={1} max={1000} />
-                            </Form.Item>
-                            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-                                <Button htmlType="submit" type="primary">开始</Button>
-                            </Form.Item>
-                        </Form>
+                                <Form.Item
+                                    label="高"
+                                    name="heigth"
+                                    initialValue={4}>
+                                    <InputNumber min={1} max={10} />
+                                </Form.Item>
+                                <Form.Item
+                                    label="时间"
+                                    name="timeset"
+                                    initialValue={100}>
+                                    <InputNumber min={1} max={1000} />
+                                </Form.Item>
+                                <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+                                    <Button htmlType="submit" type="primary">开始</Button>
+                                </Form.Item>
+                            </Form>
+                        </Card>
                     </div>
-
                 }
-
             </div>
         );
     }
