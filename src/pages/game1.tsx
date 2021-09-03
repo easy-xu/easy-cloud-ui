@@ -204,7 +204,7 @@ class PickGame extends Component {
                                     label="宽"
                                     name="width"
                                     initialValue={4}>
-                                    <InputNumber min={1} max={10} />
+                                    <InputNumber min={1} max={8} />
                                 </Form.Item>
 
                                 <Form.Item
