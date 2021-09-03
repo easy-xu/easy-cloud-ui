@@ -1,3 +1,3 @@
-FROM nginx:latest
-COPY dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/nginx.conf
+FROM tomcat:latest
+COPY dist /usr/local/tomcat/webapp
+COPY WEB-INF /usr/local/tomcat/webapp
