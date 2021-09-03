@@ -1,2 +1,2 @@
-FROM nginx
-COPY  ./dist/ /usr/local/nginx/html/static
+FROM nginx:latest
+COPY  ./dist/. /usr/local/nginx/html

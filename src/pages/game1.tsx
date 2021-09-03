@@ -92,7 +92,6 @@ class PickGame extends Component {
             source[i][j].status = 'done'
             source[pre_image.i][pre_image.j].status = 'done'
             that.setState({ source: source, pre_image: undefined })
-            console.log('匹配成功')
             let isFinsh = true;
             source.forEach((row: any) => {
                 row.forEach((col: any) => {
@@ -114,19 +113,16 @@ class PickGame extends Component {
             source[i][j].status = 'click'
             pre_image = source[i][j];
             that.setState({ pre_image: pre_image })
-            console.log('选中')
         }
         //点击了已匹配
         else if (source[i][j].status == 'done') {
-            console.log('已匹配')
         }
         else {
-            console.log('等待重置')
+
             source[i][j].status = 'click'
             that.setState({ source: source, lock: true })
-
             setTimeout(function () {
-                console.log(pre_image, source[i][j])
+
                 //和之前选择不同，则重置
                 if (pre_image != undefined && pre_image.image_index != source[i][j].image_index) {
                     if (source[i][j].status != 'done') {
@@ -136,7 +132,6 @@ class PickGame extends Component {
                         source[pre_image.i][pre_image.j].status = 'init'
                     }
                     that.setState({ source: source, pre_image: undefined, lock: false })
-                    console.log('重置')
                 }
             }, 1000);
         }
