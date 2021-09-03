@@ -1,9 +1,17 @@
+import { Result, Button, } from 'antd';
+import { Link } from 'umi';
+
 const NotFound = () => {
 
     return (
-        <h1>
-            404 资源未找到
-        </h1>
+        <Result
+            title="资源不见了"
+            extra={
+                <Button type="primary" key="console">
+                    <Link to="/">返回首页</Link>
+                </Button>
+            }
+        />
     );
 };
 
