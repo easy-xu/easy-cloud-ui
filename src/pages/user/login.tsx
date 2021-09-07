@@ -1,12 +1,24 @@
+import React, { FC } from 'react';
 import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { connect, ConnectProps, Dispatch } from 'umi';
 
 import './login.less'
 
-function UserLogin() {
+interface UserLoginProps extends ConnectProps {
+    user: any;
+    dispatch: Dispatch;
+}
+
+const UserLogin: FC<UserLoginProps> = ({ user, dispatch }) => {
 
     const onFinish = (values: any) => {
+        console.log('user', user)
         console.log('Success:', values);
+        dispatch({
+            type: 'user/login',
+            payload: values
+        })
     };
 
     const onFinishFailed = (errorInfo: any) => {
@@ -49,18 +61,20 @@ function UserLogin() {
                             忘记密码
                         </a>
                     </Form.Item>
-
                     <Form.Item>
                         <Button type="primary" htmlType="submit" className="login-form-button">
                             登 录
                         </Button>
                         没有账号？<a href="/user/signin">立即注册</a>
                     </Form.Item>
-
                 </Form>
             </Card>
         </div>
     );
 }
 
-export default UserLogin
+export default connect(
+    ({ user }: { user: any }) => ({
+        user
+    }),
+)(UserLogin);
