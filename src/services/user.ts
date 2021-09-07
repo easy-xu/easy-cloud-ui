@@ -1,8 +1,7 @@
-import { request } from 'umi';
-
-export async function loginApi(req: any) {
-    return request('/api/user/login', {
-        method: 'GET',
-        req,
-    });
+export function loginRequest(params: any) {
+  return {
+    url: '/api/user/login',
+    method: 'POST',
+    data: params,
+  };
 }
