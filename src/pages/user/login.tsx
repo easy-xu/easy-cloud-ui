@@ -13,6 +13,7 @@ interface UserLoginProps extends ConnectProps {
 }
 
 const UserLogin: FC<UserLoginProps> = ({ user, dispatch }) => {
+  //用户登录
   const { data, error, loading, run } = useRequest(
     (params) => loginRequest(params),
     {
@@ -74,6 +75,7 @@ const UserLogin: FC<UserLoginProps> = ({ user, dispatch }) => {
           </Form.Item>
           <Form.Item>
             <Button
+              loading={loading}
               type="primary"
               htmlType="submit"
               className="login-form-button"

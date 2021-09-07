@@ -5,3 +5,10 @@ export function loginRequest(params: any) {
     data: params,
   };
 }
+export function signinRequest(params: any) {
+  return {
+    url: '/api/user/signIn',
+    method: 'POST',
+    data: params,
+  };
+}
