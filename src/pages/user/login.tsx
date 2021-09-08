@@ -19,14 +19,12 @@ const UserLogin: FC<UserLoginProps> = ({ user, dispatch }) => {
     {
       manual: true,
       onSuccess: (result, params) => {
-        console.log(result, params);
+        //跳转首页
       },
     },
   );
 
   const onFinish = (values: any) => {
-    console.log('user', user);
-    console.log('Success:', values);
     run(values);
   };
 
