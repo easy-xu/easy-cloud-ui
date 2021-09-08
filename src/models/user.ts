@@ -1,35 +1,32 @@
-import { Effect, ImmerReducer, Reducer, Subscription } from 'umi';
+import { useState, useCallback } from 'react';
 
-export interface UserModelType {
-  namespace: 'user';
-  state: any;
-  effects: {
-    login: Effect;
-  };
-  reducers: {
-    save: Reducer;
-  };
+interface IUser {
+  username?: string;
+  token?: string;
+  isLogin?: boolean;
 }
 
-const UserModel: UserModelType = {
-  namespace: 'user',
-  state: {
-    username: 'zhangsan',
-  },
-  reducers: {
-    save(state, { payload }) {
-      return {
-        ...state,
-        user: payload.data,
-      };
-    },
-  },
-  effects: {
-    *login({ payload }, { call, put }) {
-      console.log(payload);
-      yield put({ type: 'save', payload: payload });
-    },
-  },
-};
+export default function useAuthModel() {
+  const [user, setUser] = useState<IUser>({});
 
-export default UserModel;
+  const login = useCallback((username, token) => {
+    setUser({
+      username: username,
+      token: token,
+      isLogin: true,
+    });
+  }, []);
+
+  const logout = useCallback(() => {
+    console.log('logout');
+    setUser({
+      isLogin: false,
+    });
+  }, []);
+
+  return {
+    user,
+    login,
+    logout,
+  };
+}

@@ -1,18 +1,12 @@
 import React, { FC } from 'react';
 import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { connect, ConnectProps, Dispatch } from 'umi';
 import { useRequest } from 'umi';
 import { signinRequest } from '@/services/user';
 
 import './login.less';
 
-interface UserSigninProps extends ConnectProps {
-  user: any;
-  dispatch: Dispatch;
-}
-
-const UserSignin: FC<UserSigninProps> = ({ user, dispatch }) => {
+const UserSignin: FC = () => {
   //用户登录
   const { data, error, loading, run } = useRequest(
     (params) => signinRequest(params),
@@ -99,6 +93,4 @@ const UserSignin: FC<UserSigninProps> = ({ user, dispatch }) => {
   );
 };
 
-export default connect(({ user }: { user: any }) => ({
-  user,
-}))(UserSignin);
+export default UserSignin;

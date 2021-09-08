@@ -1,25 +1,23 @@
 import React, { FC } from 'react';
 import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { connect, ConnectProps, Dispatch } from 'umi';
-import { useRequest } from 'umi';
+import { useRequest, history, useModel } from 'umi';
 import { loginRequest } from '@/services/user';
 
 import './login.less';
 
-interface UserLoginProps extends ConnectProps {
-  user: any;
-  dispatch: Dispatch;
-}
+const UserLogin: FC = () => {
+  const { login } = useModel('user', (model) => ({ login: model.login }));
 
-const UserLogin: FC<UserLoginProps> = ({ user, dispatch }) => {
   //用户登录
   const { data, error, loading, run } = useRequest(
     (params) => loginRequest(params),
     {
       manual: true,
-      onSuccess: (result, params) => {
+      onSuccess: (result) => {
         //跳转首页
+        history.push('/');
+        login(result.username, result.token);
       },
     },
   );
@@ -88,6 +86,4 @@ const UserLogin: FC<UserLoginProps> = ({ user, dispatch }) => {
   );
 };
 
-export default connect(({ user }: { user: any }) => ({
-  user,
-}))(UserLogin);
+export default UserLogin;
