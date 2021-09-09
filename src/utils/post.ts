@@ -26,3 +26,21 @@ function genRequestId() {
     Math.round(Math.random() * 89999 + 100000).toString()
   );
 }
+
+export function postReqeust(url: string, params: any) {
+  return {
+    url: url,
+    method: 'POST',
+    data: params,
+    headers: getHeader(),
+  };
+}
+
+export function getRequset(url: string, params?: any) {
+  return {
+    url: url,
+    method: 'GET',
+    params: params,
+    headers: getHeader(),
+  };
+}

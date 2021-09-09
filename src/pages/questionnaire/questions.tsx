@@ -1,4 +1,6 @@
 import { FC } from 'react';
+import { useRequest, history, useModel } from 'umi';
+import { questionRequest } from '@/services/question';
 
 import {
   List,
@@ -14,6 +16,23 @@ import {
 import './questions.less';
 
 const Questions: FC = () => {
+  //用户登录
+  const { data, error, loading, run } = useRequest(
+    (id) => questionRequest(id),
+    {
+      manual: true,
+      onSuccess: (result) => {
+        console.log(result);
+      },
+    },
+  );
+
+  let i = 1;
+
+  const nextQuestion = function () {
+    run(i++);
+  };
+
   const onChange = function () {
     console.log('radio checked');
   };
@@ -50,7 +69,9 @@ const Questions: FC = () => {
               <Button>上一题</Button>
             </Col>
             <Col span={12}>
-              <Button type="primary">下一题</Button>
+              <Button onClick={nextQuestion} type="primary">
+                下一题
+              </Button>
             </Col>
           </Row>
         </div>

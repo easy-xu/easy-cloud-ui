@@ -1,4 +1,4 @@
-import { getHeader } from '@/utils/header';
+import { postReqeust } from '@/utils/post';
 
 //登录接口
 export function loginRequest(params: any) {
@@ -7,13 +7,4 @@ export function loginRequest(params: any) {
 //注册接口
 export function signinRequest(params: any) {
   return postReqeust('/api/user/signIn', params);
-}
-
-function postReqeust(url: string, params: any) {
-  return {
-    url: url,
-    method: 'POST',
-    data: params,
-    headers: getHeader(),
-  };
 }

@@ -29,7 +29,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
             <Link to="/game/pickgame">小游戏</Link>
           </Menu.Item>
           <Menu.Item key="test">
-            <Link to="/test/list">测一测</Link>
+            <Link to="/questionnaire/list">测一测</Link>
           </Menu.Item>
           {user.isLogin ? (
             <SubMenu
