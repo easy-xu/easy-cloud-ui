@@ -20,17 +20,16 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     logout: model.logout,
   }));
 
-  console.info('index-user', user);
   return (
     <Layout className="layout">
       <Header>
         <div className="logo" />
         <Menu mode="horizontal" defaultSelectedKeys={['geme1']}>
-          <Menu.Item key="game1">
-            <Link to="/game1">小游戏1</Link>
+          <Menu.Item key="game">
+            <Link to="/game/pickgame">小游戏</Link>
           </Menu.Item>
-          <Menu.Item key="game2">
-            <Link to="/game2">小游戏2</Link>
+          <Menu.Item key="test">
+            <Link to="/test/list">测一测</Link>
           </Menu.Item>
           {user.isLogin ? (
             <SubMenu

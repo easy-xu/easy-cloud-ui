@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
-import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
+import { Form, Input, Button, Checkbox, Card, PageHeader, message } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useRequest } from 'umi';
+import { useRequest, history } from 'umi';
 import { signinRequest } from '@/services/user';
 
 import './login.less';
@@ -13,7 +13,8 @@ const UserSignin: FC = () => {
     {
       manual: true,
       onSuccess: (result, params) => {
-        console.log(result, params);
+        message.success('注册成功');
+        history.push('/user/login');
       },
     },
   );
