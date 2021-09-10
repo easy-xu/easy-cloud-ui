@@ -11,7 +11,7 @@ const Questions: FC = () => {
   //问题选择的答案编号
   const [selectId, setSelectId] = useState(0);
 
-  //用户登录
+  //查询问题
   const { data, error, loading, run } = useRequest(
     (id) => questionRequest(id),
     {
@@ -44,7 +44,7 @@ const Questions: FC = () => {
               <Statistic title="参与测试" value={112893} />
             </Col>
             <Col span={12}>
-              <Statistic title="剩余题目" value={93} suffix="/ 100" />
+              <Statistic title="剩余题目" value={93} suffix="/100" />
             </Col>
           </Row>
         </div>
