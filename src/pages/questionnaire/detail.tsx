@@ -1,6 +1,6 @@
 import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
-import { getQuestionnaire, initQuestionnaire } from '@/services/question';
+import { getQuestionnaire, initAnswer } from '@/services/questionnaire';
 
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
@@ -8,30 +8,31 @@ import './questions.less';
 let i = 1;
 
 const Questions: FC = () => {
-  //查询问卷
-  const getRequest = useRequest(() => getQuestionnaire(1), {
+  const { questionnaire, queryQuestionnaire } = useModel('questionnaire');
+
+  queryQuestionnaire(1);
+
+  //初始化问卷
+  const initRequset = useRequest((id) => initAnswer(id), {
+    manual: true,
     onSuccess: (data) => {
-      if (data.answer) {
-        history.push('/questionnaire/questions');
-      }
+      history.push('/questionnaire/questions');
     },
   });
 
-  //初始化问卷
-  const initRequset = useRequest((id) => initQuestionnaire(id), {
-    manual: true,
-  });
+  const reInit = function () {
+    initRequset.run(i);
+  };
 
-  const nextQuestion = function () {};
-
-  const preQuestion = function () {};
+  const goQuesiton = function () {
+    history.push('/questionnaire/questions?answer=3');
+  };
 
   const init = function () {
     initRequset.run(i);
-    history.push('/questionnaire/questions');
   };
 
-  const data = getRequest.data;
+  const data = questionnaire;
 
   return (
     <div>
@@ -53,11 +54,11 @@ const Questions: FC = () => {
             {data.answer ? (
               <Row gutter={16}>
                 <Col span={12}>
-                  <Button onClick={preQuestion}>上一题</Button>
+                  <Button onClick={reInit}>重新开始</Button>
                 </Col>
                 <Col span={12}>
-                  <Button onClick={nextQuestion} type="primary">
-                    下一题
+                  <Button onClick={goQuesiton} type="primary">
+                    继续答题
                   </Button>
                 </Col>
               </Row>

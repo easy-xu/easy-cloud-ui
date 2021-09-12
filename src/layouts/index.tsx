@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { IRouteComponentProps, Link, useModel, history } from 'umi';
-import { Layout, Menu, Avatar } from 'antd';
+import { Layout, Menu, Avatar, Button } from 'antd';
 import { UserOutlined, LoginOutlined } from '@ant-design/icons';
 
 import './index.less';
@@ -20,6 +20,11 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     logout: model.logout,
   }));
 
+  function clearCache() {
+    sessionStorage.clear();
+    localStorage.clear();
+  }
+
   return (
     <Layout className="layout">
       <Header>
@@ -31,7 +36,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
           <Menu.Item key="test">
             <Link to="/questionnaire/list">测一测</Link>
           </Menu.Item>
-          {user.isLogin ? (
+          {user && user.isLogin ? (
             <SubMenu
               key="SubMenu"
               title={user.username}
@@ -64,7 +69,10 @@ const BaseLayout: FC<IRouteComponentProps> = ({
       <Content>
         <div className="layout-content">{children}</div>
       </Content>
-      <Footer>Simple Game ©2021 Created by Xu</Footer>
+      <Footer>
+        Simple Game ©2021 Created by Xu
+        <br /> <Button onClick={clearCache}>清除缓存</Button>
+      </Footer>
     </Layout>
   );
 };

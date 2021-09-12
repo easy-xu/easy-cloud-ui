@@ -1,4 +1,8 @@
-export const token = '';
+export let token = '';
+
+export function setToken(value: any) {
+  token = value;
+}
 
 export function getHeader() {
   return {

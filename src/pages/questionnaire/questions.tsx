@@ -1,59 +1,78 @@
 import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
-import { questionRequest } from '@/services/question';
-
+import { getQuestionByIndex } from '@/services/questionnaire';
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
 
-let i = 1;
+const Questions: FC = (props: any) => {
+  console.log(props);
+  console.log(props.location.query.answer);
 
-const Questions: FC = () => {
+  const { questionnaire, index, setIndex } = useModel('questionnaire');
+
+  console.log('questionnaire', questionnaire);
+
+  if (!questionnaire) {
+    history.push('/questionnaire/list');
+    return <div>跳转中...</div>;
+  }
+
+  //查询问题
+  const queryQuestionReqeust = useRequest(() =>
+    getQuestionByIndex(questionnaire.id, index),
+  );
+  console.log('queryQuestionReqeust', queryQuestionReqeust.data);
+
   //问题选择的答案编号
   const [selectId, setSelectId] = useState(0);
 
-  //查询问题
-  const { data, error, loading, run } = useRequest(
-    (id) => questionRequest(id),
-    {
-      manual: true,
-      onSuccess: (result) => {
-        console.log(result);
-      },
-    },
-  );
-
   const nextQuestion = function () {
-    run(i++);
+    if (index >= questionnaire.questionNum) {
+      return;
+    }
+    setIndex(index + 1);
+    queryQuestionReqeust.run();
   };
 
   const preQuestion = function () {
-    run(i--);
+    if (index <= 1) {
+      return;
+    }
+    setIndex(index - 1);
+    queryQuestionReqeust.run();
   };
 
   const onSelect = function (id: any) {
     setSelectId(id);
+    nextQuestion();
   };
+
+  const question = queryQuestionReqeust.data;
 
   return (
     <div>
       <Card>
         <div className="div-head">
-          <h1>{data ? data.questionnaire.title : ''}</h1>
+          <h1>{questionnaire ? questionnaire.title : ''}</h1>
           <Row gutter={16}>
             <Col span={12}>
               <Statistic title="参与测试" value={112893} />
             </Col>
             <Col span={12}>
-              <Statistic title="剩余题目" value={93} suffix="/100" />
+              <Statistic
+                title="剩余题目"
+                value={questionnaire.questionNum - index}
+                suffix={'/' + questionnaire.questionNum}
+              />
             </Col>
           </Row>
         </div>
-        {data ? (
+        {question ? (
           <div className="div-question">
-            <h2>{data.question}</h2>
+            <h2>{question.title}</h2>
             <Radio.Group value={selectId}>
               <Space direction="vertical">
-                {data.options.map((option: any) => {
+                {question.options.map((option: any) => {
                   return (
                     <div key={option.id} className="div-option">
                       <Card
@@ -77,12 +96,20 @@ const Questions: FC = () => {
         <div className="div-button">
           <Row gutter={16}>
             <Col span={12}>
-              <Button onClick={preQuestion}>上一题</Button>
+              {index != 1 ? <Button onClick={preQuestion}>上一题</Button> : ''}
             </Col>
             <Col span={12}>
-              <Button onClick={nextQuestion} type="primary">
-                下一题
-              </Button>
+              {index != questionnaire.questionNum ? (
+                <Button
+                  type="primary"
+                  loading={queryQuestionReqeust.loading}
+                  onClick={nextQuestion}
+                >
+                  下一题
+                </Button>
+              ) : (
+                ''
+              )}
             </Col>
           </Row>
         </div>
