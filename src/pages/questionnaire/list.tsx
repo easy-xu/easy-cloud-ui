@@ -54,7 +54,7 @@ const CardList: FC = () => {
                 avatar={
                   <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                 }
-                title={<Link to="/questionnaire/detail">标题</Link>}
+                title={<Link to="/questionnaire/detail?id=1">标题</Link>}
                 description="This is the description"
               />
             </Card>

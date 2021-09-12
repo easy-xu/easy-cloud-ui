@@ -7,16 +7,27 @@ import './questions.less';
 
 let i = 1;
 
-const Questions: FC = () => {
-  const { questionnaire, queryQuestionnaire } = useModel('questionnaire');
+const Questions: FC = (props: any) => {
+  const id = props.location.query.id;
 
-  queryQuestionnaire(1);
+  if (id == undefined) {
+    history.push('/questionnaire/list');
+    return <div>加载中...</div>;
+  }
+
+  const { questionnaire, setQuestionnaire } = useModel('questionnaire');
+
+  const queryQuestionnaireRequest = useRequest(() => getQuestionnaire(id), {
+    onSuccess: (data) => {
+      setQuestionnaire(data);
+    },
+  });
 
   //初始化问卷
   const initRequset = useRequest((id) => initAnswer(id), {
     manual: true,
     onSuccess: (data) => {
-      history.push('/questionnaire/questions');
+      history.push('/questionnaire/questions?answer=' + data.id);
     },
   });
 
@@ -25,7 +36,7 @@ const Questions: FC = () => {
   };
 
   const goQuesiton = function () {
-    history.push('/questionnaire/questions?answer=3');
+    history.push('/questionnaire/questions?answer=' + questionnaire.answer.id);
   };
 
   const init = function () {

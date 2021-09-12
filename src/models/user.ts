@@ -23,6 +23,7 @@ export default function userModel() {
       useRequest(visitedRequest, {
         onSuccess: (data) => {
           user0 = data;
+          user0.isLogin = false;
           console.log('init user', user0);
           storage.setLocalItem('user', user0);
           storage.setSessionItem('user', user0);

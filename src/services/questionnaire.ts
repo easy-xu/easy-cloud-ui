@@ -17,3 +17,8 @@ export function getQuestion(questionId: number) {
 export function getQuestionByIndex(questionnaireId: number, index: number) {
   return getRequset('/api/question/index/' + questionnaireId + '/' + index);
 }
+
+//查询答案
+export function getAnswer(answerId: number) {
+  return getRequset('/api/answer/get/' + answerId);
+}
