@@ -31,7 +31,7 @@ function genRequestId() {
   );
 }
 
-export function postReqeust(url: string, params: any) {
+export function postRequest(url: string, params: any) {
   return {
     url: url,
     method: 'POST',
@@ -40,7 +40,7 @@ export function postReqeust(url: string, params: any) {
   };
 }
 
-export function getRequset(url: string, params?: any) {
+export function getRequest(url: string, params?: any) {
   return {
     url: url,
     method: 'GET',

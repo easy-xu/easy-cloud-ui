@@ -1,27 +1,45 @@
 import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
-import { getQuestionnaire, initAnswer } from '@/services/questionnaire';
+import {
+  getAnswer,
+  getQuestionnaire,
+  initAnswer,
+} from '@/services/questionnaire';
 
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
 
 let i = 1;
 
-const Questions: FC = (props: any) => {
-  const id = props.location.query.id;
-
-  if (!id) {
+const Result: FC = (props: any) => {
+  const answerId = parseInt(props.location.query.answer);
+  if (!answerId) {
     history.push('/questionnaire/list');
     return <div>加载中...</div>;
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
 
-  const queryQuestionnaireRequest = useRequest(() => getQuestionnaire(id), {
+  //查询回答
+  const getAnswerRequest = useRequest(() => getAnswer(answerId), {
     onSuccess: (data) => {
-      setQuestionnaire(data);
+      //查询问卷
+      if (questionnaire == undefined) {
+        queryQuestionnaireRequest.run(data.questionnaireId);
+      }
     },
   });
+
+  //查询问卷
+  const queryQuestionnaireRequest = useRequest(
+    (questionnaireId) => getQuestionnaire(questionnaireId),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        setQuestionnaire(data);
+      },
+    },
+  );
 
   //初始化问卷
   const initRequset = useRequest((id) => initAnswer(id), {
@@ -35,8 +53,8 @@ const Questions: FC = (props: any) => {
     initRequset.run(i);
   };
 
-  const goQuesiton = function () {
-    history.push('/questionnaire/questions?answer=' + questionnaire.answer.id);
+  const goOthers = function () {
+    history.push('/questionnaire/list');
   };
 
   const init = function () {
@@ -65,22 +83,16 @@ const Questions: FC = (props: any) => {
             {data.answer ? (
               <Row gutter={16}>
                 <Col span={12}>
-                  <Button onClick={reInit}>重新开始</Button>
+                  <Button onClick={reInit}>重新测试</Button>
                 </Col>
                 <Col span={12}>
-                  <Button onClick={goQuesiton} type="primary">
-                    继续答题
+                  <Button onClick={goOthers} type="primary">
+                    查看其它
                   </Button>
                 </Col>
               </Row>
             ) : (
-              <Button
-                type="primary"
-                loading={initRequset.loading}
-                onClick={init}
-              >
-                开始测试
-              </Button>
+              ''
             )}
           </div>
         </Card>
@@ -91,4 +103,4 @@ const Questions: FC = (props: any) => {
   );
 };
 
-export default Questions;
+export default Result;

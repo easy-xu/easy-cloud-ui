@@ -2,27 +2,37 @@ import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
 import {
   getAnswer,
+  getAnswerQuestion,
   getQuestionByIndex,
   getQuestionnaire,
+  saveAnswerQuestion,
 } from '@/services/questionnaire';
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
 
+let index = 0;
+
 const Questions: FC = (props: any) => {
-  const answerId = props.location.query.answer;
-  if (answerId == undefined) {
+  const answerId = parseInt(props.location.query.answer);
+  if (!answerId) {
     history.push('/questionnaire/list');
     return <div>加载中...</div>;
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
-  const [index, setIndex] = useState<number>(1);
 
   //查询问题
   const queryQuestionReqeust = useRequest(
     (questionnaireId, index) => getQuestionByIndex(questionnaireId, index),
-    { manual: true },
+    {
+      manual: true,
+      onSuccess: (data) => {
+        //查询当前问题是否有答案
+        getAnswerQuestionRequest.run(answerId, data.id);
+      },
+    },
   );
+  const question = queryQuestionReqeust.data;
 
   //查询问卷
   const queryQuestionnaireRequest = useRequest(
@@ -35,27 +45,49 @@ const Questions: FC = (props: any) => {
     },
   );
 
+  //查询回答
   const getAnswerRequest = useRequest(() => getAnswer(answerId), {
     onSuccess: (data) => {
       //查询问卷
-      if (!questionnaire) {
+      if (questionnaire == undefined) {
         queryQuestionnaireRequest.run(data.questionnaireId);
       }
       //设置问题索引
-      setIndex(data.questionIndex);
+      index = data.questionIndex;
       //查询当前问题
       queryQuestionReqeust.run(data.questionnaireId, data.questionIndex);
     },
   });
 
+  //保存问题答案
+  const saveAnswerQuestionRequest = useRequest(
+    (params) => saveAnswerQuestion(params),
+    {
+      manual: true,
+      onSuccess: (data) => {},
+    },
+  );
+
+  const getAnswerQuestionRequest = useRequest(
+    (answerId, questionId) => getAnswerQuestion(answerId, questionId),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        //已回答问题设置选中状态
+        setSelectId(data.optionId);
+      },
+    },
+  );
+  const answer = getAnswerQuestionRequest.data;
+
   //问题选择的答案编号
-  const [selectId, setSelectId] = useState(0);
+  const [selectId, setSelectId] = useState(1);
 
   const nextQuestion = function () {
     if (index >= questionnaire.questionNum) {
       return;
     }
-    setIndex(index + 1);
+    index++;
     queryQuestionReqeust.run(questionnaire.id, index);
   };
 
@@ -63,16 +95,31 @@ const Questions: FC = (props: any) => {
     if (index <= 1) {
       return;
     }
-    setIndex(index - 1);
+    index--;
     queryQuestionReqeust.run(questionnaire.id, index);
   };
 
-  const onSelect = function (id: any) {
-    setSelectId(id);
-    nextQuestion();
-  };
+  const onSelect = function (e: any, option: any) {
+    //设置选中状态
+    setSelectId(option.id);
 
-  const question = queryQuestionReqeust.data;
+    e.stopPropagation();
+    const params = {
+      answerId: answerId,
+      questionId: question.id,
+      optionId: option.id,
+      optionValue: option.value,
+    };
+    console.log(params);
+    saveAnswerQuestionRequest.run(params);
+    if (index >= questionnaire.questionNum) {
+      //跳转结束页面
+      history.push('/questionnaire/result?answer=' + answerId);
+    } else {
+      //跳转下一个问题
+      nextQuestion();
+    }
+  };
 
   return (
     <div>
@@ -83,7 +130,10 @@ const Questions: FC = (props: any) => {
             <h1>{questionnaire.title}</h1>
             <Row gutter={16}>
               <Col span={12}>
-                <Statistic title="参与测试" value={112893} />
+                <Statistic
+                  title="参与测试"
+                  value={questionnaire.participantNum}
+                />
               </Col>
               <Col span={12}>
                 <Statistic
@@ -106,10 +156,12 @@ const Questions: FC = (props: any) => {
                           hoverable={true}
                           style={
                             selectId == option.id
-                              ? { background: '#b37feb' }
+                              ? {
+                                  background: '#b37feb',
+                                }
                               : {}
                           }
-                          onClick={() => onSelect(option.id)}
+                          onClick={(e) => onSelect(e, option)}
                         >
                           <Radio value={option.id}>{option.text}</Radio>
                         </Card>
