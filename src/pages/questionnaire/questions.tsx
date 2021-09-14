@@ -1,10 +1,10 @@
 import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
 import {
-  getAnswer,
-  getAnswerQuestion,
-  getQuestionByIndex,
-  getQuestionnaire,
+  queryAnswer,
+  queryAnswerQuestion,
+  queryQuestionByIndex,
+  queryQuestionnaire,
   saveAnswerQuestion,
 } from '@/services/questionnaire';
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
@@ -23,20 +23,19 @@ const Questions: FC = (props: any) => {
 
   //查询问题
   const queryQuestionReqeust = useRequest(
-    (questionnaireId, index) => getQuestionByIndex(questionnaireId, index),
+    (questionnaireId, index) => queryQuestionByIndex(questionnaireId, index),
     {
       manual: true,
       onSuccess: (data) => {
         //查询当前问题是否有答案
-        getAnswerQuestionRequest.run(answerId, data.id);
+        queryAnswerQuestionRequest.run(answerId, data.id);
       },
     },
   );
-  const question = queryQuestionReqeust.data;
 
   //查询问卷
   const queryQuestionnaireRequest = useRequest(
-    (questionnaireId) => getQuestionnaire(questionnaireId),
+    (questionnaireId) => queryQuestionnaire(questionnaireId),
     {
       manual: true,
       onSuccess: (data) => {
@@ -46,7 +45,7 @@ const Questions: FC = (props: any) => {
   );
 
   //查询回答
-  const getAnswerRequest = useRequest(() => getAnswer(answerId), {
+  const queryAnswerRequest = useRequest(() => queryAnswer(answerId), {
     onSuccess: (data) => {
       //查询问卷
       if (questionnaire == undefined) {
@@ -68,8 +67,8 @@ const Questions: FC = (props: any) => {
     },
   );
 
-  const getAnswerQuestionRequest = useRequest(
-    (answerId, questionId) => getAnswerQuestion(answerId, questionId),
+  const queryAnswerQuestionRequest = useRequest(
+    (answerId, questionId) => queryAnswerQuestion(answerId, questionId),
     {
       manual: true,
       onSuccess: (data) => {
@@ -78,7 +77,6 @@ const Questions: FC = (props: any) => {
       },
     },
   );
-  const answer = getAnswerQuestionRequest.data;
 
   //问题选择的答案编号
   const [selectId, setSelectId] = useState(1);
@@ -120,6 +118,9 @@ const Questions: FC = (props: any) => {
       nextQuestion();
     }
   };
+
+  const question = queryQuestionReqeust.data;
+  const answer = queryAnswerQuestionRequest.data;
 
   return (
     <div>

@@ -1,8 +1,8 @@
 import { postRequest, getRequest } from '@/utils/api';
 
 //查询问题接口
-export function getQuestionnaire(questionnaireId: number) {
-  return postRequest('/api/questionnaire/get', { id: questionnaireId });
+export function queryQuestionnaire(questionnaireId: number) {
+  return postRequest('/api/questionnaire/query', { id: questionnaireId });
 }
 //初始化回答记录
 export function initAnswer(questionnaireId: number) {
@@ -10,11 +10,11 @@ export function initAnswer(questionnaireId: number) {
 }
 
 //查询单个问题
-export function getQuestion(questionId: number) {
-  return postRequest('/api/question/get', { id: questionId });
+export function queryQuestion(questionId: number) {
+  return postRequest('/api/question/query', { id: questionId });
 }
 
-export function getQuestionByIndex(questionnaireId: number, index: number) {
+export function queryQuestionByIndex(questionnaireId: number, index: number) {
   return postRequest('/api/question/index', {
     questionnaireId: questionnaireId,
     questionIndex: index,
@@ -22,8 +22,11 @@ export function getQuestionByIndex(questionnaireId: number, index: number) {
 }
 
 //查询答案
-export function getAnswer(answerId: number) {
-  return postRequest('/api/answer/get', { id: answerId });
+export function queryAnswer(answerId?: number, questionnaireId?: number) {
+  return postRequest('/api/answer/query', {
+    id: answerId,
+    questionnaireId: questionnaireId,
+  });
 }
 
 //保存问题答案
@@ -32,8 +35,8 @@ export function saveAnswerQuestion(params: any) {
 }
 
 //查询问题答案
-export function getAnswerQuestion(answerId: number, questionId: number) {
-  return postRequest('/api/answer/question/get', {
+export function queryAnswerQuestion(answerId: number, questionId: number) {
+  return postRequest('/api/answer/question/query', {
     answerId: answerId,
     questionId: questionId,
   });

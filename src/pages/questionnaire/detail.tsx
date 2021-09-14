@@ -1,6 +1,10 @@
 import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
-import { getQuestionnaire, initAnswer } from '@/services/questionnaire';
+import {
+  queryAnswer,
+  queryQuestionnaire,
+  initAnswer,
+} from '@/services/questionnaire';
 
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
@@ -8,20 +12,31 @@ import './questions.less';
 let i = 1;
 
 const Questions: FC = (props: any) => {
-  const id = props.location.query.id;
+  const questionnaireId = props.location.query.id;
 
-  if (!id) {
+  if (!questionnaireId) {
     history.push('/questionnaire/list');
     return <div>加载中...</div>;
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
 
-  const queryQuestionnaireRequest = useRequest(() => getQuestionnaire(id), {
-    onSuccess: (data) => {
-      setQuestionnaire(data);
+  //查询问卷信息
+  const queryQuestionnaireRequest = useRequest(
+    () => queryQuestionnaire(questionnaireId),
+    {
+      onSuccess: (data) => {
+        setQuestionnaire(data);
+      },
     },
-  });
+  );
+  //查询回答信息
+  const queryAnswerRequest = useRequest(
+    () => queryAnswer(undefined, questionnaireId),
+    {
+      onSuccess: (data) => {},
+    },
+  );
 
   //初始化问卷
   const initRequset = useRequest((id) => initAnswer(id), {
@@ -44,6 +59,7 @@ const Questions: FC = (props: any) => {
   };
 
   const data = questionnaire;
+  const answer = queryAnswerRequest.data;
 
   return (
     <div>
@@ -62,7 +78,7 @@ const Questions: FC = (props: any) => {
           </div>
 
           <div className="div-button">
-            {data.answer ? (
+            {answer ? (
               <Row gutter={16}>
                 <Col span={12}>
                   <Button onClick={reInit}>重新开始</Button>

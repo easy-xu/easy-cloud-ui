@@ -1,8 +1,8 @@
 import { FC, useState } from 'react';
 import { useRequest, history, useModel } from 'umi';
 import {
-  getAnswer,
-  getQuestionnaire,
+  queryAnswer,
+  queryQuestionnaire,
   initAnswer,
 } from '@/services/questionnaire';
 
@@ -21,7 +21,7 @@ const Result: FC = (props: any) => {
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
 
   //查询回答
-  const getAnswerRequest = useRequest(() => getAnswer(answerId), {
+  const queryAnswerRequest = useRequest(() => queryAnswer(answerId), {
     onSuccess: (data) => {
       //查询问卷
       if (questionnaire == undefined) {
@@ -32,7 +32,7 @@ const Result: FC = (props: any) => {
 
   //查询问卷
   const queryQuestionnaireRequest = useRequest(
-    (questionnaireId) => getQuestionnaire(questionnaireId),
+    (questionnaireId) => queryQuestionnaire(questionnaireId),
     {
       manual: true,
       onSuccess: (data) => {
