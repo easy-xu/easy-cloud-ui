@@ -8,6 +8,10 @@ export function queryQuestionnaire(questionnaireId: number) {
 export function initAnswer(questionnaireId: number) {
   return postRequest('/api/answer/init', { questionnaireId: questionnaireId });
 }
+//查询回答状态
+export function statusAnswer(answerId: number) {
+  return postRequest('/api/answer/status', { id: answerId });
+}
 
 //查询单个问题
 export function queryQuestion(questionId: number) {
@@ -40,4 +44,8 @@ export function queryAnswerQuestion(answerId: number, questionId: number) {
     answerId: answerId,
     questionId: questionId,
   });
+}
+
+export function listAnswerResult(answerId: number) {
+  return postRequest('/api/result/list', { answerId: answerId });
 }

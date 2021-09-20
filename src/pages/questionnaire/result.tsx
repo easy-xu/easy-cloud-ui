@@ -4,9 +4,22 @@ import {
   queryAnswer,
   queryQuestionnaire,
   initAnswer,
+  statusAnswer,
+  listAnswerResult,
 } from '@/services/questionnaire';
 
-import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
+import {
+  Card,
+  Radio,
+  Space,
+  Button,
+  Statistic,
+  Row,
+  Col,
+  Collapse,
+} from 'antd';
+const { Panel } = Collapse;
+
 import './questions.less';
 
 let i = 1;
@@ -30,6 +43,16 @@ const Result: FC = (props: any) => {
     },
   });
 
+  //查询回答
+  const statusAnswerRequest = useRequest(() => statusAnswer(answerId), {
+    onSuccess: (data) => {
+      console.log(data);
+      if (data.flow == 2) {
+        listAnswerResultRequest.run(answerId);
+      }
+    },
+  });
+
   //查询问卷
   const queryQuestionnaireRequest = useRequest(
     (questionnaireId) => queryQuestionnaire(questionnaireId),
@@ -37,6 +60,17 @@ const Result: FC = (props: any) => {
       manual: true,
       onSuccess: (data) => {
         setQuestionnaire(data);
+      },
+    },
+  );
+
+  //查询回答计算结果
+  const listAnswerResultRequest = useRequest(
+    (answerId) => listAnswerResult(answerId),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        console.log(data);
       },
     },
   );
@@ -62,6 +96,7 @@ const Result: FC = (props: any) => {
   };
 
   const data = questionnaire;
+  const results = listAnswerResultRequest.data;
 
   return (
     <div>
@@ -79,6 +114,24 @@ const Result: FC = (props: any) => {
             </Row>
           </div>
 
+          <div className="div-result">
+            {results ? (
+              <Collapse defaultActiveKey={['0']}>
+                {results.map((item: any, index: number) => {
+                  return (
+                    <Panel
+                      header={item.title + '：得分' + item.score}
+                      key={index}
+                    >
+                      <p>{item.text}</p>
+                    </Panel>
+                  );
+                })}
+              </Collapse>
+            ) : (
+              ''
+            )}
+          </div>
           <div className="div-button">
             {data.answer ? (
               <Row gutter={16}>

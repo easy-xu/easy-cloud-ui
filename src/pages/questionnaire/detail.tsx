@@ -51,7 +51,7 @@ const Questions: FC = (props: any) => {
   };
 
   const goQuesiton = function () {
-    history.push('/questionnaire/questions?answer=' + questionnaire.answer.id);
+    history.push('/questionnaire/questions?answer=' + answer.questionIndex);
   };
 
   const init = function () {

@@ -63,7 +63,15 @@ const Questions: FC = (props: any) => {
     (params) => saveAnswerQuestion(params),
     {
       manual: true,
-      onSuccess: (data) => {},
+      onSuccess: (data) => {
+        if (index >= questionnaire.questionNum) {
+          //跳转结束页面
+          history.push('/questionnaire/result?answer=' + answerId);
+        } else {
+          //跳转下一个问题
+          nextQuestion();
+        }
+      },
     },
   );
 
@@ -110,13 +118,6 @@ const Questions: FC = (props: any) => {
     };
     console.log(params);
     saveAnswerQuestionRequest.run(params);
-    if (index >= questionnaire.questionNum) {
-      //跳转结束页面
-      history.push('/questionnaire/result?answer=' + answerId);
-    } else {
-      //跳转下一个问题
-      nextQuestion();
-    }
   };
 
   const question = queryQuestionReqeust.data;
