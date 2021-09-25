@@ -1,8 +1,12 @@
 import { postRequest, getRequest } from '@/utils/api';
 
-//查询问题接口
+//查询问卷接口
 export function queryQuestionnaire(questionnaireId: number) {
   return postRequest('/api/questionnaire/query', { id: questionnaireId });
+}
+//问卷分页接口
+export function pageListQuestionnaire(page: any) {
+  return postRequest('/api/questionnaire/pageList', { page: page });
 }
 //初始化回答记录
 export function initAnswer(questionnaireId: number) {

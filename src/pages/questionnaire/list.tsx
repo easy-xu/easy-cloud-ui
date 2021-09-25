@@ -1,26 +1,27 @@
-import React, { FC } from 'react';
+import React, { FC, useState } from 'react';
 import { List, Card, Avatar } from 'antd';
 import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
-import { Link } from 'umi';
+import { Link, useRequest } from 'umi';
 const { Meta } = Card;
 
 import './list.less';
+import { pageListQuestionnaire } from '@/services/questionnaire';
 
 const CardList: FC = () => {
-  const data = [
+  //查询列表
+  const [page, setPage] = useState<any>({ current: 1 });
+
+  const [records, setRecords] = useState<any>([]);
+
+  const pageListQuestionnaireRequest = useRequest(
+    () => pageListQuestionnaire(page),
     {
-      title: 'Title 1',
+      onSuccess: (data) => {
+        console.log(data);
+        setRecords(data.page.records);
+      },
     },
-    {
-      title: 'Title 2',
-    },
-    {
-      title: 'Title 3',
-    },
-    {
-      title: 'Title 4',
-    },
-  ];
+  );
 
   return (
     <div>
@@ -34,8 +35,8 @@ const CardList: FC = () => {
           xl: 4,
           xxl: 6,
         }}
-        dataSource={data}
-        renderItem={(item) => (
+        dataSource={records}
+        renderItem={(item: any) => (
           <List.Item>
             <Card
               cover={
@@ -54,8 +55,10 @@ const CardList: FC = () => {
                 avatar={
                   <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
                 }
-                title={<Link to="/questionnaire/detail?id=1">标题</Link>}
-                description="This is the description"
+                title={
+                  <Link to="/questionnaire/detail?id=1">{item.title}</Link>
+                }
+                description="This is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the description"
               />
             </Card>
           </List.Item>

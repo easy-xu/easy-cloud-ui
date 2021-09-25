@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
-import { IRouteComponentProps, Link, useModel, history } from 'umi';
-import { Layout, Menu, Avatar, Button } from 'antd';
+import { IRouteComponentProps, Link, useModel, history, Redirect } from 'umi';
+import { Layout, Menu, Avatar, Button, Spin } from 'antd';
 import { UserOutlined, LoginOutlined } from '@ant-design/icons';
 
 import './index.less';
@@ -19,6 +19,14 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     user: model.user,
     logout: model.logout,
   }));
+
+  console.log(location);
+
+  const openPath = ['/user/login', '/user/signin', '/403', '/404'];
+
+  if (openPath.indexOf(location.pathname) == -1 && user == undefined) {
+    //return <Redirect to='/403' />
+  }
 
   function clearCache() {
     sessionStorage.clear();
@@ -67,7 +75,13 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         </Menu>
       </Header>
       <Content>
-        <div className="layout-content">{children}</div>
+        {user ? (
+          <div className="layout-content">{children}</div>
+        ) : (
+          <div className="layout-spin">
+            <Spin size="large" />
+          </div>
+        )}
       </Content>
       <Footer>
         Simple Game ©2021 Created by Xu

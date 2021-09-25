@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { useRequest, history, useModel } from 'umi';
+import { useRequest, history, useModel, Redirect } from 'umi';
 import {
   queryAnswer,
   queryQuestionnaire,
@@ -15,8 +15,7 @@ const Questions: FC = (props: any) => {
   const questionnaireId = props.location.query.id;
 
   if (!questionnaireId) {
-    history.push('/questionnaire/list');
-    return <div>加载中...</div>;
+    return <Redirect to="/questionnaire/list" />;
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');

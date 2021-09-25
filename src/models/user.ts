@@ -25,6 +25,7 @@ export default function userModel() {
           user0 = data;
           user0.isLogin = false;
           console.log('init user', user0);
+          setUser(user0);
           storage.setLocalItem('user', user0);
           storage.setSessionItem('user', user0);
           setToken(user0.token);
