@@ -6,7 +6,7 @@ export function queryQuestionnaire(questionnaireId: number) {
 }
 //问卷分页接口
 export function pageListQuestionnaire(page: any) {
-  return postRequest('/api/questionnaire/pageList', { page: page });
+  return postRequest('/api/questionnaire/page-list', { page: page });
 }
 //初始化回答记录
 export function initAnswer(questionnaireId: number) {

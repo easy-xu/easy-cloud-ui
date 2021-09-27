@@ -58,7 +58,7 @@ const CardList: FC = () => {
                 title={
                   <Link to="/questionnaire/detail?id=1">{item.title}</Link>
                 }
-                description="This is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the descriptionThis is the description"
+                description={item.shortDesc}
               />
             </Card>
           </List.Item>

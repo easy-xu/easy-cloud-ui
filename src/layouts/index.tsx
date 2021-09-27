@@ -44,6 +44,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
           <Menu.Item key="test">
             <Link to="/questionnaire/list">测一测</Link>
           </Menu.Item>
+
           {user && user.isLogin ? (
             <SubMenu
               key="SubMenu"
@@ -58,6 +59,10 @@ const BaseLayout: FC<IRouteComponentProps> = ({
                 />
               }
             >
+              {' '}
+              <Menu.Item key="console">
+                <Link to="/console">控制台</Link>
+              </Menu.Item>
               <Menu.Item key="setting:1">
                 <Link to="/user">账号信息</Link>
               </Menu.Item>

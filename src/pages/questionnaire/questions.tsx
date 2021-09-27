@@ -111,6 +111,7 @@ const Questions: FC = (props: any) => {
 
     e.stopPropagation();
     const params = {
+      id: answer.id,
       answerId: answerId,
       questionId: question.id,
       optionId: option.id,

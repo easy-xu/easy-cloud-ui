@@ -11,7 +11,7 @@ import './questions.less';
 
 let i = 1;
 
-const Questions: FC = (props: any) => {
+const Questionnaire: FC = (props: any) => {
   const questionnaireId = props.location.query.id;
 
   if (!questionnaireId) {
@@ -106,4 +106,4 @@ const Questions: FC = (props: any) => {
   );
 };
 
-export default Questions;
+export default Questionnaire;
