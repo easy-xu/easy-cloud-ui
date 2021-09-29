@@ -9,8 +9,6 @@ import {
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
 
-let i = 1;
-
 const Questionnaire: FC = (props: any) => {
   const questionnaireId = props.location.query.id;
 
@@ -46,7 +44,7 @@ const Questionnaire: FC = (props: any) => {
   });
 
   const reInit = function () {
-    initRequset.run(i);
+    initRequset.run(questionnaireId);
   };
 
   const goQuesiton = function () {
@@ -54,7 +52,7 @@ const Questionnaire: FC = (props: any) => {
   };
 
   const init = function () {
-    initRequset.run(i);
+    initRequset.run(questionnaireId);
   };
 
   const data = questionnaire;

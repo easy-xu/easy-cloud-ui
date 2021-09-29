@@ -49,7 +49,12 @@ export function queryAnswerQuestion(answerId: number, questionId: number) {
     questionId: questionId,
   });
 }
-
+//查询回答结论
 export function listAnswerResult(answerId: number) {
   return postRequest('/api/result/list', { answerId: answerId });
+}
+
+//导入问卷
+export function importQuestionnaire(fileId: number) {
+  return postRequest('/api/questionnaire/import', { fileId: fileId });
 }

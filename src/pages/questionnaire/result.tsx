@@ -17,8 +17,11 @@ import {
   Row,
   Col,
   Collapse,
+  Descriptions,
+  Divider,
 } from 'antd';
 const { Panel } = Collapse;
+const { Item } = Descriptions;
 
 import './questions.less';
 
@@ -116,21 +119,27 @@ const Result: FC = (props: any) => {
 
           <div className="div-result">
             {results ? (
-              <Collapse defaultActiveKey={['0']}>
+              <div>
                 {results.map((item: any, index: number) => {
                   return (
-                    <Panel
-                      header={item.title + '：得分' + item.score}
-                      key={index}
-                    >
-                      <p>{item.text}</p>
-                    </Panel>
+                    <div>
+                      <Descriptions
+                        column={1}
+                        title={item.title + ', 得分:' + item.score}
+                        bordered
+                      >
+                        {item.descriptions.map((desc: any) => {
+                          return <Item label={desc.name}>{desc.value}</Item>;
+                        })}
+                      </Descriptions>
+                    </div>
                   );
                 })}
-              </Collapse>
+              </div>
             ) : (
               ''
             )}
+            ,
           </div>
           <div className="div-button">
             {data.answer ? (

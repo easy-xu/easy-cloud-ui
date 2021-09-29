@@ -63,6 +63,7 @@ const Questions: FC = (props: any) => {
     (params) => saveAnswerQuestion(params),
     {
       manual: true,
+      debounceInterval: 500,
       onSuccess: (data) => {
         if (index >= questionnaire.questionNum) {
           //跳转结束页面
@@ -141,7 +142,7 @@ const Questions: FC = (props: any) => {
               <Col span={12}>
                 <Statistic
                   title="剩余题目"
-                  value={questionnaire.questionNum - index}
+                  value={questionnaire.questionNum - index + 1}
                   suffix={'/' + questionnaire.questionNum}
                 />
               </Col>
