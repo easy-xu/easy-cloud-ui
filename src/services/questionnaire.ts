@@ -58,3 +58,8 @@ export function listAnswerResult(answerId: number) {
 export function importQuestionnaire(fileId: number) {
   return postRequest('/api/questionnaire/import', { fileId: fileId });
 }
+
+//删除问卷配置
+export function deleteQuestionnaire(id: number) {
+  return postRequest('/api/questionnaire/delete', { id: id });
+}

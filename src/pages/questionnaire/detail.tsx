@@ -4,9 +4,21 @@ import {
   queryAnswer,
   queryQuestionnaire,
   initAnswer,
+  statusAnswer,
 } from '@/services/questionnaire';
 
-import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
+import {
+  Card,
+  Radio,
+  Space,
+  Button,
+  Statistic,
+  Row,
+  Col,
+  Typography,
+} from 'antd';
+const { Title, Paragraph } = Typography;
+
 import './questions.less';
 
 const Questionnaire: FC = (props: any) => {
@@ -31,9 +43,19 @@ const Questionnaire: FC = (props: any) => {
   const queryAnswerRequest = useRequest(
     () => queryAnswer(undefined, questionnaireId),
     {
-      onSuccess: (data) => {},
+      onSuccess: (data) => {
+        statusAnswerRequest.run(data.id);
+      },
     },
   );
+  //查询回答状态
+  const statusAnswerRequest = useRequest((answerId) => statusAnswer(answerId), {
+    manual: true,
+    onSuccess: (data) => {
+      if (data.flow == 2) {
+      }
+    },
+  });
 
   //初始化问卷
   const initRequset = useRequest((id) => initAnswer(id), {
@@ -48,7 +70,7 @@ const Questionnaire: FC = (props: any) => {
   };
 
   const goQuesiton = function () {
-    history.push('/questionnaire/questions?answer=' + answer.questionIndex);
+    history.push('/questionnaire/questions?answer=' + answer.id);
   };
 
   const init = function () {
@@ -63,7 +85,7 @@ const Questionnaire: FC = (props: any) => {
       {data ? (
         <Card>
           <div className="div-head">
-            <h1>{data.title}</h1>
+            <Title level={3}>{data.title}</Title>
             <Row gutter={16}>
               <Col span={12}>
                 <Statistic title="参与测试" value={data.participantNum} />
@@ -75,25 +97,32 @@ const Questionnaire: FC = (props: any) => {
           </div>
 
           <div className="div-button">
+            <Title level={5}>{data.shortDesc}</Title>
             {answer ? (
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Button onClick={reInit}>重新开始</Button>
-                </Col>
-                <Col span={12}>
-                  <Button onClick={goQuesiton} type="primary">
-                    继续答题
-                  </Button>
-                </Col>
-              </Row>
+              <div>
+                <Paragraph>检测到已有回答记录</Paragraph>
+                <Row gutter={16}>
+                  <Col span={12}>
+                    <Button onClick={reInit}>重新开始</Button>
+                  </Col>
+                  <Col span={12}>
+                    <Button onClick={goQuesiton} type="primary">
+                      继续答题
+                    </Button>
+                  </Col>
+                </Row>
+              </div>
             ) : (
-              <Button
-                type="primary"
-                loading={initRequset.loading}
-                onClick={init}
-              >
-                开始测试
-              </Button>
+              <div>
+                <Paragraph></Paragraph>
+                <Button
+                  type="primary"
+                  loading={initRequset.loading}
+                  onClick={init}
+                >
+                  开始测试
+                </Button>
+              </div>
             )}
           </div>
         </Card>

@@ -1,9 +1,13 @@
 import { FC, useState } from 'react';
-import { Upload, message, Button, Steps, Divider } from 'antd';
+import { Upload, message, Button, Steps, Divider, Table, Space } from 'antd';
 import { UploadOutlined, LoadingOutlined } from '@ant-design/icons';
 import { getHeader } from '@/utils/api';
 import { useRequest } from 'umi';
-import { importQuestionnaire } from '@/services/questionnaire';
+import {
+  deleteQuestionnaire,
+  importQuestionnaire,
+  pageListQuestionnaire,
+} from '@/services/questionnaire';
 const { Step } = Steps;
 
 const Console: FC = (props: any) => {
@@ -74,12 +78,63 @@ const Console: FC = (props: any) => {
     },
   );
 
+  //问卷表格
+
+  //查询列表
+  const [page, setPage] = useState<any>({ current: 1, size: 10 });
+
+  const [records, setRecords] = useState<any>([]);
+
+  const pageListQuestionnaireRequest = useRequest(
+    () => pageListQuestionnaire(page),
+    {
+      onSuccess: (data) => {
+        console.log(data);
+        setRecords(data.page.records);
+      },
+    },
+  );
+
+  const deleteQuestionnaireRequest = useRequest(
+    (id) => deleteQuestionnaire(id),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        pageListQuestionnaireRequest.run();
+      },
+    },
+  );
+
+  const deleteClick = function (id: number) {
+    deleteQuestionnaireRequest.run(id);
+  };
+
+  const columns = [
+    {
+      title: '标题',
+      dataIndex: 'title',
+      key: 'title',
+    },
+    {
+      title: '操作',
+      key: 'action',
+      render: (text: any, record: any) => (
+        <Space size="middle">
+          <Button size="small" danger onClick={() => deleteClick(record.id)}>
+            删除
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <div>
       <Steps>
-        {steps.map((step) => {
+        {steps.map((step, index) => {
           return (
             <Step
+              key={index}
               title={step.title}
               description={step.description}
               status={step.status}
@@ -92,6 +147,13 @@ const Console: FC = (props: any) => {
       <Upload {...uploadProps}>
         <Button icon={<UploadOutlined />}>上传测试题</Button>
       </Upload>
+      <Divider />
+      <Table
+        columns={columns}
+        rowKey={(record) => record.id}
+        dataSource={records}
+      />
+      ;
     </div>
   );
 };

@@ -89,7 +89,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         )}
       </Content>
       <Footer>
-        Simple Game ©2021 Created by Xu
+        Simple Game ©2021 Created by 为了呆毛
         <br /> <Button onClick={clearCache}>清除缓存</Button>
       </Footer>
     </Layout>

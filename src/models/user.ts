@@ -55,6 +55,8 @@ export default function userModel() {
   const logout = useCallback(() => {
     console.log('logout');
     user0 = {
+      username: user.username,
+      token: user.token,
       isLogin: false,
     };
     saveUser(user0);

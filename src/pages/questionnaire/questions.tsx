@@ -6,6 +6,7 @@ import {
   queryQuestionByIndex,
   queryQuestionnaire,
   saveAnswerQuestion,
+  statusAnswer,
 } from '@/services/questionnaire';
 import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
 import './questions.less';
@@ -51,6 +52,15 @@ const Questions: FC = (props: any) => {
       if (questionnaire == undefined) {
         queryQuestionnaireRequest.run(data.questionnaireId);
       }
+      //查询问题状态
+      statusAnswerRequest.run(data.id);
+    },
+  });
+
+  //查询回答状态
+  const statusAnswerRequest = useRequest((answerId) => statusAnswer(answerId), {
+    manual: true,
+    onSuccess: (data) => {
       //设置问题索引
       index = data.questionIndex;
       //查询当前问题
