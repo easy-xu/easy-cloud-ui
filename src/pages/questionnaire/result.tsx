@@ -3,26 +3,23 @@ import { useRequest, history, useModel } from 'umi';
 import {
   queryAnswer,
   queryQuestionnaire,
-  initAnswer,
   statusAnswer,
   listAnswerResult,
 } from '@/services/questionnaire';
 
 import {
   Card,
-  Radio,
-  Space,
-  Button,
   Statistic,
   Row,
   Col,
   Collapse,
   Descriptions,
   Divider,
-  Spin,
+  Typography,
 } from 'antd';
 const { Panel } = Collapse;
 const { Item } = Descriptions;
+const { Title, Paragraph, Text, Link } = Typography;
 
 import './index.less';
 import FixRow from '@/components/FixRow';
@@ -109,16 +106,23 @@ const Result: FC = (props: any) => {
             <div>
               {results.map((item: any, index: number) => {
                 return (
-                  <div>
-                    <Descriptions
-                      column={1}
-                      title={item.title + ', 得分:' + item.score}
-                      bordered
-                    >
-                      {item.descriptions.map((desc: any) => {
-                        return <Item label={desc.name}>{desc.value}</Item>;
-                      })}
-                    </Descriptions>
+                  <div key={index}>
+                    <Title level={3}>
+                      {item.title}{' '}
+                      <Text code strong italic>
+                        {' '}
+                        {item.score}分
+                      </Text>{' '}
+                    </Title>
+                    {item.descriptions.map((desc: any, index: number) => {
+                      return (
+                        <div key={index}>
+                          <Title level={5}>{desc.name}</Title>
+                          <Paragraph>{desc.value}</Paragraph>
+                        </div>
+                      );
+                    })}
+                    <Divider />
                   </div>
                 );
               })}
