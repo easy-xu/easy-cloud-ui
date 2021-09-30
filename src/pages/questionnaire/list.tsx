@@ -1,11 +1,11 @@
 import React, { FC, useState } from 'react';
-import { List, Card, Avatar } from 'antd';
+import { List, Card, Avatar, Typography } from 'antd';
 import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
 import { Link, useRequest } from 'umi';
-const { Meta } = Card;
-
-import './list.less';
 import { pageListQuestionnaire } from '@/services/questionnaire';
+
+const { Meta } = Card;
+const { Title, Paragraph } = Typography;
 
 const CardList: FC = () => {
   //查询列表
@@ -60,7 +60,13 @@ const CardList: FC = () => {
                     {item.title}
                   </Link>
                 }
-                description={item.shortDesc}
+                description={
+                  <Paragraph
+                    ellipsis={{ rows: 3, expandable: false, symbol: '...' }}
+                  >
+                    {item.shortDesc}
+                  </Paragraph>
+                }
               />
             </Card>
           </List.Item>

@@ -19,7 +19,9 @@ import {
 } from 'antd';
 const { Title, Paragraph } = Typography;
 
-import './questions.less';
+import './index.less';
+import FixRow from '@/components/FixRow';
+import Loading from '@/components/Loading';
 
 const Questionnaire: FC = (props: any) => {
   const questionnaireId = props.location.query.id;
@@ -51,10 +53,7 @@ const Questionnaire: FC = (props: any) => {
   //查询回答状态
   const statusAnswerRequest = useRequest((answerId) => statusAnswer(answerId), {
     manual: true,
-    onSuccess: (data) => {
-      if (data.flow == 2) {
-      }
-    },
+    onSuccess: (data) => {},
   });
 
   //初始化问卷
@@ -73,62 +72,77 @@ const Questionnaire: FC = (props: any) => {
     history.push('/questionnaire/questions?answer=' + answer.id);
   };
 
+  const goResult = function () {
+    history.push('/questionnaire/result?answer=' + answer.id);
+  };
+
   const init = function () {
     initRequset.run(questionnaireId);
   };
 
-  const data = questionnaire;
   const answer = queryAnswerRequest.data;
+
+  if (!questionnaire) {
+    return <Loading />;
+  }
 
   return (
     <div>
-      {data ? (
-        <Card>
-          <div className="div-head">
-            <Title level={3}>{data.title}</Title>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic title="参与测试" value={data.participantNum} />
-              </Col>
-              <Col span={12}>
-                <Statistic title="题目数量" value={data.questionNum} />
-              </Col>
-            </Row>
-          </div>
-
-          <div className="div-button">
-            <Title level={5}>{data.shortDesc}</Title>
-            {answer ? (
-              <div>
-                <Paragraph>检测到已有回答记录</Paragraph>
-                <Row gutter={16}>
-                  <Col span={12}>
-                    <Button onClick={reInit}>重新开始</Button>
-                  </Col>
-                  <Col span={12}>
+      <Card>
+        <div className="div-head">
+          <Title level={3}>{questionnaire.title}</Title>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Statistic
+                title="参与测试"
+                value={questionnaire.participantNum}
+              />
+            </Col>
+            <Col span={12}>
+              <Statistic title="题目数量" value={questionnaire.questionNum} />
+            </Col>
+          </Row>
+        </div>
+        <div className="div-desc">
+          <FixRow>
+            <Paragraph>{questionnaire.shortDesc}</Paragraph>
+          </FixRow>
+        </div>
+        <div className="div-button">
+          {answer ? (
+            <div>
+              <Paragraph>检测到已有回答记录</Paragraph>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Button onClick={reInit}>重新开始</Button>
+                </Col>
+                <Col span={12}>
+                  {answer.flow == 2 ? (
+                    <Button onClick={goResult} type="primary">
+                      查看结果
+                    </Button>
+                  ) : (
                     <Button onClick={goQuesiton} type="primary">
                       继续答题
                     </Button>
-                  </Col>
-                </Row>
-              </div>
-            ) : (
-              <div>
-                <Paragraph></Paragraph>
-                <Button
-                  type="primary"
-                  loading={initRequset.loading}
-                  onClick={init}
-                >
-                  开始测试
-                </Button>
-              </div>
-            )}
-          </div>
-        </Card>
-      ) : (
-        ''
-      )}
+                  )}
+                </Col>
+              </Row>
+            </div>
+          ) : (
+            <div>
+              <Paragraph></Paragraph>
+              <Button
+                type="primary"
+                loading={initRequset.loading}
+                onClick={init}
+              >
+                开始测试
+              </Button>
+            </div>
+          )}
+        </div>
+      </Card>
     </div>
   );
 };

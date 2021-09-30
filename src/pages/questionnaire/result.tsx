@@ -19,11 +19,14 @@ import {
   Collapse,
   Descriptions,
   Divider,
+  Spin,
 } from 'antd';
 const { Panel } = Collapse;
 const { Item } = Descriptions;
 
-import './questions.less';
+import './index.less';
+import FixRow from '@/components/FixRow';
+import Loading from '@/components/Loading';
 
 let i = 1;
 
@@ -78,89 +81,51 @@ const Result: FC = (props: any) => {
     },
   );
 
-  //初始化问卷
-  const initRequset = useRequest((id) => initAnswer(id), {
-    manual: true,
-    onSuccess: (data) => {
-      history.push('/questionnaire/questions?answer=' + data.id);
-    },
-  });
-
-  const reInit = function () {
-    initRequset.run(i);
-  };
-
-  const goOthers = function () {
-    history.push('/questionnaire/list');
-  };
-
-  const init = function () {
-    initRequset.run(i);
-  };
-
-  const data = questionnaire;
   const results = listAnswerResultRequest.data;
+
+  if (!questionnaire || !results) {
+    return <Loading />;
+  }
 
   return (
     <div>
-      {data ? (
-        <Card>
-          <div className="div-head">
-            <h1>{data.title}</h1>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic title="参与测试" value={data.participantNum} />
-              </Col>
-              <Col span={12}>
-                <Statistic title="题目数量" value={data.questionNum} />
-              </Col>
-            </Row>
-          </div>
-
-          <div className="div-result">
-            {results ? (
-              <div>
-                {results.map((item: any, index: number) => {
-                  return (
-                    <div>
-                      <Descriptions
-                        column={1}
-                        title={item.title + ', 得分:' + item.score}
-                        bordered
-                      >
-                        {item.descriptions.map((desc: any) => {
-                          return <Item label={desc.name}>{desc.value}</Item>;
-                        })}
-                      </Descriptions>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              ''
-            )}
-            ,
-          </div>
-          <div className="div-button">
-            {data.answer ? (
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Button onClick={reInit}>重新测试</Button>
-                </Col>
-                <Col span={12}>
-                  <Button onClick={goOthers} type="primary">
-                    查看其它
-                  </Button>
-                </Col>
-              </Row>
-            ) : (
-              ''
-            )}
-          </div>
-        </Card>
-      ) : (
-        ''
-      )}
+      <Card>
+        <div className="div-head">
+          <h1>{questionnaire.title}</h1>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Statistic
+                title="参与测试"
+                value={questionnaire.participantNum}
+              />
+            </Col>
+            <Col span={12}>
+              <Statistic title="题目数量" value={questionnaire.questionNum} />
+            </Col>
+          </Row>
+        </div>
+        <div className="div-result">
+          <FixRow>
+            <div>
+              {results.map((item: any, index: number) => {
+                return (
+                  <div>
+                    <Descriptions
+                      column={1}
+                      title={item.title + ', 得分:' + item.score}
+                      bordered
+                    >
+                      {item.descriptions.map((desc: any) => {
+                        return <Item label={desc.name}>{desc.value}</Item>;
+                      })}
+                    </Descriptions>
+                  </div>
+                );
+              })}
+            </div>
+          </FixRow>
+        </div>
+      </Card>
     </div>
   );
 };

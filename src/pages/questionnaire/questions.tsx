@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { useRequest, history, useModel } from 'umi';
+import { useRequest, history, useModel, Redirect } from 'umi';
 import {
   queryAnswer,
   queryAnswerQuestion,
@@ -8,16 +8,29 @@ import {
   saveAnswerQuestion,
   statusAnswer,
 } from '@/services/questionnaire';
-import { Card, Radio, Space, Button, Statistic, Row, Col } from 'antd';
-import './questions.less';
+import {
+  Card,
+  Radio,
+  Space,
+  Button,
+  Statistic,
+  Row,
+  Col,
+  Typography,
+} from 'antd';
+const { Title, Paragraph } = Typography;
+
+import './index.less';
+import FixRow from '@/components/FixRow';
+import Loading from '@/components/Loading';
 
 let index = 0;
+let max_index = 0;
 
 const Questions: FC = (props: any) => {
   const answerId = parseInt(props.location.query.answer);
   if (!answerId) {
-    history.push('/questionnaire/list');
-    return <div>加载中...</div>;
+    return <Redirect to="/questionnaire/list" />;
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
@@ -61,10 +74,15 @@ const Questions: FC = (props: any) => {
   const statusAnswerRequest = useRequest((answerId) => statusAnswer(answerId), {
     manual: true,
     onSuccess: (data) => {
-      //设置问题索引
-      index = data.questionIndex;
-      //查询当前问题
-      queryQuestionReqeust.run(data.questionnaireId, data.questionIndex);
+      if (data.flow == 2) {
+        return <Redirect to={'/questionnaire/result?answer=' + data.id} />;
+      } else {
+        //设置问题索引
+        index = data.questionIndex;
+        max_index = index;
+        //查询当前问题
+        queryQuestionReqeust.run(data.questionnaireId, data.questionIndex);
+      }
     },
   });
 
@@ -105,6 +123,9 @@ const Questions: FC = (props: any) => {
       return;
     }
     index++;
+    if (index > max_index) {
+      max_index = index;
+    }
     queryQuestionReqeust.run(questionnaire.id, index);
   };
 
@@ -135,87 +156,80 @@ const Questions: FC = (props: any) => {
   const question = queryQuestionReqeust.data;
   const answer = queryAnswerQuestionRequest.data;
 
+  if (!questionnaire || !question) {
+    return <Loading />;
+  }
+
   return (
     <div>
-      {' '}
-      {questionnaire ? (
-        <Card>
-          <div className="div-head">
-            <h1>{questionnaire.title}</h1>
-            <Row gutter={16}>
-              <Col span={12}>
-                <Statistic
-                  title="参与测试"
-                  value={questionnaire.participantNum}
-                />
-              </Col>
-              <Col span={12}>
-                <Statistic
-                  title="剩余题目"
-                  value={questionnaire.questionNum - index + 1}
-                  suffix={'/' + questionnaire.questionNum}
-                />
-              </Col>
-            </Row>
-          </div>
-          {question ? (
-            <div className="div-question">
-              <h2>{question.title}</h2>
-              <Radio.Group value={selectId}>
-                <Space direction="vertical">
-                  {question.options.map((option: any) => {
-                    return (
-                      <div key={option.id} className="div-option">
-                        <Card
-                          hoverable={true}
-                          style={
-                            selectId == option.id
-                              ? {
-                                  background: '#b37feb',
-                                }
-                              : {}
-                          }
-                          onClick={(e) => onSelect(e, option)}
-                        >
-                          <Radio value={option.id}>{option.text}</Radio>
-                        </Card>
-                      </div>
-                    );
-                  })}
-                </Space>
-              </Radio.Group>
-            </div>
-          ) : (
-            ''
-          )}
-          <div className="div-button">
-            <Row gutter={16}>
-              <Col span={12}>
-                {index != 1 ? (
-                  <Button onClick={preQuestion}>上一题</Button>
-                ) : (
-                  ''
-                )}
-              </Col>
-              <Col span={12}>
-                {index != questionnaire.questionNum ? (
-                  <Button
-                    type="primary"
-                    loading={queryQuestionReqeust.loading}
-                    onClick={nextQuestion}
-                  >
-                    下一题
-                  </Button>
-                ) : (
-                  ''
-                )}
-              </Col>
-            </Row>
-          </div>
-        </Card>
-      ) : (
-        ''
-      )}
+      <Card>
+        <div className="div-head">
+          <Title level={3}>{questionnaire.title}</Title>
+          <Row gutter={16}>
+            <Col span={12}>
+              <Statistic
+                title="参与测试"
+                value={questionnaire.participantNum}
+              />
+            </Col>
+            <Col span={12}>
+              <Statistic
+                title="剩余题目"
+                value={questionnaire.questionNum - index + 1}
+                suffix={'/' + questionnaire.questionNum}
+              />
+            </Col>
+          </Row>
+        </div>
+        <div className="div-question">
+          <FixRow>
+            <h2>{question.title}</h2>
+            <Radio.Group value={selectId}>
+              <Space direction="vertical">
+                {question.options.map((option: any) => {
+                  return (
+                    <div key={option.id} className="div-option">
+                      <Card
+                        hoverable={true}
+                        style={
+                          selectId == option.id
+                            ? {
+                                background: '#b37feb',
+                              }
+                            : {}
+                        }
+                        onClick={(e) => onSelect(e, option)}
+                      >
+                        <Radio value={option.id}>{option.text}</Radio>
+                      </Card>
+                    </div>
+                  );
+                })}
+              </Space>
+            </Radio.Group>
+          </FixRow>
+        </div>
+        <div className="div-button">
+          <Row gutter={16}>
+            <Col span={12}>
+              {index != 1 ? <Button onClick={preQuestion}>上一题</Button> : ''}
+            </Col>
+            <Col span={12}>
+              {index < max_index ? (
+                <Button
+                  type="primary"
+                  loading={queryQuestionReqeust.loading}
+                  onClick={nextQuestion}
+                >
+                  下一题
+                </Button>
+              ) : (
+                ''
+              )}
+            </Col>
+          </Row>
+        </div>
+      </Card>
     </div>
   );
 };
