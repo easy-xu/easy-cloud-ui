@@ -37,63 +37,59 @@ const BaseLayout: FC<IRouteComponentProps> = ({
   return (
     <Layout className="layout">
       <Header>
-        <FixRow>
-          <div className="logo" />
-          <Menu mode="horizontal" defaultSelectedKeys={['geme1']}>
-            <Menu.Item key="game">
-              <Link to="/game/pickgame">小游戏</Link>
-            </Menu.Item>
-            <Menu.Item key="test">
-              <Link to="/questionnaire/list">测一测</Link>
-            </Menu.Item>
-            {user && user.isLogin ? (
-              <SubMenu
-                key="SubMenu"
-                title={user.username}
-                icon={
-                  <Avatar
-                    style={{
-                      backgroundColor: '#7265e6',
-                      verticalAlign: 'middle',
-                    }}
-                    icon={<UserOutlined />}
-                  />
-                }
-              >
-                {' '}
-                <Menu.Item key="console">
-                  <Link to="/console">控制台</Link>
-                </Menu.Item>
-                <Menu.Item key="setting:1">
-                  <Link to="/user">账号信息</Link>
-                </Menu.Item>
-                <Menu.Item key="logout" onClick={logout}>
-                  退出
-                </Menu.Item>
-              </SubMenu>
-            ) : (
-              <Menu.Item key="login">
-                <Link to="/user/login">
-                  <LoginOutlined /> 登录
-                </Link>
+        <div className="logo" />
+        <Menu mode="horizontal" defaultSelectedKeys={['geme1']}>
+          <Menu.Item key="game">
+            <Link to="/game/pickgame">小游戏</Link>
+          </Menu.Item>
+          <Menu.Item key="test">
+            <Link to="/questionnaire/list">测一测</Link>
+          </Menu.Item>
+          {user && user.isLogin ? (
+            <SubMenu
+              key="SubMenu"
+              title={user.username}
+              icon={
+                <Avatar
+                  style={{
+                    backgroundColor: '#7265e6',
+                    verticalAlign: 'middle',
+                  }}
+                  icon={<UserOutlined />}
+                />
+              }
+            >
+              {' '}
+              <Menu.Item key="cms">
+                <Link to="/cms">控制台</Link>
               </Menu.Item>
-            )}
-          </Menu>
-        </FixRow>
-      </Header>
-      <FixRow>
-        <Content>
-          {user ? (
-            <div className="layout-content">{children}</div>
+              <Menu.Item key="setting:1">
+                <Link to="/user">账号信息</Link>
+              </Menu.Item>
+              <Menu.Item key="logout" onClick={logout}>
+                退出
+              </Menu.Item>
+            </SubMenu>
           ) : (
-            <div className="layout-spin">
-              <Spin size="large" />
-            </div>
+            <Menu.Item key="login">
+              <Link to="/user/login">
+                <LoginOutlined /> 登录
+              </Link>
+            </Menu.Item>
           )}
-        </Content>
-      </FixRow>
+        </Menu>
+      </Header>
+      <Content>
+        {user ? (
+          <div className="layout-content">{children}</div>
+        ) : (
+          <div className="layout-spin">
+            <Spin size="large" />
+          </div>
+        )}
+      </Content>
       <Footer>
-        Simple Game ©2021 Created by 为了呆毛
+        Simple ©2021 Created by 为了呆毛
         <br /> <Button onClick={clearCache}>清除缓存</Button>
       </Footer>
     </Layout>
