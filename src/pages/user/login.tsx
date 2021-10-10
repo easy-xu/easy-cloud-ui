@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { useRequest, history, useModel } from 'umi';
-import { loginRequest } from '@/services/user';
+import { loginRequest } from '@/services/cms';
 
 import './login.less';
 

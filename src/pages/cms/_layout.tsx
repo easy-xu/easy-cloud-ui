@@ -45,8 +45,10 @@ const CmsLayout: FC<IRouteComponentProps> = ({
           defaultOpenKeys={['sub1']}
           style={{ height: '100%' }}
         >
-          <SubMenu key="sub1" icon={<UserOutlined />} title="subnav 1">
-            <Menu.Item key="1">option1</Menu.Item>
+          <SubMenu key="sub1" icon={<UserOutlined />} title="系统管理">
+            <Menu.Item key="1">
+              <Link to="/cms/menu">菜单管理</Link>
+            </Menu.Item>
             <Menu.Item key="2">option2</Menu.Item>
             <Menu.Item key="3">option3</Menu.Item>
             <Menu.Item key="4">option4</Menu.Item>

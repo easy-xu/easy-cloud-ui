@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRequest } from 'umi';
 import storage from '@/utils/storage';
-import { visitedRequest } from '@/services/user';
+import { visitedRequest } from '@/services/cms';
 import { setToken } from '@/utils/api';
 
 interface IUser {
