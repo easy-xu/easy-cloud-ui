@@ -14,6 +14,11 @@ export function signinRequest(params: any) {
   return postRequest('/api/user/signIn', params);
 }
 
+//菜单树接口
+export function cmsMenuTree() {
+  return getRequest('/api/cms/menu/tree');
+}
+
 //新增接口
 export function cmsSaveEntity(model: string, params: any) {
   return postRequest(`/api/cms/${model}/save`, params);
@@ -25,6 +30,10 @@ export function cmsPageList(model: string, page: any, query: any) {
     page: page,
     query: query,
   });
+}
+//列表查询接口
+export function cmsList(model: string, query: any) {
+  return postRequest(`/api/cms/${model}/list`, query);
 }
 //详情查询接口
 export function cmsQueryEntity(model: string, id: number) {
