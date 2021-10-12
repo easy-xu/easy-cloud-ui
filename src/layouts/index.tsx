@@ -38,10 +38,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     <Layout className="layout">
       <Header>
         <div className="logo" />
-        <Menu mode="horizontal" defaultSelectedKeys={['geme1']}>
-          <Menu.Item key="game">
-            <Link to="/game/pickgame">小游戏</Link>
-          </Menu.Item>
+        <Menu mode="horizontal" defaultSelectedKeys={['test']}>
           <Menu.Item key="test">
             <Link to="/questionnaire/list">测一测</Link>
           </Menu.Item>

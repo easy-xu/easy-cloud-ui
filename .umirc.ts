@@ -13,5 +13,5 @@ export default defineConfig({
   fastRefresh: {},
   dva: {},
   webpack5: {},
-  //mfsu: {},
+  mfsu: {},
 });
