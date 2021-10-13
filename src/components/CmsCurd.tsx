@@ -165,7 +165,7 @@ const Menu: FC<{
       setEntity(data);
       //设置父组件数据
       extendData?.forEach((item: any) => {
-        item.set(data[item.key]);
+        item.setData(data[item.key]);
       });
       setStatus(nextStatus);
     },

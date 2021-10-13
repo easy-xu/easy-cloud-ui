@@ -65,7 +65,7 @@ const Role: FC = (props: any) => {
     },
     {
       name: '角色菜单',
-      code: 'roleMenus',
+      code: 'menuIds',
       type: 'tree',
       style: {
         search: { display: false },
@@ -100,7 +100,7 @@ const Role: FC = (props: any) => {
         {
           key: 'menuIds',
           data: checkedMenuKeys,
-          set: setCheckedMenuKeys,
+          setData: setCheckedMenuKeys,
           clear: menuTreeClear,
         },
       ]}
