@@ -15,8 +15,8 @@ export function signinRequest(params: any) {
 }
 
 //菜单树接口
-export function cmsMenuTree() {
-  return getRequest('/api/cms/menu/tree');
+export function cmsMenuTree(params: any) {
+  return postRequest('/api/cms/menu/tree', params);
 }
 
 //新增接口

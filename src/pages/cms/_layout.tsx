@@ -30,11 +30,14 @@ const CmsLayout: FC<IRouteComponentProps> = ({
 
   const [menuTree, setMenuTree] = useState([]);
 
-  const menuTreeRequest = useRequest(() => cmsMenuTree(), {
-    onSuccess: (data) => {
-      setMenuTree(data);
+  const menuTreeRequest = useRequest(
+    () => cmsMenuTree({ userNo: user.userNo }),
+    {
+      onSuccess: (data) => {
+        setMenuTree(data);
+      },
     },
-  });
+  );
 
   const getIcon = (iconType: string) => {
     return (

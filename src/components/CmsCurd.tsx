@@ -39,8 +39,9 @@ export declare type IStyle = {
 
 export declare type IOption = {
   code: string;
-  name: string;
+  name?: string;
   color?: string;
+  node?: ReactElement;
 };
 
 export declare type IField = {
@@ -296,7 +297,7 @@ const Menu: FC<{
           {item.select.map((option: IOption) => {
             return (
               <Option key={option.code} value={option.code}>
-                {option.name}
+                {option.node ? option.node : option.name}
               </Option>
             );
           })}
@@ -345,20 +346,33 @@ const Menu: FC<{
         title: item.name,
         dataIndex: item.code,
         key: item.code,
-        render: (text: any, record: any) =>
-          item && item.select
-            ? item.select.map((option) => {
-                if (option.code == text) {
-                  return option.color ? (
+        render: (text: any, record: any) => {
+          //选择类型回显
+          if (item && item.select) {
+            return item.select.map((option) => {
+              if (option.code == text) {
+                //指定节点
+                if (option.node) {
+                  return option.node;
+                }
+                //指定颜色
+                else if (option.color) {
+                  return (
                     <Tag key={record.id} color={option.color}>
                       {option.name}
                     </Tag>
-                  ) : (
-                    option.name
                   );
                 }
-              })
-            : text,
+                //默认纯文本
+                else {
+                  return option.name;
+                }
+              }
+            });
+          } else {
+            return text;
+          }
+        },
       });
     }
   });

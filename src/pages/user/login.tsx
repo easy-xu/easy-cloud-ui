@@ -15,7 +15,7 @@ const UserLogin: FC = () => {
     {
       manual: true,
       onSuccess: (result) => {
-        login(result.username, result.token);
+        login(result);
         //跳转首页
         history.push('/');
       },

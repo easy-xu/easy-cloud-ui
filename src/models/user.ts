@@ -5,6 +5,7 @@ import { visitedRequest } from '@/services/cms';
 import { setToken } from '@/utils/api';
 
 interface IUser {
+  userNo?: string;
   username?: string;
   token?: string;
   isLogin?: boolean;
@@ -42,10 +43,9 @@ export default function userModel() {
   const [user, setUser] = useState<IUser>(user0);
 
   //用户登录
-  const login = useCallback((username, token) => {
+  const login = useCallback((user) => {
     user0 = {
-      username: username,
-      token: token,
+      ...user,
       isLogin: true,
     };
     saveUser(user0);
@@ -55,8 +55,7 @@ export default function userModel() {
   const logout = useCallback(() => {
     console.log('logout');
     user0 = {
-      username: user.username,
-      token: user.token,
+      ...user,
       isLogin: false,
     };
     saveUser(user0);

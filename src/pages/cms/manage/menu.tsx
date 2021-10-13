@@ -2,6 +2,17 @@ import { FC, useState } from 'react';
 import CmsCurd, { IFields } from '@/components/CmsCurd';
 import { cmsList } from '@/services/cms';
 import { useRequest } from 'umi';
+import {
+  DashboardOutlined,
+  BankOutlined,
+  BellOutlined,
+  AuditOutlined,
+  CalendarOutlined,
+  ContactsOutlined,
+  DatabaseOutlined,
+  SettingOutlined,
+  TeamOutlined,
+} from '@ant-design/icons';
 
 const Menu: FC = (props: any) => {
   //页面状态
@@ -57,10 +68,20 @@ const Menu: FC = (props: any) => {
     {
       name: '菜单图标',
       code: 'icon',
-      type: 'string',
+      type: 'select',
+      select: [
+        { code: 'DashboardOutlined', node: <DashboardOutlined /> },
+        { code: 'SettingOutlined', node: <SettingOutlined /> },
+        { code: 'BankOutlined', node: <BankOutlined /> },
+        { code: 'BellOutlined', node: <BellOutlined /> },
+        { code: 'AuditOutlined', node: <AuditOutlined /> },
+        { code: 'CalendarOutlined', node: <CalendarOutlined /> },
+        { code: 'ContactsOutlined', node: <ContactsOutlined /> },
+        { code: 'DatabaseOutlined', node: <DatabaseOutlined /> },
+        { code: 'TeamOutlined', node: <TeamOutlined /> },
+      ],
       style: {
         search: { display: false },
-        table: { display: false },
       },
     },
     {

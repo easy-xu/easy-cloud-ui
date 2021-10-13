@@ -8,7 +8,7 @@ const Role: FC = (props: any) => {
   const [menuTreeData, setMenuTreeData] = useState([]);
   const [checkedMenuKeys, setCheckedMenuKeys] = useState<React.Key[]>([]);
 
-  const menuTreeRequest = useRequest(() => cmsMenuTree(), {
+  const menuTreeRequest = useRequest(() => cmsMenuTree({}), {
     onSuccess: (data) => {
       setMenuTreeData(convertToTreeData(data));
     },
