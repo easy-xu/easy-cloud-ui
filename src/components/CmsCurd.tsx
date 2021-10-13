@@ -1,4 +1,4 @@
-import { FC, useState } from 'react';
+import { FC, ReactElement, useState } from 'react';
 import {
   InputNumber,
   Form,
@@ -54,6 +54,7 @@ export declare type IField = {
     edit?: IStyle;
   };
   select?: IOption[];
+  node?: ReactElement;
 };
 
 export declare type IFields = IField[];
@@ -79,6 +80,8 @@ const Menu: FC<{
   saveEntityApi?: any;
   deleteEntityApi?: any;
   refresh?: any[];
+  extendData?: any;
+  extendDataOnClear?: any;
 }> = ({
   model,
   name,
@@ -88,6 +91,7 @@ const Menu: FC<{
   saveEntityApi,
   deleteEntityApi,
   refresh,
+  extendData,
 }) => {
   if (queryEntityApi == undefined) {
     queryEntityApi = cmsQueryEntity;
@@ -131,6 +135,10 @@ const Menu: FC<{
       onSuccess: (data) => {
         setEntity({});
         setSelectedRowKeys([]);
+        //清除父组件数据
+        extendData?.forEach((item: any) => {
+          item.clear();
+        });
         setStatus('search');
         pageListRequest.run(page, query);
         //需要刷新的api
@@ -155,6 +163,10 @@ const Menu: FC<{
     manual: true,
     onSuccess: (data) => {
       setEntity(data);
+      //设置父组件数据
+      extendData?.forEach((item: any) => {
+        item.set(data[item.key]);
+      });
       setStatus(nextStatus);
     },
   });
@@ -194,10 +206,18 @@ const Menu: FC<{
   //新增按钮
   const addClick = () => {
     setEntity({});
+    //清除父组件数据
+    extendData?.forEach((item: any) => {
+      item.clear();
+    });
     setStatus('add');
   };
   //新增确认按钮
   const addSubmitClick = (values: any) => {
+    //补充父组件数据
+    extendData?.forEach((item: any) => {
+      values[item.key] = item.data;
+    });
     saveEntiyRequest.run(values);
   };
   //新增取消按钮
@@ -211,6 +231,10 @@ const Menu: FC<{
   };
   //修改确认按钮
   const editSubmitClick = (values: any) => {
+    //补充父组件数据
+    extendData?.forEach((item: any) => {
+      values[item.key] = item.data;
+    });
     saveEntiyRequest.run(values);
   };
   //修改取消按钮
@@ -255,11 +279,14 @@ const Menu: FC<{
       disable = true;
     }
 
-    //普通输入框
-    let content = <Input readOnly={disable} />;
+    let content;
 
+    //自定义节点
+    if (item.node) {
+      content = item.node;
+    }
     //下拉选择框
-    if (item.type == 'select' && item.select != undefined) {
+    else if (item.type == 'select' && item.select != undefined) {
       content = (
         <Select
           style={{ minWidth: style?.width ? style.width : 100 }}
@@ -278,8 +305,12 @@ const Menu: FC<{
     }
 
     //数字输入
-    if (item.type == 'number') {
+    else if (item.type == 'number') {
       content = <InputNumber style={{ minWidth: 100 }} readOnly={disable} />;
+    }
+    //默认普通输入框
+    else {
+      content = <Input readOnly={disable} />;
     }
 
     return (

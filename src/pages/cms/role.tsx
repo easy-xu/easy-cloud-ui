@@ -1,9 +1,42 @@
 import { FC, useState } from 'react';
 import CmsCurd, { IFields } from '@/components/CmsCurd';
-import { cmsList } from '@/services/cms';
+import { cmsList, cmsMenuTree } from '@/services/cms';
 import { useRequest } from 'umi';
+import { Tree } from 'antd';
 
 const Role: FC = (props: any) => {
+  const [menuTreeData, setMenuTreeData] = useState([]);
+  const [checkedMenuKeys, setCheckedMenuKeys] = useState<React.Key[]>([]);
+
+  const menuTreeRequest = useRequest(() => cmsMenuTree(), {
+    onSuccess: (data) => {
+      setMenuTreeData(convertToTreeData(data));
+    },
+  });
+
+  const convertToTreeData = (menus: any) => {
+    console.log(menus);
+    return menus?.map((menu: any) => {
+      let children = convertToTreeData(menu.children);
+      return {
+        key: menu.id,
+        title: menu.name,
+        children: children,
+      };
+    });
+  };
+
+  const onMenuTreeCheck = (checkedKeysValue: any) => {
+    console.log('onCheck', checkedKeysValue);
+    setCheckedMenuKeys(checkedKeysValue);
+  };
+
+  const menuTreeClear = () => {
+    setCheckedMenuKeys([]);
+  };
+
+  console.log(menuTreeData);
+
   const fields: IFields = [
     {
       name: '主键',
@@ -31,6 +64,23 @@ const Role: FC = (props: any) => {
       },
     },
     {
+      name: '角色菜单',
+      code: 'roleMenus',
+      type: 'tree',
+      style: {
+        search: { display: false },
+        table: { display: false },
+      },
+      node: (
+        <Tree
+          checkable
+          onCheck={onMenuTreeCheck}
+          checkedKeys={checkedMenuKeys}
+          treeData={menuTreeData}
+        />
+      ),
+    },
+    {
       name: '状态',
       code: 'status',
       type: 'select',
@@ -41,7 +91,21 @@ const Role: FC = (props: any) => {
     },
   ];
 
-  return <CmsCurd model="role" name="角色" fields={fields} />;
+  return (
+    <CmsCurd
+      model="role"
+      name="角色"
+      fields={fields}
+      extendData={[
+        {
+          key: 'menuIds',
+          data: checkedMenuKeys,
+          set: setCheckedMenuKeys,
+          clear: menuTreeClear,
+        },
+      ]}
+    />
+  );
 };
 
 export default Role;
