@@ -6,6 +6,8 @@ import { Tree } from 'antd';
 
 const Role: FC = (props: any) => {
   const [menuTreeData, setMenuTreeData] = useState([]);
+  const [menutreeDisable, setMenuTreeDisable] = useState<boolean>(false);
+
   const [checkedMenuKeys, setCheckedMenuKeys] = useState<React.Key[]>([]);
 
   const menuTreeRequest = useRequest(() => cmsMenuTree({}), {
@@ -28,9 +30,8 @@ const Role: FC = (props: any) => {
 
   const onMenuTreeCheck = (checkedKeysValue: any) => {
     console.log('onCheck', checkedKeysValue);
-    setCheckedMenuKeys(checkedKeysValue);
+    setCheckedMenuKeys(checkedKeysValue.checked);
   };
-
   const menuTreeClear = () => {
     setCheckedMenuKeys([]);
   };
@@ -73,7 +74,9 @@ const Role: FC = (props: any) => {
       },
       node: (
         <Tree
+          disabled={menutreeDisable}
           checkable
+          checkStrictly
           onCheck={onMenuTreeCheck}
           checkedKeys={checkedMenuKeys}
           treeData={menuTreeData}
@@ -100,6 +103,7 @@ const Role: FC = (props: any) => {
         {
           key: 'menuIds',
           data: checkedMenuKeys,
+          setDisable: setMenuTreeDisable,
           setData: setCheckedMenuKeys,
           clear: menuTreeClear,
         },
@@ -107,5 +111,6 @@ const Role: FC = (props: any) => {
     />
   );
 };
-
+// @ts-ignore
+Role.title = '角色页面';
 export default Role;

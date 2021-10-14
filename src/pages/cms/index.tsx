@@ -1,7 +1,7 @@
 import { Card, Typography } from 'antd';
 const { Title, Paragraph, Text, Link } = Typography;
 
-export default function IndexPage() {
+function IndexPage() {
   return (
     <div>
       <Card>
@@ -14,3 +14,6 @@ export default function IndexPage() {
     </div>
   );
 }
+// @ts-ignore
+IndexPage.title = '欢迎登陆';
+export default IndexPage;

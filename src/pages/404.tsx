@@ -7,7 +7,7 @@ const NotFound = () => {
       status="warning"
       title="对不起，您访问的页面不存在。"
       extra={
-        <Button type="primary" key="console">
+        <Button type="primary" key="index">
           <Link to="/">返回首页</Link>
         </Button>
       }

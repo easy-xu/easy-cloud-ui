@@ -133,5 +133,6 @@ const Menu: FC = (props: any) => {
     />
   );
 };
-
+// @ts-ignore
+Menu.title = '菜单页面';
 export default Menu;

@@ -46,55 +46,65 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     localStorage.clear();
   }
 
+  if (!user) {
+    return <Loading />;
+  }
+
+  let menuNodes = [
+    <Menu.Item key="questionnaire">
+      <Link to="/questionnaire/list">测一测</Link>
+    </Menu.Item>,
+  ];
+  if (user.isLogin) {
+    menuNodes = [
+      ...menuNodes,
+      <Menu.Item key="cms">
+        <Link to="/cms">控制台</Link>
+      </Menu.Item>,
+      <SubMenu
+        key="SubMenu"
+        title={user.username}
+        icon={
+          <Avatar
+            style={{
+              backgroundColor: '#7265e6',
+              verticalAlign: 'middle',
+            }}
+            icon={<UserOutlined />}
+          />
+        }
+      >
+        <Menu.Item key="setting:1">
+          <Link to="/user">账号信息</Link>
+        </Menu.Item>
+        <Menu.Item key="logout" onClick={logout}>
+          退出
+        </Menu.Item>
+      </SubMenu>,
+    ];
+  } else {
+    menuNodes = [
+      ...menuNodes,
+      <Menu.Item key="login">
+        <Link to="/user/login">
+          <LoginOutlined /> 登录
+        </Link>
+      </Menu.Item>,
+    ];
+  }
+
+  const openKey = location.pathname.split('/')[1];
   return (
     <ConfigProvider locale={zhCN}>
       <Layout className="layout">
         <Header>
           <div className="logo" />
-          <Menu mode="horizontal" defaultSelectedKeys={['test']}>
-            <Menu.Item key="test">
-              <Link to="/questionnaire/list">测一测</Link>
-            </Menu.Item>
-            {user && user.isLogin ? (
-              <SubMenu
-                key="SubMenu"
-                title={user.username}
-                icon={
-                  <Avatar
-                    style={{
-                      backgroundColor: '#7265e6',
-                      verticalAlign: 'middle',
-                    }}
-                    icon={<UserOutlined />}
-                  />
-                }
-              >
-                {' '}
-                <Menu.Item key="cms">
-                  <Link to="/cms">控制台</Link>
-                </Menu.Item>
-                <Menu.Item key="setting:1">
-                  <Link to="/user">账号信息</Link>
-                </Menu.Item>
-                <Menu.Item key="logout" onClick={logout}>
-                  退出
-                </Menu.Item>
-              </SubMenu>
-            ) : (
-              <Menu.Item key="login">
-                <Link to="/user/login">
-                  <LoginOutlined /> 登录
-                </Link>
-              </Menu.Item>
-            )}
+          <Menu mode="horizontal" defaultSelectedKeys={[openKey]}>
+            {menuNodes}
           </Menu>
         </Header>
         <Content>
-          {user ? (
-            <div className="layout-content">{children}</div>
-          ) : (
-            <Loading />
-          )}
+          <div className="layout-content">{children}</div>
         </Content>
         <Footer>
           Simple ©2021 Created by 为了呆毛

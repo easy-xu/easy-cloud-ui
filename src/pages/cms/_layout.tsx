@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   IRouteComponentProps,
   Link,
@@ -23,21 +23,35 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   history,
   match,
 }) => {
-  const { user, logout } = useModel('user', (model) => ({
+  const { user } = useModel('user', (model) => ({
     user: model.user,
-    logout: model.logout,
   }));
+
+  let notFound = true;
+  let notAuth = false;
+  //判断是否存在
+  route.routes?.forEach((item) => {
+    if (notFound && item.path == location.pathname) {
+      notFound = false;
+    }
+  });
 
   const [menuTree, setMenuTree] = useState([]);
 
   const menuTreeRequest = useRequest(
     () => cmsMenuTree({ userNo: user.userNo }),
     {
+      manual: true,
       onSuccess: (data) => {
         setMenuTree(data);
+        notAuth = true;
       },
     },
   );
+
+  useEffect(() => {
+    menuTreeRequest.run();
+  }, []);
 
   const getIcon = (iconType: string) => {
     return (
@@ -48,10 +62,16 @@ const CmsLayout: FC<IRouteComponentProps> = ({
       </div>
     );
   };
-
   const getNodes = (menus: any, parentPath: string) => {
     return menus?.map((menu: any) => {
       const path = parentPath + '/' + menu.path;
+      //判断是否分配菜单
+      if (
+        (notAuth && location.pathname == path) ||
+        location.pathname == '/cms'
+      ) {
+        notAuth = false;
+      }
       if (menu.type == 'F') {
         return (
           <SubMenu
@@ -71,11 +91,20 @@ const CmsLayout: FC<IRouteComponentProps> = ({
       }
     });
   };
-
   const menuTreeNode = getNodes(menuTree, '');
-
   const selectKey = location.pathname;
   const openKey = selectKey.substring(0, selectKey.lastIndexOf('/'));
+
+  if (!user.isLogin) {
+    return <Redirect to="/user/login"></Redirect>;
+  }
+
+  if (notFound) {
+    return <Redirect to="/404"></Redirect>;
+  }
+  if (notAuth) {
+    return <Redirect to="/403"></Redirect>;
+  }
 
   return (
     <Layout className="layout">
@@ -93,14 +122,9 @@ const CmsLayout: FC<IRouteComponentProps> = ({
       </Sider>
 
       <Content>
-        {user ? (
-          <div className="cms-layout-content">{children}</div>
-        ) : (
-          <Loading />
-        )}
+        <div className="cms-layout-content">{children}</div>
       </Content>
     </Layout>
   );
 };
-
 export default CmsLayout;

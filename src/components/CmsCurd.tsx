@@ -1,4 +1,4 @@
-import { FC, ReactElement, useState } from 'react';
+import { FC, ReactElement, useEffect, useState } from 'react';
 import {
   InputNumber,
   Form,
@@ -68,7 +68,7 @@ export declare type IPage = {
   total?: number;
 };
 
-const default_pageSize = 10;
+const default_pageSize = 5;
 
 let nextStatus: IStatus = 'search';
 
@@ -153,6 +153,7 @@ const Menu: FC<{
   const pageListRequest = useRequest(
     (page, query) => pageListApi(model, page, query),
     {
+      manual: true,
       onSuccess: (data) => {
         setPage(data.page);
         setRecords(data.records);
@@ -167,6 +168,7 @@ const Menu: FC<{
       //设置父组件数据
       extendData?.forEach((item: any) => {
         item.setData(data[item.key]);
+        item.setDisable(nextStatus == 'view');
       });
       setStatus(nextStatus);
     },
@@ -185,6 +187,12 @@ const Menu: FC<{
     },
   });
   // ======useRequest end======
+
+  // ======useEffect end======
+  useEffect(() => {
+    pageListRequest.run(page, query);
+  }, []);
+  // ======useEffect end======
 
   // ======click function start======
   //查询条件更新
@@ -210,6 +218,7 @@ const Menu: FC<{
     //清除父组件数据
     extendData?.forEach((item: any) => {
       item.clear();
+      item.setDisable(false);
     });
     setStatus('add');
   };
@@ -229,19 +238,6 @@ const Menu: FC<{
   const eidtClick = () => {
     nextStatus = 'edit';
     queryEntityRequest.run(selectedRowKeys[0]);
-  };
-  //修改确认按钮
-  const editSubmitClick = (values: any) => {
-    //补充父组件数据
-    extendData?.forEach((item: any) => {
-      values[item.key] = item.data;
-    });
-    saveEntiyRequest.run(values);
-  };
-  //修改取消按钮
-  const editCancleClick = () => {
-    setEntity({});
-    setStatus('search');
   };
   //表格选择事件
   const onSelectChange = (selectedRowKeys: any) => {
@@ -363,13 +359,14 @@ const Menu: FC<{
                     </Tag>
                   );
                 }
-                //默认纯文本
+                //选项纯文本
                 else {
                   return option.name;
                 }
               }
             });
           } else {
+            //默认纯文本
             return text;
           }
         },
@@ -444,6 +441,7 @@ const Menu: FC<{
   // ======render node end======
 
   //debug
+  console.log(model + ' page render');
 
   //新增页面
   if (status == 'add' || status == 'edit' || status == 'view') {
@@ -505,9 +503,6 @@ const Menu: FC<{
                 onClick={queryClick}
               >
                 查询
-              </Button>
-              <Button icon={<SearchOutlined />} shape="round">
-                模糊查询
               </Button>
             </Space>
           </Form.Item>

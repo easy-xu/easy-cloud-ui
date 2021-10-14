@@ -105,5 +105,6 @@ const User: FC = (props: any) => {
     />
   );
 };
-
+// @ts-ignore
+User.title = '用户页面';
 export default User;
