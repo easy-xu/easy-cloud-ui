@@ -6,6 +6,8 @@ import { Checkbox } from 'antd';
 
 const User: FC = (props: any) => {
   const [roleData, setRoleData] = useState([]);
+  const [roleCheckedDisable, setRoleCheckedDisable] = useState<boolean>(false);
+
   const [checkedRoleKeys, setCheckedRoleKeys] = useState<React.Key[]>([]);
 
   const roleDataRequest = useRequest(() => cmsList('role', {}), {
@@ -74,7 +76,13 @@ const User: FC = (props: any) => {
         search: { display: false },
         table: { display: false },
       },
-      node: <Checkbox.Group options={roleData} onChange={onRoleChecked} />,
+      node: (
+        <Checkbox.Group
+          disabled={roleCheckedDisable}
+          options={roleData}
+          onChange={onRoleChecked}
+        />
+      ),
     },
     {
       name: '状态',
@@ -98,6 +106,7 @@ const User: FC = (props: any) => {
         {
           key: 'roleIds',
           data: checkedRoleKeys,
+          setDisable: setRoleCheckedDisable,
           setData: setCheckedRoleKeys,
           clear: roleCheckedClear,
         },

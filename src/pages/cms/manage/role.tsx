@@ -36,8 +36,6 @@ const Role: FC = (props: any) => {
     setCheckedMenuKeys([]);
   };
 
-  console.log(menuTreeData);
-
   const fields: IFields = [
     {
       name: '主键',
