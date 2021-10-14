@@ -79,6 +79,7 @@ const UserSignin: FC = () => {
           </Form.Item>
           <Form.Item>
             <Button
+              disabled
               loading={loading}
               type="primary"
               htmlType="submit"

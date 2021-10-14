@@ -43,3 +43,7 @@ export function cmsQueryEntity(model: string, id: number) {
 export function cmsDeleteEntity(model: string, id: number) {
   return postRequest(`/api/cms/${model}/delete`, { id: id });
 }
+//查询当前用户指定菜单操作权限
+export function cmsQueryOptionAuth(menuCode: string) {
+  return postRequest(`/api/cms/auth/user-menu-option`, { menuCode: menuCode });
+}

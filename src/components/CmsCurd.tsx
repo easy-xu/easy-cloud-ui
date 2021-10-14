@@ -25,6 +25,7 @@ import {
   cmsSaveEntity,
   cmsDeleteEntity,
   cmsQueryEntity,
+  cmsQueryOptionAuth,
 } from '@/services/cms';
 import Loading from './Loading';
 
@@ -44,10 +45,21 @@ export declare type IOption = {
   node?: ReactElement;
 };
 
+// {
+//   xs: '480px',
+//   sm: '576px',
+//   md: '768px',
+//   lg: '992px',
+//   xl: '1200px',
+//   xxl: '1600px',
+// }
+export declare type Breakpoint = 'xxl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
+
 export declare type IField = {
   name?: string;
   code?: string;
   type?: string;
+  responsive?: Breakpoint[];
   style?: {
     search?: IStyle;
     table?: IStyle;
@@ -80,6 +92,7 @@ const Menu: FC<{
   pageListApi?: any;
   saveEntityApi?: any;
   deleteEntityApi?: any;
+  queryOptionAuthApi?: any;
   refresh?: any[];
   extendData?: any;
   extendDataOnClear?: any;
@@ -91,6 +104,7 @@ const Menu: FC<{
   pageListApi,
   saveEntityApi,
   deleteEntityApi,
+  queryOptionAuthApi,
   refresh,
   extendData,
 }) => {
@@ -105,6 +119,9 @@ const Menu: FC<{
   }
   if (deleteEntityApi == undefined) {
     deleteEntityApi = cmsDeleteEntity;
+  }
+  if (queryOptionAuthApi == undefined) {
+    queryOptionAuthApi = cmsQueryOptionAuth;
   }
 
   //页面状态
@@ -126,6 +143,8 @@ const Menu: FC<{
   const [query, setQuery] = useState<any>({});
   //列表数据
   const [records, setRecords] = useState<any[]>([]);
+  //操作权限
+  const [optionAuth, setOptionAuth] = useState<any[]>([]);
 
   // ======useRequest start======
   //新增或保存
@@ -186,10 +205,18 @@ const Menu: FC<{
       });
     },
   });
+  //查询操作权限
+  const optionAuthRequest = useRequest(() => queryOptionAuthApi(model), {
+    manual: true,
+    onSuccess: (data) => {
+      setOptionAuth(data);
+    },
+  });
   // ======useRequest end======
 
   // ======useEffect end======
   useEffect(() => {
+    optionAuthRequest.run();
     pageListRequest.run(page, query);
   }, []);
   // ======useEffect end======
@@ -330,6 +357,7 @@ const Menu: FC<{
 
   //列表数据
   let columns: any = new Array();
+  let columnCount = 0;
   fields.forEach((item: IField) => {
     //未声明或者指定显示
     if (
@@ -338,10 +366,34 @@ const Menu: FC<{
       item.style.table.display == undefined ||
       item.style.table.display
     ) {
+      columnCount++;
+      let responsive = ['xxl'];
+      switch (columnCount) {
+        case 1:
+        case 2:
+          responsive = ['xs', 'sm'];
+          break;
+        case 3:
+        case 4:
+          responsive = ['md'];
+          break;
+        case 6:
+        case 5:
+          responsive = ['lg'];
+          break;
+        case 8:
+        case 7:
+          responsive = ['xl'];
+          break;
+        default:
+          responsive = ['xxl'];
+      }
+
       columns.push({
         title: item.name,
         dataIndex: item.code,
         key: item.code,
+        responsive: responsive,
         render: (text: any, record: any) => {
           //选择类型回显
           if (item && item.select) {
@@ -373,18 +425,24 @@ const Menu: FC<{
       });
     }
   });
-
-  columns.push({
-    title: '操作',
-    key: 'action',
-    render: (text: any, record: any) => (
-      <Space size="middle">
-        <Button size="small" shape="round" onClick={() => viewClick(record.id)}>
-          查看
-        </Button>
-      </Space>
-    ),
-  });
+  //详情查看按钮
+  if (optionAuth.indexOf('view') > -1) {
+    columns.push({
+      title: '操作',
+      key: 'action',
+      render: (text: any, record: any) => (
+        <Space size="middle">
+          <Button
+            size="small"
+            shape="round"
+            onClick={() => viewClick(record.id)}
+          >
+            详情
+          </Button>
+        </Space>
+      ),
+    });
+  }
 
   //表格选择
   const rowSelection = {
@@ -423,7 +481,7 @@ const Menu: FC<{
     addTitle = '修改';
   }
   if (status == 'view') {
-    addTitle = '查看';
+    addTitle = '详情';
     addOptionNodes = (
       <Form.Item>
         <div className="cms-add-options">
@@ -438,6 +496,68 @@ const Menu: FC<{
       </Form.Item>
     );
   }
+
+  //查询按钮
+  const queryButton =
+    optionAuth.indexOf('query') > -1 ? (
+      <Button
+        type="primary"
+        icon={<SearchOutlined />}
+        shape="round"
+        onClick={queryClick}
+      >
+        查询
+      </Button>
+    ) : (
+      ''
+    );
+
+  //新增按钮
+  const addButtion =
+    optionAuth.indexOf('add') > -1 ? (
+      <Button
+        type="primary"
+        icon={<PlusOutlined />}
+        shape="round"
+        onClick={addClick}
+      >
+        新增
+      </Button>
+    ) : (
+      ''
+    );
+
+  //修改按钮
+  const editButtion =
+    optionAuth.indexOf('edit') > -1 ? (
+      <Button
+        disabled={selectedRowKeys.length != 1}
+        icon={<EditOutlined />}
+        shape="round"
+        onClick={eidtClick}
+      >
+        修改
+      </Button>
+    ) : (
+      ''
+    );
+
+  //删除按钮
+  const deleteButtion =
+    optionAuth.indexOf('delete') > -1 ? (
+      <Button
+        disabled={selectedRowKeys.length != 1}
+        danger
+        icon={<DeleteOutlined />}
+        shape="round"
+        onClick={deleteClick}
+      >
+        删除
+      </Button>
+    ) : (
+      ''
+    );
+
   // ======render node end======
 
   //debug
@@ -483,7 +603,7 @@ const Menu: FC<{
 
   return (
     <div className="cms-main">
-      <Card>
+      <div className="cms-query">
         <Form
           layout="inline"
           name="search"
@@ -495,46 +615,15 @@ const Menu: FC<{
         >
           {seachNodes}
           <Form.Item>
-            <Space>
-              <Button
-                type="primary"
-                icon={<SearchOutlined />}
-                shape="round"
-                onClick={queryClick}
-              >
-                查询
-              </Button>
-            </Space>
+            <Space>{queryButton}</Space>
           </Form.Item>
         </Form>
-      </Card>
+      </div>
       <div className="cms-options">
         <Space>
-          <Button
-            type="primary"
-            icon={<PlusOutlined />}
-            shape="round"
-            onClick={addClick}
-          >
-            新增
-          </Button>
-          <Button
-            disabled={selectedRowKeys.length != 1}
-            icon={<EditOutlined />}
-            shape="round"
-            onClick={eidtClick}
-          >
-            修改
-          </Button>
-          <Button
-            disabled={selectedRowKeys.length != 1}
-            danger
-            icon={<DeleteOutlined />}
-            shape="round"
-            onClick={deleteClick}
-          >
-            删除
-          </Button>
+          {addButtion}
+          {editButtion}
+          {deleteButtion}
         </Space>
       </div>
 

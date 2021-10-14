@@ -27,8 +27,9 @@ const CmsLayout: FC<IRouteComponentProps> = ({
     user: model.user,
   }));
 
+  console.log(location, route);
+
   let notFound = true;
-  let notAuth = false;
   //判断是否存在
   route.routes?.forEach((item) => {
     if (notFound && item.path == location.pathname) {
@@ -37,6 +38,8 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   });
 
   const [menuTree, setMenuTree] = useState([]);
+  const [notAuth, setNotAuth] = useState<boolean>(false);
+  const [small, setSmall] = useState<boolean>(false);
 
   const menuTreeRequest = useRequest(
     () => cmsMenuTree({ userNo: user.userNo }),
@@ -44,7 +47,15 @@ const CmsLayout: FC<IRouteComponentProps> = ({
       manual: true,
       onSuccess: (data) => {
         setMenuTree(data);
-        notAuth = true;
+        const paths = getPath(data, '/cms');
+        console.log(paths);
+        //判断是否分配菜单
+        if (
+          paths.indexOf(location.pathname) == -1 &&
+          location.pathname != '/cms'
+        ) {
+          setNotAuth(true);
+        }
       },
     },
   );
@@ -52,6 +63,19 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   useEffect(() => {
     menuTreeRequest.run();
   }, []);
+
+  const getPath = (menus: any, parentPath: string) => {
+    let paths: any[] = [];
+    menus?.map((menu: any) => {
+      const path = parentPath + '/' + menu.code;
+      if (menu.type == 'F') {
+        paths = [...paths, ...getPath(menu.children, path)];
+      } else {
+        paths.push(path);
+      }
+    });
+    return paths;
+  };
 
   const getIcon = (iconType: string) => {
     return (
@@ -64,14 +88,7 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   };
   const getNodes = (menus: any, parentPath: string) => {
     return menus?.map((menu: any) => {
-      const path = parentPath + '/' + menu.path;
-      //判断是否分配菜单
-      if (
-        (notAuth && location.pathname == path) ||
-        location.pathname == '/cms'
-      ) {
-        notAuth = false;
-      }
+      const path = parentPath + '/' + menu.code;
       if (menu.type == 'F') {
         return (
           <SubMenu
@@ -85,19 +102,40 @@ const CmsLayout: FC<IRouteComponentProps> = ({
       } else {
         return (
           <Menu.Item key={path}>
-            <Link to={path}>{menu.name}</Link>
+            <Link key={menu.id} to={path}>
+              {menu.name}
+            </Link>
           </Menu.Item>
         );
       }
     });
   };
-  const menuTreeNode = getNodes(menuTree, '');
+  const menuTreeNode = getNodes(menuTree, '/cms');
   const selectKey = location.pathname;
   const openKey = selectKey.substring(0, selectKey.lastIndexOf('/'));
+
+  const menuNode = (
+    <Menu
+      mode="inline"
+      style={small ? {} : { height: '100%' }}
+      defaultSelectedKeys={[selectKey]}
+      defaultOpenKeys={[openKey]}
+    >
+      {menuTreeNode}
+    </Menu>
+  );
+
+  const topMenu = small ? menuNode : '';
+
+  const showTopMenu = function (broken: any) {
+    setSmall(broken);
+  };
 
   if (!user.isLogin) {
     return <Redirect to="/user/login"></Redirect>;
   }
+
+  console.log(notFound, notAuth);
 
   if (notFound) {
     return <Redirect to="/404"></Redirect>;
@@ -108,20 +146,20 @@ const CmsLayout: FC<IRouteComponentProps> = ({
 
   return (
     <Layout className="layout">
-      <Sider className="cms-sider" width={200}>
-        <Anchor>
-          <Menu
-            mode="inline"
-            style={{ height: '100%' }}
-            defaultSelectedKeys={[selectKey]}
-            defaultOpenKeys={[openKey]}
-          >
-            {menuTreeNode}
-          </Menu>
-        </Anchor>
+      <Sider
+        className="cms-sider"
+        width={200}
+        collapsible
+        breakpoint="md"
+        trigger={null}
+        onBreakpoint={showTopMenu}
+        collapsedWidth="0"
+      >
+        <Anchor>{menuNode}</Anchor>
       </Sider>
 
       <Content>
+        {topMenu}
         <div className="cms-layout-content">{children}</div>
       </Content>
     </Layout>

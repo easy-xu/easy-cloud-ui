@@ -2,38 +2,27 @@ import { FC, useState } from 'react';
 import CmsCurd, { IFields } from '@/components/CmsCurd';
 import { cmsList, cmsMenuTree } from '@/services/cms';
 import { useRequest } from 'umi';
-import { Tree } from 'antd';
+import { Tree, Checkbox } from 'antd';
 
 const Role: FC = (props: any) => {
-  const [menuTreeData, setMenuTreeData] = useState([]);
-  const [menutreeDisable, setMenuTreeDisable] = useState<boolean>(false);
-
-  const [checkedMenuKeys, setCheckedMenuKeys] = useState<React.Key[]>([]);
-
-  const menuTreeRequest = useRequest(() => cmsMenuTree({}), {
+  const [authData, setAuthData] = useState([]);
+  const [authCheckedDisable, setAuthCheckedDisable] = useState<boolean>(false);
+  const [checkedAuthKeys, setCheckedAuthKeys] = useState<React.Key[]>([]);
+  const authDataRequest = useRequest(() => cmsList('auth', {}), {
     onSuccess: (data) => {
-      setMenuTreeData(convertToTreeData(data));
+      const authData = data.map((item: any) => {
+        return { label: item.name, value: item.id };
+      });
+      setAuthData(authData);
     },
   });
 
-  const convertToTreeData = (menus: any) => {
-    console.log(menus);
-    return menus?.map((menu: any) => {
-      let children = convertToTreeData(menu.children);
-      return {
-        key: menu.id,
-        title: menu.name,
-        children: children,
-      };
-    });
-  };
+  function onAuthChecked(checkedValues: any) {
+    setCheckedAuthKeys(checkedValues);
+  }
 
-  const onMenuTreeCheck = (checkedKeysValue: any) => {
-    console.log('onCheck', checkedKeysValue);
-    setCheckedMenuKeys(checkedKeysValue.checked);
-  };
-  const menuTreeClear = () => {
-    setCheckedMenuKeys([]);
+  const authCheckedClear = () => {
+    setCheckedAuthKeys([]);
   };
 
   const fields: IFields = [
@@ -63,21 +52,18 @@ const Role: FC = (props: any) => {
       },
     },
     {
-      name: '角色菜单',
-      code: 'menuIds',
+      name: '权限操作',
+      code: 'authIds',
       type: 'tree',
       style: {
         search: { display: false },
         table: { display: false },
       },
       node: (
-        <Tree
-          disabled={menutreeDisable}
-          checkable
-          checkStrictly
-          onCheck={onMenuTreeCheck}
-          checkedKeys={checkedMenuKeys}
-          treeData={menuTreeData}
+        <Checkbox.Group
+          disabled={authCheckedDisable}
+          options={authData}
+          onChange={onAuthChecked}
         />
       ),
     },
@@ -99,11 +85,11 @@ const Role: FC = (props: any) => {
       fields={fields}
       extendData={[
         {
-          key: 'menuIds',
-          data: checkedMenuKeys,
-          setDisable: setMenuTreeDisable,
-          setData: setCheckedMenuKeys,
-          clear: menuTreeClear,
+          key: 'authIds',
+          data: checkedAuthKeys,
+          setDisable: setAuthCheckedDisable,
+          setData: setCheckedAuthKeys,
+          clear: authCheckedClear,
         },
       ]}
     />
@@ -111,4 +97,6 @@ const Role: FC = (props: any) => {
 };
 // @ts-ignore
 Role.title = '角色页面';
+// @ts-ignore
+Role.code = 'role';
 export default Role;

@@ -42,6 +42,11 @@ const Menu: FC = (props: any) => {
       },
     },
     {
+      name: '菜单名称',
+      code: 'name',
+      type: 'string',
+    },
+    {
       name: '文件夹',
       code: 'parentId',
       type: 'select',
@@ -52,14 +57,10 @@ const Menu: FC = (props: any) => {
         },
       },
     },
+
     {
-      name: '菜单名称',
-      code: 'name',
-      type: 'string',
-    },
-    {
-      name: '菜单路径',
-      code: 'path',
+      name: '路径字符',
+      code: 'code',
       type: 'string',
       style: {
         search: { display: false },
@@ -135,4 +136,6 @@ const Menu: FC = (props: any) => {
 };
 // @ts-ignore
 Menu.title = '菜单页面';
+// @ts-ignore
+Menu.code = 'menu';
 export default Menu;
