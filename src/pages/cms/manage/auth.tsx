@@ -27,7 +27,7 @@ const Auth: FC = (props: any) => {
 
   const onMenuTreeCheck = (checkedKeysValue: any) => {
     console.log('onCheck', checkedKeysValue);
-    setCheckedMenuKeys(checkedKeysValue);
+    setCheckedMenuKeys(checkedKeysValue.checked);
   };
   const menuTreeClear = () => {
     setCheckedMenuKeys([]);
@@ -92,6 +92,7 @@ const Auth: FC = (props: any) => {
         <Tree
           disabled={menutreeDisable}
           checkable
+          checkStrictly
           onCheck={onMenuTreeCheck}
           checkedKeys={checkedMenuKeys}
           treeData={menuTreeData}
@@ -116,7 +117,7 @@ const Auth: FC = (props: any) => {
     },
     {
       name: '状态',
-      code: 'status',
+      code: 'deleted',
       type: 'select',
       select: [
         { code: '0', name: '启用', color: 'green' },

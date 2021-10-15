@@ -43,6 +43,7 @@ const CmsLayout: FC<IRouteComponentProps> = ({
 
   const menuTreeRequest = useRequest(
     () => cmsMenuTree({ userNo: user.userNo }),
+    //() => cmsMenuTree({}),
     {
       manual: true,
       onSuccess: (data) => {

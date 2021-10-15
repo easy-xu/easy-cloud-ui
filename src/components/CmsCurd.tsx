@@ -426,7 +426,7 @@ const Menu: FC<{
     }
   });
   //详情查看按钮
-  if (optionAuth.indexOf('view') > -1) {
+  if (optionAuth.indexOf('query') > -1) {
     columns.push({
       title: '操作',
       key: 'action',

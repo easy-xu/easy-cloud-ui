@@ -7,9 +7,7 @@ import { Checkbox } from 'antd';
 const User: FC = (props: any) => {
   const [roleData, setRoleData] = useState([]);
   const [roleCheckedDisable, setRoleCheckedDisable] = useState<boolean>(false);
-
   const [checkedRoleKeys, setCheckedRoleKeys] = useState<React.Key[]>([]);
-
   const roleDataRequest = useRequest(() => cmsList('role', {}), {
     onSuccess: (data) => {
       const roleData = data.map((item: any) => {
@@ -18,13 +16,30 @@ const User: FC = (props: any) => {
       setRoleData(roleData);
     },
   });
-
   function onRoleChecked(checkedValues: any) {
     setCheckedRoleKeys(checkedValues);
   }
-
   const roleCheckedClear = () => {
     setCheckedRoleKeys([]);
+  };
+
+  const [groupData, setGroupData] = useState([]);
+  const [groupCheckedDisable, setGroupCheckedDisable] =
+    useState<boolean>(false);
+  const [checkedGroupKeys, setCheckedGroupKeys] = useState<React.Key[]>([]);
+  const groupDataRequest = useRequest(() => cmsList('group', {}), {
+    onSuccess: (data) => {
+      const groupData = data.map((item: any) => {
+        return { label: item.name, value: item.id };
+      });
+      setGroupData(groupData);
+    },
+  });
+  function onGroupChecked(checkedValues: any) {
+    setCheckedGroupKeys(checkedValues);
+  }
+  const groupCheckedClear = () => {
+    setCheckedGroupKeys([]);
   };
 
   const fields: IFields = [
@@ -71,7 +86,7 @@ const User: FC = (props: any) => {
     {
       name: '用户角色',
       code: 'roleIds',
-      type: 'tree',
+      type: 'checkgroup',
       style: {
         search: { display: false },
         table: { display: false },
@@ -85,8 +100,24 @@ const User: FC = (props: any) => {
       ),
     },
     {
+      name: '用户分组',
+      code: 'groupIds',
+      type: 'checkgroup',
+      style: {
+        search: { display: false },
+        table: { display: false },
+      },
+      node: (
+        <Checkbox.Group
+          disabled={groupCheckedDisable}
+          options={groupData}
+          onChange={onGroupChecked}
+        />
+      ),
+    },
+    {
       name: '状态',
-      code: 'status',
+      code: 'deleted',
       type: 'select',
       select: [
         { code: '0', name: '启用', color: 'green' },
@@ -95,7 +126,7 @@ const User: FC = (props: any) => {
     },
   ];
 
-  console.log(checkedRoleKeys);
+  console.log(checkedGroupKeys);
 
   return (
     <CmsCurd
@@ -109,6 +140,13 @@ const User: FC = (props: any) => {
           setDisable: setRoleCheckedDisable,
           setData: setCheckedRoleKeys,
           clear: roleCheckedClear,
+        },
+        {
+          key: 'groupIds',
+          data: checkedGroupKeys,
+          setDisable: setGroupCheckedDisable,
+          setData: setCheckedGroupKeys,
+          clear: groupCheckedClear,
         },
       ]}
     />

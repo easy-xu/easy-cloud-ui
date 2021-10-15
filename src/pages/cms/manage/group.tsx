@@ -1,20 +1,7 @@
-import { FC, useState } from 'react';
+import { FC } from 'react';
 import CmsCurd, { IFields } from '@/components/CmsCurd';
-import { cmsList } from '@/services/cms';
-import { useRequest } from 'umi';
-import {
-  DashboardOutlined,
-  BankOutlined,
-  BellOutlined,
-  AuditOutlined,
-  CalendarOutlined,
-  ContactsOutlined,
-  DatabaseOutlined,
-  SettingOutlined,
-  TeamOutlined,
-} from '@ant-design/icons';
 
-const Option: FC = (props: any) => {
+const Group: FC = (props: any) => {
   const fields: IFields = [
     {
       name: '主键',
@@ -27,14 +14,14 @@ const Option: FC = (props: any) => {
         edit: { hidden: true },
       },
     },
-
     {
-      name: '操作名称',
+      name: '分组名称',
       code: 'name',
       type: 'string',
     },
+
     {
-      name: '操作字符',
+      name: '分组字符',
       code: 'code',
       type: 'string',
       style: {
@@ -53,10 +40,10 @@ const Option: FC = (props: any) => {
     },
   ];
 
-  return <CmsCurd model="option" name="操作" fields={fields} />;
+  return <CmsCurd model="group" name="分组" fields={fields} />;
 };
 // @ts-ignore
-Option.title = '操作页面';
+Group.title = '分组页面';
 // @ts-ignore
-Option.code = 'option';
-export default Option;
+Group.code = 'group';
+export default Group;

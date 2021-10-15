@@ -69,7 +69,7 @@ const Role: FC = (props: any) => {
     },
     {
       name: '状态',
-      code: 'status',
+      code: 'deleted',
       type: 'select',
       select: [
         { code: '0', name: '启用', color: 'green' },
