@@ -11,12 +11,15 @@ import {
   Card,
   Tag,
   Modal,
+  Tabs,
 } from 'antd';
 import {
   EditOutlined,
   SearchOutlined,
   DeleteOutlined,
   PlusOutlined,
+  ControlOutlined,
+  ProfileOutlined,
 } from '@ant-design/icons';
 import { useRequest } from 'umi';
 import FixRow from '@/components/FixRow';
@@ -26,10 +29,12 @@ import {
   cmsDeleteEntity,
   cmsQueryEntity,
   cmsQueryOptionAuth,
+  cmsList,
 } from '@/services/cms';
 import Loading from './Loading';
 
 const { Option } = Select;
+const { TabPane } = Tabs;
 
 export declare type IStyle = {
   display?: boolean;
@@ -65,6 +70,7 @@ export declare type IField = {
     table?: IStyle;
     add?: IStyle;
     edit?: IStyle;
+    view?: IStyle;
   };
   select?: IOption[];
   node?: ReactElement;
@@ -73,6 +79,7 @@ export declare type IField = {
 export declare type IFields = IField[];
 
 export declare type IStatus = 'search' | 'add' | 'edit' | 'view';
+export declare type IAddStatus = 'base' | 'property';
 
 export declare type IPage = {
   current: number;
@@ -124,8 +131,16 @@ const Menu: FC<{
     queryOptionAuthApi = cmsQueryOptionAuth;
   }
 
+  const initPata = {
+    current: 1,
+    pageSize: default_pageSize,
+    total: 0,
+  };
+
   //页面状态
   const [status, setStatus] = useState<IStatus>('search');
+  //新增页面状态
+  const [addStatus, setAddStatus] = useState<IAddStatus>('base');
   //列表选择
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   //删除确认弹窗
@@ -134,19 +149,119 @@ const Menu: FC<{
   //新增-修改对象
   const [entity, setEntity] = useState<any>({});
   //分页信息
-  const [page, setPage] = useState<IPage>({
-    current: 1,
-    pageSize: default_pageSize,
-    total: 0,
-  });
+  const [page, setPage] = useState<IPage>(initPata);
   //查询条件
   const [query, setQuery] = useState<any>({});
   //列表数据
   const [records, setRecords] = useState<any[]>([]);
   //操作权限
   const [optionAuth, setOptionAuth] = useState<any[]>([]);
+  //分组数据
+  const [groupData, setGroupData] = useState<any[]>([]);
+
+  //数据分组权限字段
+  const propertyFields = [
+    {
+      name: '分组',
+      code: 'groupId',
+      type: 'select',
+      select: groupData,
+      style: {
+        search: { display: false },
+      },
+    },
+    {
+      name: '所有者权限',
+      code: 'ownMode',
+      type: 'select',
+      select: [
+        { code: '-', name: '无权限', color: 'gray' },
+        { code: 'r', name: '可读权限', color: 'yellow' },
+        { code: 'w', name: '可写权限', color: 'green' },
+      ],
+      style: {
+        search: { display: false },
+      },
+    },
+    {
+      name: '同分组权限',
+      code: 'groupMode',
+      type: 'select',
+      select: [
+        { code: '-', name: '无权限', color: 'gray' },
+        { code: 'r', name: '可读权限', color: 'yellow' },
+        { code: 'w', name: '可写权限', color: 'green' },
+      ],
+      style: {
+        search: { display: false },
+      },
+    },
+    {
+      name: '其他组权限',
+      code: 'otherMode',
+      type: 'select',
+      select: [
+        { code: '-', name: '无权限', color: 'gray' },
+        { code: 'r', name: '可读权限', color: 'yellow' },
+        { code: 'w', name: '可写权限', color: 'green' },
+      ],
+      style: {
+        search: { display: false },
+      },
+    },
+    {
+      name: '创建人员',
+      code: 'createBy',
+      type: 'string',
+      style: {
+        search: { display: false },
+        add: { display: false },
+        edit: { disable: true },
+      },
+    },
+    {
+      name: '创建时间',
+      code: 'createTime',
+      type: 'string',
+      style: {
+        search: { display: false },
+        add: { display: false },
+        edit: { disable: true },
+      },
+    },
+    {
+      name: '修改人员',
+      code: 'updateBy',
+      type: 'string',
+      style: {
+        search: { display: false },
+        add: { display: false },
+        edit: { display: false },
+      },
+    },
+    {
+      name: '修改时间',
+      code: 'updateTime',
+      type: 'string',
+      style: {
+        search: { display: false },
+        add: { display: false },
+        edit: { display: false },
+      },
+    },
+  ];
 
   // ======useRequest start======
+  //分页查询
+  const groupDataRequest = useRequest(() => cmsList('group', {}), {
+    manual: true,
+    onSuccess: (data) => {
+      let groups = data.map((item: any) => {
+        return { code: item.id, name: item.name };
+      });
+      setGroupData(groups);
+    },
+  });
   //新增或保存
   const saveEntiyRequest = useRequest(
     (params) => saveEntityApi(model, params),
@@ -190,6 +305,7 @@ const Menu: FC<{
         item.setDisable(nextStatus == 'view');
       });
       setStatus(nextStatus);
+      setAddStatus('base');
     },
   });
   //主键删除
@@ -217,6 +333,7 @@ const Menu: FC<{
   // ======useEffect end======
   useEffect(() => {
     optionAuthRequest.run();
+    groupDataRequest.run();
     pageListRequest.run(page, query);
   }, []);
   // ======useEffect end======
@@ -248,6 +365,7 @@ const Menu: FC<{
       item.setDisable(false);
     });
     setStatus('add');
+    setAddStatus('base');
   };
   //新增确认按钮
   const addSubmitClick = (values: any) => {
@@ -290,15 +408,41 @@ const Menu: FC<{
   // ======click function end======
 
   // ======render node start======
-  const formItem = (item: IField, style?: IStyle) => {
+  //获取指定style
+  const getStyle = (item: IField) => {
+    //未声明或者指定显示
+    let style = undefined;
+    if (status == 'search' && item.style && item.style.search) {
+      style = item.style.search;
+    }
+    if (status == 'add' && item.style && item.style.add) {
+      style = item.style.add;
+    }
+    if (status == 'edit' && item.style && item.style.edit) {
+      style = item.style.edit;
+    }
+    if (status == 'view' && item.style && item.style.view) {
+      style = item.style.view;
+    }
+    return style;
+  };
+
+  const formItem = (
+    item: IField,
+    style?: IStyle,
+    displayAddStatus?: IAddStatus,
+  ) => {
     if (style != undefined && style.display == false) {
       return;
     }
-    let hidden = false;
+    let hidden = displayAddStatus ? displayAddStatus != addStatus : false;
     if (style != undefined && style.hidden == true) {
       hidden = true;
     }
     let disable = false;
+    if (style != undefined && style.disable == true) {
+      disable = true;
+    }
     if (status == 'view') {
       disable = true;
     }
@@ -352,7 +496,7 @@ const Menu: FC<{
   //查询选项
   let seachNodes = fields.map((item: IField) => {
     //未声明或者指定显示
-    return formItem(item, item.style ? item.style.search : undefined);
+    return formItem(item, getStyle(item));
   });
 
   //列表数据
@@ -452,10 +596,15 @@ const Menu: FC<{
   };
 
   //新增页面字段
-  let addFieldNodes = fields.map((item: IField) => {
-    //未声明或者指定显示
-    return formItem(item, item.style ? item.style.add : undefined);
+  const addFieldNodes = fields.map((item: IField) => {
+    return formItem(item, getStyle(item), 'base');
   });
+
+  const addPropertyFieldNodes = propertyFields.map((item: IField) => {
+    //未声明或者指定显示
+    return formItem(item, getStyle(item), 'property');
+  });
+
   //新增页面按钮
   let addOptionNodes = (
     <Form.Item>
@@ -562,6 +711,25 @@ const Menu: FC<{
 
   //debug
   console.log(model + ' page render');
+  console.log('entity', entity);
+
+  //表单布局样式
+  const formLayout = {
+    labelCol: {
+      xs: { span: 24, offset: 0 },
+      sm: { span: 6, offset: 0 },
+      md: { span: 4, offset: 1 },
+      lg: { span: 3, offset: 2 },
+      xl: { span: 2, offset: 2 },
+    },
+    wrapperCol: {
+      xs: { span: 24, offset: 0 },
+      sm: { span: 18, offset: 0 },
+      md: { span: 14, offset: 0 },
+      lg: { span: 12, offset: 0 },
+      xl: { span: 10, offset: 0 },
+    },
+  };
 
   //新增页面
   if (status == 'add' || status == 'edit' || status == 'view') {
@@ -572,28 +740,40 @@ const Menu: FC<{
           onBack={addCancleClick}
           title={addTitle}
           subTitle={name + '页面'}
+          extra={[
+            <Button
+              key="1"
+              type={addStatus == 'base' ? 'primary' : 'default'}
+              icon={<ProfileOutlined />}
+              onClick={() => {
+                setAddStatus('base');
+              }}
+              shape="round"
+            >
+              基础
+            </Button>,
+            <Button
+              key="2"
+              type={addStatus == 'property' ? 'primary' : 'default'}
+              icon={<ControlOutlined />}
+              onClick={() => {
+                setAddStatus('property');
+              }}
+              shape="round"
+            >
+              属性
+            </Button>,
+          ]}
         >
           <Form
             initialValues={entity}
-            name={status}
-            labelCol={{
-              xs: { span: 24, offset: 0 },
-              sm: { span: 6, offset: 0 },
-              md: { span: 4, offset: 1 },
-              lg: { span: 3, offset: 2 },
-              xl: { span: 2, offset: 2 },
-            }}
-            wrapperCol={{
-              xs: { span: 24, offset: 0 },
-              sm: { span: 18, offset: 0 },
-              md: { span: 14, offset: 0 },
-              lg: { span: 12, offset: 0 },
-              xl: { span: 10, offset: 0 },
-            }}
+            name={status + '_' + addStatus}
+            {...formLayout}
             onFinish={addSubmitClick}
             autoComplete="off"
           >
             {addFieldNodes}
+            {addPropertyFieldNodes}
             {addOptionNodes}
           </Form>
         </PageHeader>
