@@ -42,11 +42,13 @@ const Role: FC = (props: any) => {
       name: '角色名称',
       code: 'name',
       type: 'string',
+      rules: [{ required: true }],
     },
     {
       name: '角色字符',
       code: 'code',
       type: 'string',
+      rules: [{ required: true }],
       style: {
         search: { display: false },
       },

@@ -32,11 +32,13 @@ const Option: FC = (props: any) => {
       name: '操作名称',
       code: 'name',
       type: 'string',
+      rules: [{ required: true }],
     },
     {
       name: '操作字符',
       code: 'code',
       type: 'string',
+      rules: [{ required: true }],
       style: {
         search: { display: false },
       },

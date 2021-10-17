@@ -1,8 +1,9 @@
 import { FC, useState } from 'react';
-import CmsCurd, { IFields } from '@/components/CmsCurd';
-import { cmsList, cmsMenuTree } from '@/services/cms';
+import CmsCurd, { formLayout, IFields, IStatus } from '@/components/CmsCurd';
+import { cmsList, cmsMenuTree, cmsResetPassword } from '@/services/cms';
 import { useRequest } from 'umi';
-import { Checkbox } from 'antd';
+import { Checkbox, Form, Input, Space, Button, InputNumber } from 'antd';
+import FixRow from '@/components/FixRow';
 
 const User: FC = (props: any) => {
   const [roleData, setRoleData] = useState([]);
@@ -54,16 +55,37 @@ const User: FC = (props: any) => {
         edit: { hidden: true },
       },
     },
-
+    {
+      name: '编号',
+      code: 'userNo',
+      type: 'string',
+      style: {
+        add: { display: false },
+        edit: { disable: true },
+      },
+    },
     {
       name: '用户名',
       code: 'username',
       type: 'string',
+      rules: [{ required: true }],
     },
     {
       name: '昵称',
       code: 'nickname',
       type: 'string',
+    },
+    {
+      name: '初始密码',
+      code: 'password',
+      type: 'password',
+      rules: [{ required: true }],
+      style: {
+        search: { display: false },
+        edit: { display: false },
+        view: { display: false },
+        table: { display: false },
+      },
     },
     {
       name: '邮箱',
@@ -126,30 +148,115 @@ const User: FC = (props: any) => {
     },
   ];
 
-  console.log(checkedGroupKeys);
+  //重置密码
+  const [entity, setEntity] = useState<any>({});
+  const [extendOptionStatus, setExtendOptionStatus] = useState<string>();
+
+  const restPasswordRequest = useRequest((params) => cmsResetPassword(params), {
+    manual: true,
+    onSuccess: (data) => {
+      setExtendOptionStatus(undefined);
+    },
+  });
+
+  const openResetPassword = (values?: any) => {
+    setExtendOptionStatus('restPassword');
+    setEntity({ id: values.id });
+  };
+  const finishResetPassword = (values?: any) => {
+    console.log('finishResetPassword', values);
+    restPasswordRequest.run(values);
+  };
+
+  const restPasswordNode = (
+    <Form
+      name="restPassword"
+      initialValues={entity}
+      {...formLayout}
+      onFinish={finishResetPassword}
+      autoComplete="off"
+    >
+      <Form.Item label="主键" name="id" key="id" hidden>
+        <InputNumber />
+      </Form.Item>
+      <Form.Item
+        label="新密码"
+        name="password"
+        key="password"
+        rules={[{ required: true }]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item
+        label="确认密码"
+        name="rePassword"
+        key="rePassword"
+        rules={[
+          { required: true },
+          ({ getFieldValue }) => ({
+            validator(_, value) {
+              if (!value || getFieldValue('password') === value) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('两次密码不一致'));
+            },
+          }),
+        ]}
+      >
+        <Input.Password />
+      </Form.Item>
+      <Form.Item>
+        <div className="cms-add-options">
+          <FixRow>
+            <Space>
+              <Button key="1" type="primary" htmlType="submit" shape="round">
+                重置密码
+              </Button>
+            </Space>
+          </FixRow>
+        </div>
+      </Form.Item>
+    </Form>
+  );
+
+  const extendOptionPage =
+    extendOptionStatus == 'restPassword'
+      ? { key: 'restPassword', name: '重置密码', node: restPasswordNode }
+      : undefined;
 
   return (
-    <CmsCurd
-      model="user"
-      name="用户"
-      fields={fields}
-      extendData={[
-        {
-          key: 'roleIds',
-          data: checkedRoleKeys,
-          setDisable: setRoleCheckedDisable,
-          setData: setCheckedRoleKeys,
-          clear: roleCheckedClear,
-        },
-        {
-          key: 'groupIds',
-          data: checkedGroupKeys,
-          setDisable: setGroupCheckedDisable,
-          setData: setCheckedGroupKeys,
-          clear: groupCheckedClear,
-        },
-      ]}
-    />
+    <div>
+      <CmsCurd
+        model="user"
+        name="用户"
+        fields={fields}
+        extendData={[
+          {
+            key: 'roleIds',
+            data: checkedRoleKeys,
+            setDisable: setRoleCheckedDisable,
+            setData: setCheckedRoleKeys,
+            clear: roleCheckedClear,
+          },
+          {
+            key: 'groupIds',
+            data: checkedGroupKeys,
+            setDisable: setGroupCheckedDisable,
+            setData: setCheckedGroupKeys,
+            clear: groupCheckedClear,
+          },
+        ]}
+        extendOption={[
+          {
+            key: 'resetPassword',
+            name: '重置密码',
+            requireAuth: 'edit',
+            onClick: openResetPassword,
+          },
+        ]}
+        extendOptionPage={extendOptionPage}
+      />
+    </div>
   );
 };
 // @ts-ignore

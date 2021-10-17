@@ -45,11 +45,13 @@ const Menu: FC = (props: any) => {
       name: '菜单名称',
       code: 'name',
       type: 'string',
+      rules: [{ required: true }],
     },
     {
       name: '文件夹',
       code: 'parentId',
       type: 'select',
+      rules: [{ required: true }],
       select: folders,
       style: {
         search: {
@@ -62,6 +64,7 @@ const Menu: FC = (props: any) => {
       name: '路径字符',
       code: 'code',
       type: 'string',
+      rules: [{ required: true }],
       style: {
         search: { display: false },
       },
@@ -89,6 +92,7 @@ const Menu: FC = (props: any) => {
       name: '显示排序',
       code: 'orderNum',
       type: 'number',
+      rules: [{ required: true }],
       style: {
         search: { display: false },
       },
@@ -97,6 +101,7 @@ const Menu: FC = (props: any) => {
       name: '类型',
       code: 'type',
       type: 'select',
+      rules: [{ required: true }],
       select: [
         { code: 'F', name: '目录', color: 'yellow' },
         { code: 'M', name: '菜单', color: 'green' },

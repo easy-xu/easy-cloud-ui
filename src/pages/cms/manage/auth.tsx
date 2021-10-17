@@ -71,11 +71,13 @@ const Auth: FC = (props: any) => {
       name: '权限名称',
       code: 'name',
       type: 'string',
+      rules: [{ required: true }],
     },
     {
       name: '权限字符',
       code: 'code',
       type: 'string',
+      rules: [{ required: true }],
       style: {
         search: { display: false },
       },

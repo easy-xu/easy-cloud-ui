@@ -47,3 +47,7 @@ export function cmsDeleteEntity(model: string, id: number) {
 export function cmsQueryOptionAuth(menuCode: string) {
   return postRequest(`/api/cms/auth/user-menu-option`, { menuCode: menuCode });
 }
+//重置密码
+export function cmsResetPassword(params: any) {
+  return postRequest(`/api/cms/user/reset-password`, params);
+}

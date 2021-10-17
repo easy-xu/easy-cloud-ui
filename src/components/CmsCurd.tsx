@@ -12,6 +12,8 @@ import {
   Tag,
   Modal,
   Tabs,
+  Radio,
+  Typography,
 } from 'antd';
 import {
   EditOutlined,
@@ -35,6 +37,7 @@ import Loading from './Loading';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
+const { Text, Link, Paragraph } = Typography;
 
 export declare type IStyle = {
   display?: boolean;
@@ -65,6 +68,7 @@ export declare type IField = {
   code?: string;
   type?: string;
   responsive?: Breakpoint[];
+  rules?: any[];
   style?: {
     search?: IStyle;
     table?: IStyle;
@@ -78,13 +82,31 @@ export declare type IField = {
 
 export declare type IFields = IField[];
 
-export declare type IStatus = 'search' | 'add' | 'edit' | 'view';
+export declare type IStatus = 'search' | 'add' | 'edit' | 'view' | string;
 export declare type IAddStatus = 'base' | 'property';
 
 export declare type IPage = {
   current: number;
   pageSize: number;
   total?: number;
+};
+
+//表单布局样式
+export const formLayout = {
+  labelCol: {
+    xs: { span: 24, offset: 0 },
+    sm: { span: 6, offset: 0 },
+    md: { span: 4, offset: 1 },
+    lg: { span: 3, offset: 2 },
+    xl: { span: 2, offset: 2 },
+  },
+  wrapperCol: {
+    xs: { span: 24, offset: 0 },
+    sm: { span: 18, offset: 0 },
+    md: { span: 14, offset: 0 },
+    lg: { span: 12, offset: 0 },
+    xl: { span: 10, offset: 0 },
+  },
 };
 
 const default_pageSize = 5;
@@ -101,8 +123,9 @@ const Menu: FC<{
   deleteEntityApi?: any;
   queryOptionAuthApi?: any;
   refresh?: any[];
-  extendData?: any;
-  extendDataOnClear?: any;
+  extendData?: any[];
+  extendOption?: any[];
+  extendOptionPage?: any;
 }> = ({
   model,
   name,
@@ -114,6 +137,8 @@ const Menu: FC<{
   queryOptionAuthApi,
   refresh,
   extendData,
+  extendOption,
+  extendOptionPage,
 }) => {
   if (queryEntityApi == undefined) {
     queryEntityApi = cmsQueryEntity;
@@ -336,6 +361,16 @@ const Menu: FC<{
     groupDataRequest.run();
     pageListRequest.run(page, query);
   }, []);
+
+  useEffect(() => {
+    if (extendOptionPage == undefined && status != 'search') {
+      setStatus('search');
+      pageListRequest.run(page, query);
+    }
+    if (extendOptionPage != undefined && extendOptionPage.key != status) {
+      setStatus(extendOptionPage.key);
+    }
+  }, [extendOptionPage]);
   // ======useEffect end======
 
   // ======click function start======
@@ -375,8 +410,8 @@ const Menu: FC<{
     });
     saveEntiyRequest.run(values);
   };
-  //新增取消按钮
-  const addCancleClick = () => {
+  //显示条件分页界面
+  const openFirstPage = () => {
     setStatus('search');
   };
   //修改按钮
@@ -472,9 +507,29 @@ const Menu: FC<{
       );
     }
 
+    //单选框
+    else if (item.type == 'radio' && item.select != undefined) {
+      content = (
+        <Radio.Group name={item.name}>
+          {item.select.map((option: IOption) => {
+            return (
+              <Radio key={option.code} value={option.code}>
+                {' '}
+                {option.node ? option.node : option.name}
+              </Radio>
+            );
+          })}
+        </Radio.Group>
+      );
+    }
+
     //数字输入
     else if (item.type == 'number') {
-      content = <InputNumber style={{ minWidth: 100 }} readOnly={disable} />;
+      content = <InputNumber style={{ minWidth: 200 }} readOnly={disable} />;
+    }
+    //密码
+    else if (item.type == 'password') {
+      content = <Input.Password readOnly={disable} />;
     }
     //默认普通输入框
     else {
@@ -487,6 +542,7 @@ const Menu: FC<{
         name={item.code}
         key={item.code}
         hidden={hidden}
+        rules={status == 'search' ? [] : item.rules}
       >
         {content}
       </Form.Item>
@@ -611,7 +667,7 @@ const Menu: FC<{
       <div className="cms-add-options">
         <FixRow>
           <Space>
-            <Button key="2" shape="round" onClick={addCancleClick}>
+            <Button key="2" shape="round" onClick={openFirstPage}>
               取消
             </Button>
             <Button key="1" type="primary" htmlType="submit" shape="round">
@@ -636,7 +692,7 @@ const Menu: FC<{
         <div className="cms-add-options">
           <FixRow>
             <Space>
-              <Button key="1" shape="round" onClick={addCancleClick}>
+              <Button key="1" shape="round" onClick={openFirstPage}>
                 返回
               </Button>
             </Space>
@@ -707,29 +763,29 @@ const Menu: FC<{
       ''
     );
 
+  //额外的按钮
+  const extendOptionButton = extendOption?.map((item) => {
+    return optionAuth.indexOf(item.requireAuth) > -1 ? (
+      <Button
+        key={item.key}
+        disabled={selectedRowKeys.length != 1}
+        shape="round"
+        onClick={() => {
+          item.onClick(records[selectedRowKeys[0] - 1]);
+        }}
+      >
+        {item.name}
+      </Button>
+    ) : (
+      ''
+    );
+  });
+
   // ======render node end======
 
   //debug
   console.log(model + ' page render');
   console.log('entity', entity);
-
-  //表单布局样式
-  const formLayout = {
-    labelCol: {
-      xs: { span: 24, offset: 0 },
-      sm: { span: 6, offset: 0 },
-      md: { span: 4, offset: 1 },
-      lg: { span: 3, offset: 2 },
-      xl: { span: 2, offset: 2 },
-    },
-    wrapperCol: {
-      xs: { span: 24, offset: 0 },
-      sm: { span: 18, offset: 0 },
-      md: { span: 14, offset: 0 },
-      lg: { span: 12, offset: 0 },
-      xl: { span: 10, offset: 0 },
-    },
-  };
 
   //新增页面
   if (status == 'add' || status == 'edit' || status == 'view') {
@@ -737,7 +793,7 @@ const Menu: FC<{
       <div className="cms-main">
         <PageHeader
           ghost={false}
-          onBack={addCancleClick}
+          onBack={openFirstPage}
           title={addTitle}
           subTitle={name + '页面'}
           extra={[
@@ -781,58 +837,83 @@ const Menu: FC<{
     );
   }
 
+  if (status == 'search') {
+    return (
+      <div className="cms-main">
+        <div className="cms-query">
+          <Form
+            layout="inline"
+            name="search"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+            initialValues={query}
+            autoComplete="off"
+            onValuesChange={queryChange}
+          >
+            {seachNodes}
+            <Form.Item>
+              <Space>{queryButton}</Space>
+            </Form.Item>
+          </Form>
+        </div>
+        <div className="cms-options">
+          <Space>
+            {addButtion}
+            {editButtion}
+            {deleteButtion}
+            {extendOptionButton}
+          </Space>
+        </div>
+
+        <Table
+          columns={columns}
+          rowKey={(record) => record.id}
+          rowSelection={rowSelection}
+          dataSource={records}
+          pagination={{
+            showSizeChanger: true,
+            onShowSizeChange: pageChage,
+            onChange: pageChage,
+            current: page.current,
+            total: page.total,
+            pageSize: page.pageSize,
+            pageSizeOptions: ['5', '10', '20', '50'],
+          }}
+        />
+        <Modal
+          title="删除确认"
+          visible={deleteConfirmVisible}
+          onOk={deleteConfirm}
+          onCancel={deleteCancle}
+          okButtonProps={{ danger: true }}
+          okText="删除"
+          cancelText="取消"
+        >
+          <Paragraph>
+            <Text strong>数据删除后不可恢复！</Text>
+          </Paragraph>
+          <Paragraph>
+            是否确认
+            <Text strong type="danger">
+              删除
+            </Text>
+            {selectedRowKeys.length}条数据？
+          </Paragraph>
+        </Modal>
+      </div>
+    );
+  }
+
   return (
     <div className="cms-main">
-      <div className="cms-query">
-        <Form
-          layout="inline"
-          name="search"
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 16 }}
-          initialValues={query}
-          autoComplete="off"
-          onValuesChange={queryChange}
-        >
-          {seachNodes}
-          <Form.Item>
-            <Space>{queryButton}</Space>
-          </Form.Item>
-        </Form>
-      </div>
-      <div className="cms-options">
-        <Space>
-          {addButtion}
-          {editButtion}
-          {deleteButtion}
-        </Space>
-      </div>
-
-      <Table
-        columns={columns}
-        rowKey={(record) => record.id}
-        rowSelection={rowSelection}
-        dataSource={records}
-        pagination={{
-          showSizeChanger: true,
-          onShowSizeChange: pageChage,
-          onChange: pageChage,
-          current: page.current,
-          total: page.total,
-          pageSize: page.pageSize,
-          pageSizeOptions: ['5', '10', '20', '50'],
-        }}
-      />
-      <Modal
-        title="删除确认"
-        visible={deleteConfirmVisible}
-        onOk={deleteConfirm}
-        onCancel={deleteCancle}
-        okButtonProps={{ danger: true }}
-        okText="删除"
-        cancelText="取消"
+      <PageHeader
+        ghost={false}
+        onBack={openFirstPage}
+        title={extendOptionPage?.name}
+        subTitle={name + '页面'}
       >
-        是否确认删除{selectedRowKeys.length}条数据？
-      </Modal>
+        {extendOptionPage?.node}
+      </PageHeader>
     </div>
   );
 };

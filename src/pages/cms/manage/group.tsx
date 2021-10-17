@@ -18,12 +18,14 @@ const Group: FC = (props: any) => {
       name: '分组名称',
       code: 'name',
       type: 'string',
+      rules: [{ required: true }],
     },
 
     {
       name: '分组字符',
       code: 'code',
       type: 'string',
+      rules: [{ required: true }],
       style: {
         search: { display: false },
       },
