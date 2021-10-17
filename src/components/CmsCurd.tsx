@@ -235,8 +235,18 @@ const Menu: FC<{
       },
     },
     {
-      name: '创建人员',
+      name: '创建人员编号',
       code: 'createBy',
+      type: 'string',
+      style: {
+        search: { display: false },
+        add: { display: false },
+        edit: { disable: true },
+      },
+    },
+    {
+      name: '创建人员昵称',
+      code: 'createByNickname',
       type: 'string',
       style: {
         search: { display: false },
@@ -255,8 +265,18 @@ const Menu: FC<{
       },
     },
     {
-      name: '修改人员',
+      name: '修改人员编号',
       code: 'updateBy',
+      type: 'string',
+      style: {
+        search: { display: false },
+        add: { display: false },
+        edit: { display: false },
+      },
+    },
+    {
+      name: '修改人员昵称',
+      code: 'updateByNickname',
       type: 'string',
       style: {
         search: { display: false },
