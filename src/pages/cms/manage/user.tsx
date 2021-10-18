@@ -43,6 +43,19 @@ const User: FC = (props: any) => {
     setCheckedGroupKeys([]);
   };
 
+  const defaultGroupData: any = groupData
+    .filter((item: any) => {
+      return checkedGroupKeys.indexOf(item.value) > -1;
+    })
+    .map((item: any) => {
+      return { name: item.label, code: item.value };
+    });
+
+  console.log('groupData', groupData);
+
+  console.log('checkedGroupKeys', checkedGroupKeys);
+  console.log('defaultGroupData', defaultGroupData);
+
   const fields: IFields = [
     {
       name: '主键',
@@ -138,6 +151,29 @@ const User: FC = (props: any) => {
       ),
     },
     {
+      name: '当前分组',
+      code: 'defaultGroupId',
+      type: 'select',
+      rules: [
+        { required: true },
+        // @ts-ignore
+        ({ getFieldValue }) => ({
+          // @ts-ignore
+          validator(_, value) {
+            if (!value || getFieldValue('groupIds').indexOf(value) > -1) {
+              return Promise.resolve();
+            }
+            return Promise.reject(new Error('当前分组不可用'));
+          },
+        }),
+      ],
+      style: {
+        search: { display: false },
+        table: { display: false },
+      },
+      select: defaultGroupData,
+    },
+    {
       name: '状态',
       code: 'deleted',
       type: 'select',
@@ -189,8 +225,8 @@ const User: FC = (props: any) => {
       </Form.Item>
       <Form.Item
         label="确认密码"
-        name="rePassword"
-        key="rePassword"
+        name="re-password"
+        key="re-password"
         rules={[
           { required: true },
           ({ getFieldValue }) => ({
