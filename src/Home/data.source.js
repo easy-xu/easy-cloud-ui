@@ -18,22 +18,22 @@ export const Banner50DataSource = {
   childWrapper: {
     className: 'banner5-title-wrapper',
     children: [
-      { name: 'title', children: '产品名', className: 'banner5-title' },
+      { name: 'title', children: 'EasyCode', className: 'banner5-title' },
       {
         name: 'explain',
         className: 'banner5-explain',
-        children: '产品标语介绍',
+        children: '简单的代码',
       },
       {
         name: 'content',
         className: 'banner5-content',
-        children: '产品的详细说明，如是什么东西之类的文字',
+        children: '更少的代码，更快的交付',
       },
       {
         name: 'button',
         className: 'banner5-button-wrapper',
         children: {
-          href: '#',
+          href: '/cms',
           className: 'banner5-button',
           type: 'primary',
           children: '开始使用',
@@ -296,7 +296,7 @@ export const Footer10DataSource = {
         title: {
           className: 'logo',
           children:
-            'https://zos.alipayobjects.com/rmsportal/qqaimmXZVSwAhpL.svg',
+            'https://simple-cloud-1256275568.cos.ap-shanghai.myqcloud.com/logo.png',
         },
         childWrapper: {
           className: 'slogan',
@@ -355,11 +355,6 @@ export const Footer10DataSource = {
   copyrightPage: { className: 'home-page' },
   copyright: {
     className: 'copyright',
-    children: (
-      <span>
-        ©2018 by <a href="https://motion.ant.design">Ant Motion</a> All Rights
-        Reserved
-      </span>
-    ),
+    children: <span>©2021 by 为了呆毛 All Rights Reserved</span>,
   },
 };
