@@ -5,6 +5,7 @@ import { visitedRequest } from '@/services/cms';
 import { setToken } from '@/utils/api';
 
 interface IUser {
+  nickname: string;
   userNo?: string;
   username?: string;
   token?: string;

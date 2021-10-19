@@ -21,7 +21,13 @@
   },
   "dependencies": {
     "@ant-design/pro-layout": "^6.5.0",
+    "enquire-js": "^0.2.1",
     "localStorage": "^1.0.4",
+    "rc-banner-anim": "^2.4.5",
+    "rc-queue-anim": "^2.0.0",
+    "rc-scroll-anim": "^2.7.6",
+    "rc-texty": "^0.2.0",
+    "rc-tween-one": "^2.7.3",
     "react": "17.x",
     "react-countdown": "^2.3.2",
     "react-dom": "17.x",
