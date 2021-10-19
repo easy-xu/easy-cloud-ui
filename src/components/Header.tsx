@@ -23,6 +23,7 @@ const Header: React.FC<{
     console.log('refresh');
     setIsShow(false);
     setTimeout(() => {
+      setPhoneOpen(true);
       setIsShow(true);
     }, 500);
   }, [refresh]);
@@ -65,9 +66,8 @@ const Header: React.FC<{
                     height: 0,
                     duration: 300,
                     onComplete: (e) => {
-                      console.log(e);
                       if (phoneOpen) {
-                        e.target.style.height = 'auto';
+                        e.target.style.height = '100%';
                       }
                     },
                     ease: 'easeInOutQuad',
