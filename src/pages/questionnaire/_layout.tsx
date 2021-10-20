@@ -24,19 +24,6 @@ const PageLayout: FC<IRouteComponentProps> = ({
     logout: model.logout,
   }));
 
-  console.log(location);
-
-  const openPath = ['/user/login', '/user/signin', '/403', '/404'];
-
-  if (openPath.indexOf(location.pathname) == -1 && user == undefined) {
-    //return <Redirect to='/403' />
-  }
-
-  function clearCache() {
-    sessionStorage.clear();
-    localStorage.clear();
-  }
-
   return <FixRow>{children}</FixRow>;
 };
 

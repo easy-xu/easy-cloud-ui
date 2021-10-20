@@ -99,6 +99,4 @@ const Role: FC = (props: any) => {
 };
 // @ts-ignore
 Role.title = '角色页面';
-// @ts-ignore
-Role.code = 'role';
 export default Role;

@@ -27,8 +27,6 @@ const CmsLayout: FC<IRouteComponentProps> = ({
     user: model.user,
   }));
 
-  console.log(location, route);
-
   let notFound = true;
   //判断是否存在
   route.routes?.forEach((item) => {
@@ -49,7 +47,6 @@ const CmsLayout: FC<IRouteComponentProps> = ({
       onSuccess: (data) => {
         setMenuTree(data);
         const paths = getPath(data, '/cms');
-        console.log(paths);
         //判断是否分配菜单
         if (
           paths.indexOf(location.pathname) == -1 &&
@@ -81,9 +78,12 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   const getIcon = (iconType: string) => {
     return (
       <div>
-        {React.createElement(Icon[iconType], {
-          style: { fontSize: '16px', color: '#1890ff' },
-        })}
+        {
+          //@ts-ignore
+          React.createElement(Icon[iconType], {
+            style: { fontSize: '16px', color: '#1890ff' },
+          })
+        }
       </div>
     );
   };
@@ -135,8 +135,6 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   if (!user.isLogin) {
     return <Redirect to="/user/login"></Redirect>;
   }
-
-  console.log(notFound, notAuth);
 
   if (notFound) {
     return <Redirect to="/404"></Redirect>;

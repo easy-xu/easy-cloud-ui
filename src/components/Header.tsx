@@ -15,7 +15,9 @@ const Header: React.FC<{
   const [phoneOpen, setPhoneOpen] = useState(false);
 
   const phoneClick = () => {
-    setPhoneOpen(!phoneOpen);
+    if (isMobile) {
+      setPhoneOpen(!phoneOpen);
+    }
   };
 
   const navChildren = dataSource.Menu.children;
@@ -84,8 +86,8 @@ const Header: React.FC<{
           >
             <Menu
               mode={isMobile ? 'inline' : 'horizontal'}
-              defaultSelectedKeys={['index']}
-              theme="dark"
+              theme={'dark'}
+              onClick={phoneClick}
             >
               {navChildren}
             </Menu>

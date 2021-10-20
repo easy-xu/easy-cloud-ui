@@ -154,6 +154,4 @@ const Auth: FC = (props: any) => {
 };
 // @ts-ignore
 Auth.title = '权限页面';
-// @ts-ignore
-Auth.code = 'auth';
 export default Auth;

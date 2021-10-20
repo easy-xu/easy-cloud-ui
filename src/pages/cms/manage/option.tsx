@@ -59,6 +59,4 @@ const Option: FC = (props: any) => {
 };
 // @ts-ignore
 Option.title = '操作页面';
-// @ts-ignore
-Option.code = 'option';
 export default Option;

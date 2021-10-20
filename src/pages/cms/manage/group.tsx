@@ -46,6 +46,4 @@ const Group: FC = (props: any) => {
 };
 // @ts-ignore
 Group.title = '分组页面';
-// @ts-ignore
-Group.code = 'group';
 export default Group;

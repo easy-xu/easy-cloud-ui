@@ -117,7 +117,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
                 verticalAlign: 'middle',
               }}
             >
-              {user.username}
+              {user.nickname}
             </Avatar>
           </Popover>
         </Menu.Item>,

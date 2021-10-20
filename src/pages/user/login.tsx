@@ -86,4 +86,6 @@ const UserLogin: FC = () => {
   );
 };
 
+// @ts-ignore
+UserLogin.noLayout = true;
 export default UserLogin;

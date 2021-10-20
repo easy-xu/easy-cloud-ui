@@ -141,6 +141,4 @@ const Menu: FC = (props: any) => {
 };
 // @ts-ignore
 Menu.title = '菜单页面';
-// @ts-ignore
-Menu.code = 'menu';
 export default Menu;

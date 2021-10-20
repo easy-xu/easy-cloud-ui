@@ -621,7 +621,7 @@ const Menu: FC<{
               if (option.code == text) {
                 //指定节点
                 if (option.node) {
-                  return option.node;
+                  return <div key={record.id}> {option.node} </div>;
                 }
                 //指定颜色
                 else if (option.color) {

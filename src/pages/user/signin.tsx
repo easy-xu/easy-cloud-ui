@@ -95,4 +95,6 @@ const UserSignin: FC = () => {
   );
 };
 
+// @ts-ignore
+UserSignin.noLayout = true;
 export default UserSignin;
