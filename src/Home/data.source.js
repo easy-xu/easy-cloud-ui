@@ -27,7 +27,7 @@ export const Banner50DataSource = {
       {
         name: 'content',
         className: 'banner5-content',
-        children: '更少的代码，更快的交付',
+        children: '更快的开发，更快的交付',
       },
       {
         name: 'button',

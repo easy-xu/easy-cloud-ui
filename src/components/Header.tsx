@@ -4,13 +4,14 @@ import { Menu } from 'antd';
 
 const { Item, SubMenu } = Menu;
 
+let refreshIng = false;
+
 const Header: React.FC<{
   dataSource?: any;
   isMobile?: boolean;
   refresh?: any;
 }> = ({ dataSource, isMobile, refresh }) => {
-  const { location: any = {} } = typeof window !== 'undefined' ? window : {};
-  const [isShow, setIsShow] = useState(!location.port);
+  const [isShow, setIsShow] = useState(false);
   const [phoneOpen, setPhoneOpen] = useState(false);
 
   const phoneClick = () => {
@@ -22,10 +23,14 @@ const Header: React.FC<{
   useEffect(() => {
     console.log('refresh');
     setIsShow(false);
-    setTimeout(() => {
-      setPhoneOpen(true);
-      setIsShow(true);
-    }, 500);
+    if (!refreshIng) {
+      refreshIng = true;
+      setTimeout(() => {
+        setIsShow(true);
+        console.log('refreshed');
+        refreshIng = false;
+      }, 500);
+    }
   }, [refresh]);
 
   const moment = phoneOpen === undefined ? 300 : null;
@@ -65,11 +70,6 @@ const Header: React.FC<{
                 ? {
                     height: 0,
                     duration: 300,
-                    onComplete: (e) => {
-                      if (phoneOpen) {
-                        e.target.style.height = '100%';
-                      }
-                    },
                     ease: 'easeInOutQuad',
                   }
                 : {
@@ -79,7 +79,7 @@ const Header: React.FC<{
                   }
             }
             moment={moment}
-            reverse={!!phoneOpen}
+            reverse={phoneOpen}
             resetStyle={true}
           >
             <Menu

@@ -10,6 +10,7 @@ import {
   ConfigProvider,
   Row,
   Col,
+  Popover,
 } from 'antd';
 import { UserOutlined, LoginOutlined } from '@ant-design/icons';
 
@@ -25,8 +26,6 @@ import Loading from '@/components/Loading';
 
 //@ts-ignore
 import { enquireScreen } from 'enquire-js';
-//@ts-ignore
-import Nav from '../Home/Nav0';
 //@ts-ignore
 import Footer from '../Home/Footer1';
 //@ts-ignore
@@ -57,69 +56,20 @@ const BaseLayout: FC<IRouteComponentProps> = ({
   }));
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
-
-  const openPath = ['/user/login', '/user/signin', '/403', '/404'];
-
-  if (openPath.indexOf(location.pathname) == -1 && user == undefined) {
-    //return <Redirect to='/403' />
-  }
+  const [menuNodes, setMenuNodes] = useState<any[]>([]);
 
   function clearCache() {
     sessionStorage.clear();
     localStorage.clear();
   }
 
-  if (!user) {
-    return <Loading />;
+  function logoutClick() {
+    logout();
+    history.push('/user/login');
   }
 
-  console.log('isMobile', isMobile);
-
-  let menuNodes = [
-    <Menu.Item key="index">
-      <Link to="/">首页</Link>
-    </Menu.Item>,
-    <Menu.Item key="questionnaire">
-      <Link to="/questionnaire/list">测一测</Link>
-    </Menu.Item>,
-  ];
-  if (user.isLogin) {
-    menuNodes = [
-      ...menuNodes,
-      <Menu.Item key="cms">
-        <Link to="/cms">控制台</Link>
-      </Menu.Item>,
-      <SubMenu
-        key="SubMenu"
-        icon={
-          <Avatar
-            style={{
-              backgroundColor: '#7265e6',
-              verticalAlign: 'middle',
-            }}
-          >
-            {user.username}
-          </Avatar>
-        }
-      >
-        <Menu.Item key="setting:1">
-          <Link to="/user">账号信息</Link>
-        </Menu.Item>
-        <Menu.Item key="logout" onClick={logout}>
-          退出
-        </Menu.Item>
-      </SubMenu>,
-    ];
-  } else {
-    menuNodes = [
-      ...menuNodes,
-      <Menu.Item key="login">
-        <Link to="/user/login">
-          <LoginOutlined />
-          登录
-        </Link>
-      </Menu.Item>,
-    ];
+  if (!user) {
+    return <Loading />;
   }
 
   useEffect(() => {
@@ -127,6 +77,64 @@ const BaseLayout: FC<IRouteComponentProps> = ({
       setIsMobile(!!b);
     });
   }, []);
+
+  useEffect(() => {
+    let menuNodes = [
+      <Menu.Item key="index">
+        <Link to="/">首页</Link>
+      </Menu.Item>,
+      <Menu.Item key="questionnaire">
+        <Link to="/questionnaire/list">测一测</Link>
+      </Menu.Item>,
+    ];
+    if (user.isLogin) {
+      menuNodes = [
+        ...menuNodes,
+        <Menu.Item key="cms">
+          <Link to="/cms">控制台</Link>
+        </Menu.Item>,
+        <Menu.Item key="avatar">
+          <Popover
+            placement="bottom"
+            color="#001529"
+            content={
+              <div>
+                <Menu theme="dark">
+                  <Menu.Item key="setting:1">
+                    <Link to="/user/info">账号信息</Link>
+                  </Menu.Item>
+                  <Menu.Item key="logout" onClick={logoutClick}>
+                    退出
+                  </Menu.Item>
+                </Menu>
+              </div>
+            }
+            trigger="hover"
+          >
+            <Avatar
+              style={{
+                backgroundColor: '#7265e6',
+                verticalAlign: 'middle',
+              }}
+            >
+              {user.username}
+            </Avatar>
+          </Popover>
+        </Menu.Item>,
+      ];
+    } else {
+      menuNodes = [
+        ...menuNodes,
+        <Menu.Item key="login">
+          <Link to="/user/login">
+            <LoginOutlined />
+            登录
+          </Link>
+        </Menu.Item>,
+      ];
+    }
+    setMenuNodes(menuNodes);
+  }, [user?.isLogin, isMobile]);
 
   Nav00DataSource.Menu.children = menuNodes;
 
@@ -136,7 +144,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
       <Header
         dataSource={Nav00DataSource}
         isMobile={isMobile}
-        refresh={menuNodes.length}
+        refresh={menuNodes}
       />
       <Layout className="layout">
         <Content>
