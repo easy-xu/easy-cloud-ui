@@ -87,7 +87,14 @@ const UserSignin: FC = () => {
             >
               注 册
             </Button>
-            已有账号？<a href="/user/login">立即登录</a>
+            已有账号？
+            <a
+              onClick={() => {
+                history.push('/user/login');
+              }}
+            >
+              立即登录
+            </a>
           </Form.Item>
         </Form>
       </Card>

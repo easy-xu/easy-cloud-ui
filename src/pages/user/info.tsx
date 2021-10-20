@@ -42,7 +42,6 @@ const UserInfo: FC = (props: any) => {
               {' '}
               <Descriptions title="User Info">
                 {Object.keys(user).map((key, index: number) => {
-                  console.log(key, Object.values(user)[index]);
                   return (
                     <Descriptions.Item key={index} label={key}>
                       <Paragraph copyable>

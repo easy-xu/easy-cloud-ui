@@ -9,8 +9,9 @@ let refreshIng = false;
 const Header: React.FC<{
   dataSource?: any;
   isMobile?: boolean;
-  refresh?: any;
-}> = ({ dataSource, isMobile, refresh }) => {
+  refresh: any[];
+  menuSelectKey: string;
+}> = ({ dataSource, isMobile, refresh, menuSelectKey }) => {
   const [isShow, setIsShow] = useState(false);
   const [phoneOpen, setPhoneOpen] = useState(false);
 
@@ -22,10 +23,10 @@ const Header: React.FC<{
 
   const navChildren = dataSource.Menu.children;
 
-  useEffect(() => {
-    console.log('refresh');
-    setIsShow(false);
+  const refreshMenu = () => {
     if (!refreshIng) {
+      console.log('refresh');
+      setIsShow(false);
       refreshIng = true;
       setTimeout(() => {
         setIsShow(true);
@@ -33,9 +34,14 @@ const Header: React.FC<{
         refreshIng = false;
       }, 500);
     }
-  }, [refresh]);
+  };
 
-  const moment = phoneOpen === undefined ? 300 : null;
+  useEffect(() => {
+    setPhoneOpen(false);
+    refreshMenu();
+  }, [...refresh]);
+
+  const moment = phoneOpen === false ? 300 : null;
   return (
     <TweenOne
       component="header"
@@ -87,7 +93,7 @@ const Header: React.FC<{
             <Menu
               mode={isMobile ? 'inline' : 'horizontal'}
               theme={'dark'}
-              onClick={phoneClick}
+              defaultSelectedKeys={[menuSelectKey]}
             >
               {navChildren}
             </Menu>

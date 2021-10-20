@@ -43,6 +43,8 @@ enquireScreen((b: boolean) => {
   isMobile = b;
 });
 
+let historyPath: string | undefined = undefined;
+
 const BaseLayout: FC<IRouteComponentProps> = ({
   children,
   location,
@@ -56,7 +58,6 @@ const BaseLayout: FC<IRouteComponentProps> = ({
   }));
 
   const [isMobile, setIsMobile] = useState<boolean>(false);
-  const [menuNodes, setMenuNodes] = useState<any[]>([]);
 
   function clearCache() {
     sessionStorage.clear();
@@ -78,73 +79,76 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     });
   }, []);
 
-  useEffect(() => {
-    let menuNodes = [
-      <Menu.Item key="index">
-        <Link to="/">首页</Link>
+  let menuNodes = [
+    <Menu.Item key="index">
+      <Link to="/">首页</Link>
+    </Menu.Item>,
+    <Menu.Item key="questionnaire">
+      <Link to="/questionnaire/list">测一测</Link>
+    </Menu.Item>,
+  ];
+  if (user.isLogin) {
+    menuNodes = [
+      ...menuNodes,
+      <Menu.Item key="cms">
+        <Link to="/cms">控制台</Link>
       </Menu.Item>,
-      <Menu.Item key="questionnaire">
-        <Link to="/questionnaire/list">测一测</Link>
+      <Menu.Item key="avatar">
+        <Popover
+          placement="bottom"
+          color="#001529"
+          content={
+            <div>
+              <Menu theme="dark">
+                <Menu.Item key="setting:1">
+                  <Link to="/user/info">账号信息</Link>
+                </Menu.Item>
+                <Menu.Item key="logout" onClick={logoutClick}>
+                  退出
+                </Menu.Item>
+              </Menu>
+            </div>
+          }
+          trigger="hover"
+        >
+          <Avatar
+            style={{
+              backgroundColor: '#7265e6',
+              verticalAlign: 'middle',
+            }}
+          >
+            {user.nickname}
+          </Avatar>
+        </Popover>
       </Menu.Item>,
     ];
-    if (user.isLogin) {
-      menuNodes = [
-        ...menuNodes,
-        <Menu.Item key="cms">
-          <Link to="/cms">控制台</Link>
-        </Menu.Item>,
-        <Menu.Item key="avatar">
-          <Popover
-            placement="bottom"
-            color="#001529"
-            content={
-              <div>
-                <Menu theme="dark">
-                  <Menu.Item key="setting:1">
-                    <Link to="/user/info">账号信息</Link>
-                  </Menu.Item>
-                  <Menu.Item key="logout" onClick={logoutClick}>
-                    退出
-                  </Menu.Item>
-                </Menu>
-              </div>
-            }
-            trigger="hover"
-          >
-            <Avatar
-              style={{
-                backgroundColor: '#7265e6',
-                verticalAlign: 'middle',
-              }}
-            >
-              {user.nickname}
-            </Avatar>
-          </Popover>
-        </Menu.Item>,
-      ];
-    } else {
-      menuNodes = [
-        ...menuNodes,
-        <Menu.Item key="login">
-          <Link to="/user/login">
-            <LoginOutlined />
-            登录
-          </Link>
-        </Menu.Item>,
-      ];
-    }
-    setMenuNodes(menuNodes);
-  }, [user?.isLogin, isMobile]);
+  } else {
+    menuNodes = [
+      ...menuNodes,
+      <Menu.Item key="login">
+        <Link to="/user/login">
+          <LoginOutlined />
+          登录
+        </Link>
+      </Menu.Item>,
+    ];
+  }
 
   Nav00DataSource.Menu.children = menuNodes;
+  const selectKey = location.pathname.split('/')[1];
 
-  const openKey = location.pathname.split('/')[1];
+  //刷新条件
+  const refresh = isMobile
+    ? [selectKey, user?.isLogin, isMobile]
+    : ['', user?.isLogin, isMobile];
+
   return (
     <ConfigProvider locale={zhCN}>
       <Header
         dataSource={Nav00DataSource}
         isMobile={isMobile}
-        refresh={menuNodes}
+        refresh={refresh}
+        menuSelectKey={selectKey}
       />
       <Layout className="layout">
         <Content>
