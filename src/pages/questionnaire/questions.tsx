@@ -27,6 +27,8 @@ import Loading from '@/components/Loading';
 let index = 0;
 let max_index = 0;
 
+let lock = false;
+
 const Questions: FC = (props: any) => {
   const answerId = parseInt(props.location.query.answer);
   if (!answerId) {
@@ -111,6 +113,7 @@ const Questions: FC = (props: any) => {
       onSuccess: (data) => {
         //已回答问题设置选中状态
         setSelectId(data.optionId);
+        lock = false;
       },
     },
   );
@@ -138,9 +141,12 @@ const Questions: FC = (props: any) => {
   };
 
   const onSelect = function (e: any, option: any) {
+    if (lock) {
+      return;
+    }
+    lock = true;
     //设置选中状态
     setSelectId(option.id);
-
     e.stopPropagation();
     const params = {
       id: answer.id,

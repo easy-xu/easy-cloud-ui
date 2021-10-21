@@ -107,7 +107,7 @@ const Result: FC = (props: any) => {
     xField: 'name',
     yField: 'value',
     meta: {
-      star: {
+      value: {
         alias: '分数',
         min: 0,
         nice: true,
