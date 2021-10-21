@@ -27,7 +27,7 @@ import Loading from '@/components/Loading';
 let index = 0;
 let max_index = 0;
 
-let lock = false;
+let isPosting = false;
 
 const Questions: FC = (props: any) => {
   const answerId = parseInt(props.location.query.answer);
@@ -36,6 +36,9 @@ const Questions: FC = (props: any) => {
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
+  const { isMobile } = useModel('system', (model) => ({
+    isMobile: model.isMobile,
+  }));
 
   //查询问题
   const queryQuestionReqeust = useRequest(
@@ -113,7 +116,7 @@ const Questions: FC = (props: any) => {
       onSuccess: (data) => {
         //已回答问题设置选中状态
         setSelectId(data.optionId);
-        lock = false;
+        isPosting = false;
       },
     },
   );
@@ -141,10 +144,10 @@ const Questions: FC = (props: any) => {
   };
 
   const onSelect = function (e: any, option: any) {
-    if (lock) {
+    if (isPosting) {
       return;
     }
-    lock = true;
+    isPosting = true;
     //设置选中状态
     setSelectId(option.id);
     e.stopPropagation();
@@ -193,17 +196,19 @@ const Questions: FC = (props: any) => {
             <Radio.Group value={selectId}>
               <Space direction="vertical">
                 {question.options.map((option: any) => {
+                  let cardStyle: any = {};
+                  if (option.id == selectId) {
+                    cardStyle.background = '#b37feb';
+                  }
+                  if (isMobile) {
+                    cardStyle.padding = '12px';
+                  }
+
                   return (
                     <div key={option.id} className="div-option">
                       <Card
                         hoverable={true}
-                        style={
-                          selectId == option.id
-                            ? {
-                                background: '#b37feb',
-                              }
-                            : {}
-                        }
+                        bodyStyle={cardStyle}
                         onClick={(e) => onSelect(e, option)}
                       >
                         <Radio value={option.id}>{option.text}</Radio>

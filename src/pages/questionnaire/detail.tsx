@@ -117,7 +117,7 @@ const Questionnaire: FC = (props: any) => {
                   <Button onClick={reInit}>重新开始</Button>
                 </Col>
                 <Col span={12}>
-                  {answer.flow == 2 ? (
+                  {answer.flow != 1 && answer.flow != 0 ? (
                     <Button onClick={goResult} type="primary">
                       查看结果
                     </Button>
