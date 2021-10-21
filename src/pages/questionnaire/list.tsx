@@ -1,8 +1,9 @@
 import React, { FC, useState } from 'react';
-import { List, Card, Avatar, Typography } from 'antd';
+import { List, Card, Avatar, Typography, Image } from 'antd';
 import { MessageOutlined, LikeOutlined, StarOutlined } from '@ant-design/icons';
 import { Link, useRequest } from 'umi';
 import { pageListQuestionnaire } from '@/services/questionnaire';
+import FixRow from '@/components/FixRow';
 
 const { Meta } = Card;
 const { Title, Paragraph } = Typography;
@@ -33,17 +34,25 @@ const CardList: FC = () => {
           md: 2,
           lg: 3,
           xl: 4,
-          xxl: 6,
+          xxl: 5,
         }}
         dataSource={records}
         renderItem={(item: any) => (
           <List.Item>
             <Card
+              style={{ width: '280px', margin: 'auto' }}
               cover={
-                <img
-                  alt="example"
-                  src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-                />
+                <div
+                  style={{ width: '280px', height: '280px', margin: 'auto' }}
+                >
+                  <Image
+                    preview={false}
+                    width="100%"
+                    height="100%"
+                    alt={item.title}
+                    src={item.showImage}
+                  />
+                </div>
               }
               actions={[
                 <MessageOutlined key="setting" />,
