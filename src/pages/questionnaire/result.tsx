@@ -14,9 +14,12 @@ import {
   Col,
   Collapse,
   Descriptions,
+  Tabs,
   Divider,
   Typography,
 } from 'antd';
+import { Radar } from '@ant-design/charts';
+
 const { Panel } = Collapse;
 const { Item } = Descriptions;
 const { Title, Paragraph, Text, Link } = Typography;
@@ -35,6 +38,10 @@ const Result: FC = (props: any) => {
   }
 
   const { questionnaire, setQuestionnaire } = useModel('questionnaire');
+
+  const { isMobile } = useModel('system', (model) => ({
+    isMobile: model.isMobile,
+  }));
 
   //查询回答
   const queryAnswerRequest = useRequest(() => queryAnswer(answerId), {
@@ -84,6 +91,50 @@ const Result: FC = (props: any) => {
     return <Loading />;
   }
 
+  //判断最大分值结论
+  let maxScoreResultId = results[0].id;
+  let maxScore = 0;
+  results.forEach((r: any) => {
+    if (r.score > maxScore) {
+      maxScore = r.score;
+      maxScoreResultId = r.id;
+    }
+  });
+
+  //雷达图配置
+  const config = {
+    data: results?.map((d: any) => ({ name: d.title, value: d.score })),
+    xField: 'name',
+    yField: 'value',
+    meta: {
+      star: {
+        alias: '分数',
+        min: 0,
+        nice: true,
+      },
+    },
+    xAxis: {
+      line: null,
+      tickLine: null,
+    },
+    yAxis: {
+      grid: {
+        alternateColor: 'rgba(0, 0, 0, 0.04)',
+      },
+      // 开启辅助点
+      point: {},
+      area: {},
+    },
+  };
+
+  const chartOnReady = (plot: any) => {
+    console.log('chartOnReady');
+    // axis-label 添加点击事件
+    plot.on('axis-label:click', (...args: any[]) => {
+      console.log(...args);
+    });
+  };
+
   return (
     <div>
       <Card>
@@ -103,29 +154,35 @@ const Result: FC = (props: any) => {
         </div>
         <div className="div-result">
           <FixRow>
+            <Radar {...config} onReady={chartOnReady} />
+          </FixRow>
+          <FixRow>
             <div>
-              {results.map((item: any, index: number) => {
-                return (
-                  <div key={index}>
-                    <Title level={3}>
-                      {item.title}{' '}
-                      <Text code strong italic>
-                        {' '}
-                        {item.score}分
-                      </Text>{' '}
-                    </Title>
-                    {item.descriptions.map((desc: any, index: number) => {
-                      return (
-                        <div key={index}>
-                          <Title level={5}>{desc.name}</Title>
-                          <Paragraph>{desc.value}</Paragraph>
-                        </div>
-                      );
-                    })}
-                    <Divider />
-                  </div>
-                );
-              })}
+              <Tabs
+                tabPosition={isMobile ? 'top' : 'right'}
+                defaultActiveKey={`${maxScoreResultId}`}
+              >
+                {results.map((item: any) => {
+                  return (
+                    <Tabs.TabPane tab={item.title} key={`${item.id}`}>
+                      <Title level={3}>
+                        {item.title}{' '}
+                        <Text code strong italic>
+                          {item.score}分
+                        </Text>
+                      </Title>
+                      {item.descriptions.map((desc: any) => {
+                        return (
+                          <div key={desc.id}>
+                            <Title level={5}>{desc.name}</Title>
+                            <Paragraph>{desc.value}</Paragraph>
+                          </div>
+                        );
+                      })}
+                    </Tabs.TabPane>
+                  );
+                })}
+              </Tabs>
             </div>
           </FixRow>
         </div>

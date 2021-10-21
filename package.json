@@ -20,6 +20,7 @@
     ]
   },
   "dependencies": {
+    "@ant-design/charts": "^1.2.14",
     "@ant-design/pro-layout": "^6.5.0",
     "enquire-js": "^0.2.1",
     "localStorage": "^1.0.4",

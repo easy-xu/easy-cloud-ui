@@ -24,7 +24,11 @@ const PageLayout: FC<IRouteComponentProps> = ({
     logout: model.logout,
   }));
 
-  return <FixRow>{children}</FixRow>;
+  return (
+    <div className="div-main">
+      <FixRow>{children}</FixRow>;
+    </div>
+  );
 };
 
 export default PageLayout;

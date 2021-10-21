@@ -90,7 +90,7 @@ const QuestionnaireImport: FC = (props: any) => {
     {
       onSuccess: (data) => {
         console.log(data);
-        setRecords(data.page.records);
+        setRecords(data.records);
       },
     },
   );

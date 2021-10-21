@@ -4,8 +4,7 @@ export const Nav00DataSource = {
   page: { className: 'home-page' },
   logo: {
     className: 'header0-logo',
-    children:
-      'https://simple-cloud-1256275568.cos.ap-shanghai.myqcloud.com/logo.png',
+    children: '/assets/logo.png',
   },
   Menu: {
     className: 'header0-menu',
@@ -295,8 +294,7 @@ export const Footer10DataSource = {
         className: 'block',
         title: {
           className: 'logo',
-          children:
-            'https://simple-cloud-1256275568.cos.ap-shanghai.myqcloud.com/logo.png',
+          children: '/assets/logo.png',
         },
         childWrapper: {
           className: 'slogan',

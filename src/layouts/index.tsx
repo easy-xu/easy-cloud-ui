@@ -5,7 +5,7 @@ import {
   Menu,
   Avatar,
   Button,
-  Anchor,
+  Dropdown,
   BackTop,
   ConfigProvider,
   Row,
@@ -57,7 +57,10 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     logout: model.logout,
   }));
 
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const { isMobile, setIsMobile } = useModel('system', (model) => ({
+    isMobile: model.isMobile,
+    setIsMobile: model.setIsMobile,
+  }));
 
   function clearCache() {
     sessionStorage.clear();
@@ -94,10 +97,9 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         <Link to="/cms">控制台</Link>
       </Menu.Item>,
       <Menu.Item key="avatar">
-        <Popover
-          placement="bottom"
-          color="#001529"
-          content={
+        <Dropdown
+          placement="bottomCenter"
+          overlay={
             <div>
               <Menu theme="dark">
                 <Menu.Item key="setting:1">
@@ -109,17 +111,18 @@ const BaseLayout: FC<IRouteComponentProps> = ({
               </Menu>
             </div>
           }
-          trigger="hover"
         >
-          <Avatar
-            style={{
-              backgroundColor: '#7265e6',
-              verticalAlign: 'middle',
-            }}
-          >
-            {user.nickname}
-          </Avatar>
-        </Popover>
+          <div style={{ height: '100%' }}>
+            <Avatar
+              style={{
+                backgroundColor: '#7265e6',
+                verticalAlign: 'middle',
+              }}
+            >
+              {user.nickname?.substring(0, 1)}
+            </Avatar>
+          </div>
+        </Dropdown>
       </Menu.Item>,
     ];
   } else {
