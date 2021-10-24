@@ -15,7 +15,6 @@ const Auth: FC = (props: any) => {
     },
   });
   const convertToTreeData = (menus: any) => {
-    console.log(menus);
     return menus?.map((menu: any) => {
       let children = convertToTreeData(menu.children);
       return {

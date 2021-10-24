@@ -1,22 +1,12 @@
-import React, { FC, useCallback, useEffect, useState } from 'react';
-import { RadialTreeGraph, WordCloud } from '@ant-design/charts';
+import React, { FC, useEffect, useState } from 'react';
 import { IRouteComponentProps, useRequest } from 'umi';
-import {
-  knowledgeNodeSave,
-  knowledgeNodeTree,
-  knowledgeNodeWordCloud,
-} from '@/services/knowledge';
+
 import { Button, List, Typography } from 'antd';
 import FixRow from '@/components/FixRow';
-import {
-  EditOutlined,
-  SearchOutlined,
-  DeleteOutlined,
-  PlusOutlined,
-  ControlOutlined,
-  ProfileOutlined,
-} from '@ant-design/icons';
+
 import Markdown from '@/components/Markdown';
+import { baseQueryEntity } from '@/services/base';
+import { Redirect } from 'umi';
 const { Title, Paragraph, Text, Link } = Typography;
 
 const Knowledge: FC<IRouteComponentProps> = ({
@@ -27,24 +17,19 @@ const Knowledge: FC<IRouteComponentProps> = ({
   match,
 }) => {
   const dataId = location.query.id;
+  //@ts-ignore
+  if (dataId == undefined || dataId == '' || isNaN(dataId)) {
+    return <Redirect to="/knowledge"></Redirect>;
+  }
 
-  const [data, setData] = useState([]);
+  const [markdown, setMarkdown] = useState<string>('');
   const knowledgeDataRequest = useRequest(
-    () => knowledgeNodeWordCloud({ parentId: dataId }),
+    //@ts-ignore
+    () => baseQueryEntity('knowledge', 'node', Number.parseInt(dataId)),
     {
       manual: true,
       onSuccess: (data) => {
-        setData(data);
-      },
-    },
-  );
-
-  const saveKnowledgeRequest = useRequest(
-    (params) => knowledgeNodeSave(params),
-    {
-      manual: true,
-      onSuccess: (data) => {
-        knowledgeDataRequest.run();
+        setMarkdown(data.markdown);
       },
     },
   );
@@ -53,73 +38,11 @@ const Knowledge: FC<IRouteComponentProps> = ({
     knowledgeDataRequest.run();
   }, []);
 
-  const setEditableStr = (id: any, value: string) => {
-    console.log(id, value);
-    saveKnowledgeRequest.run({ id: id, value: value });
-  };
-
-  const getNode = (item: any) => {
-    console.log(item);
-    return item.type == 'T' ? (
-      <Title
-        key={item.id}
-        level={5}
-        editable={{ onChange: (value) => setEditableStr(item.id, value) }}
-      >
-        {item.value}
-      </Title>
-    ) : (
-      <Paragraph
-        key={item.id}
-        editable={{ onChange: (valeu) => setEditableStr(item.id, valeu) }}
-      >
-        {item.value}
-      </Paragraph>
-    );
-  };
-
-  const nodes = (
-    <List
-      dataSource={data}
-      renderItem={(item) => (
-        <List.Item extra={<DeleteOutlined></DeleteOutlined>}>
-          {getNode(item)}
-        </List.Item>
-      )}
-    />
+  return (
+    <FixRow>
+      <Markdown disable={true} value={markdown} />
+    </FixRow>
   );
-
-  const markdown = `
-
-# 一级标题
-## 二级标题
-
-### 三级标题
-
-#### 四级标题
-
-##### 五级标题
-
-###### 六级标题
-
-> 区块
-
-
-
-| 表头1    |   表头2   |     表头3 |
-| :------- | :-------: | --------: |
-| muggledy | celestezj | 2021.9.25 |
-|          |           |           |
-|          |           |           |
-|          |           |           |`;
-
-  const [value, setValue] = useState(markdown);
-
-  const onChange = useCallback((value: string) => {
-    setValue(value);
-  }, []);
-
-  return <Markdown />;
 };
 
 export default Knowledge;

@@ -9,7 +9,7 @@ const Knowledge: FC = (props: any) => {
 
   //查询知识点文件夹
   const knowledgeFolderRequest = useRequest(
-    () => baseList('knowledge', 'node', { type: 'F' }),
+    () => baseList('knowledge', 'node', { type: 'N' }),
     {
       onSuccess: (data) => {
         let folders = data.map((item: any) => {
@@ -83,7 +83,7 @@ const Knowledge: FC = (props: any) => {
     },
     {
       name: '内容',
-      code: 'content',
+      code: 'markdown',
       type: 'markdown',
       style: {
         search: { display: false },
