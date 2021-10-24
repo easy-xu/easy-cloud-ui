@@ -19,7 +19,7 @@ import {
 const { Title, Paragraph, Text, Link } = Typography;
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-//import '../../assets/drake.css'
+//import '../../assets/github.css'
 import '../reset.less';
 
 const Knowledge: FC<IRouteComponentProps> = ({
@@ -117,7 +117,7 @@ const Knowledge: FC<IRouteComponentProps> = ({
 |          |           |           |`;
 
   return (
-    <div className="div-main">
+    <div className="div-mk">
       <FixRow>
         <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} />
       </FixRow>

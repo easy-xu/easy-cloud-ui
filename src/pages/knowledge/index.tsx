@@ -36,8 +36,9 @@ const Knowledage: FC<IRouteComponentProps> = ({
     interactions: [{ type: 'element-active' }],
     state: { active: { style: { lineWidth: 3 } } },
   };
-  //@ts-ignore
+
   return (
+    //@ts-ignore
     <WordCloud
       {...config}
       onReady={(plot) => {
