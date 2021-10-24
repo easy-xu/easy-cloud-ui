@@ -46,7 +46,9 @@ const Questionnaire: FC = (props: any) => {
     () => queryAnswer(undefined, questionnaireId),
     {
       onSuccess: (data) => {
-        statusAnswerRequest.run(data.id);
+        if (data && data.id) {
+          statusAnswerRequest.run(data.id);
+        }
       },
     },
   );

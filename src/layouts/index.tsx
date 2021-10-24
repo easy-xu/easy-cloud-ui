@@ -89,6 +89,9 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     <Menu.Item key="questionnaire">
       <Link to="/questionnaire/list">测一测</Link>
     </Menu.Item>,
+    <Menu.Item key="knowledge">
+      <Link to="/knowledge">学习笔记</Link>
+    </Menu.Item>,
   ];
   if (user.isLogin) {
     menuNodes = [
@@ -157,12 +160,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         <Content>
           <div className="layout-content">{children}</div>
         </Content>
-        <Footer
-          id="Footer1_0"
-          key="Footer1_0"
-          dataSource={Footer10DataSource}
-          isMobile={isMobile}
-        />
+
         <Button onClick={clearCache}>清除缓存</Button>
       </Layout>
       <BackTop />

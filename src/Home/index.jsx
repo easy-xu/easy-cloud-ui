@@ -72,6 +72,12 @@ export default class Home extends React.Component {
         dataSource={Content30DataSource}
         isMobile={this.state.isMobile}
       />,
+      <Footer1
+        id="Footer1_0"
+        key="Footer1_0"
+        dataSource={Footer10DataSource}
+        isMobile={this.state.isMobile}
+      />,
     ];
     return (
       <div
