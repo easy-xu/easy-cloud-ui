@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useCallback, useEffect, useState } from 'react';
 import { RadialTreeGraph, WordCloud } from '@ant-design/charts';
 import { IRouteComponentProps, useRequest } from 'umi';
 import {
@@ -16,11 +16,8 @@ import {
   ControlOutlined,
   ProfileOutlined,
 } from '@ant-design/icons';
+import Markdown from '@/components/Markdown';
 const { Title, Paragraph, Text, Link } = Typography;
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-//import '../../assets/github.css'
-import '../reset.less';
 
 const Knowledge: FC<IRouteComponentProps> = ({
   children,
@@ -116,13 +113,13 @@ const Knowledge: FC<IRouteComponentProps> = ({
 |          |           |           |
 |          |           |           |`;
 
-  return (
-    <div className="div-mk">
-      <FixRow>
-        <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} />
-      </FixRow>
-    </div>
-  );
+  const [value, setValue] = useState(markdown);
+
+  const onChange = useCallback((value: string) => {
+    setValue(value);
+  }, []);
+
+  return <Markdown />;
 };
 
 export default Knowledge;

@@ -26,14 +26,15 @@ import {
 import { useRequest } from 'umi';
 import FixRow from '@/components/FixRow';
 import {
-  cmsPageList,
-  cmsSaveEntity,
-  cmsDeleteEntity,
-  cmsQueryEntity,
-  cmsQueryOptionAuth,
-  cmsList,
-} from '@/services/cms';
+  basePageList,
+  baseSaveEntity,
+  baseDeleteEntity,
+  baseQueryEntity,
+  baseList,
+} from '@/services/base';
 import Loading from './Loading';
+import { cmsQueryOptionAuth } from '@/services/cms';
+import Markdown from './Markdown';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -41,6 +42,7 @@ const { Text, Link, Paragraph } = Typography;
 
 export declare type IStyle = {
   display?: boolean;
+  displayCondition?: any;
   hidden?: boolean;
   disable?: boolean;
   width?: number;
@@ -113,7 +115,8 @@ const default_pageSize = 5;
 
 let nextStatus: IStatus = 'search';
 
-const Menu: FC<{
+const CurdPage: FC<{
+  namespace: string;
   model: string;
   name: string;
   fields: IFields;
@@ -127,6 +130,7 @@ const Menu: FC<{
   extendOption?: any[];
   extendOptionPage?: any;
 }> = ({
+  namespace,
   model,
   name,
   fields,
@@ -141,16 +145,16 @@ const Menu: FC<{
   extendOptionPage,
 }) => {
   if (queryEntityApi == undefined) {
-    queryEntityApi = cmsQueryEntity;
+    queryEntityApi = baseQueryEntity;
   }
   if (pageListApi == undefined) {
-    pageListApi = cmsPageList;
+    pageListApi = basePageList;
   }
   if (saveEntityApi == undefined) {
-    saveEntityApi = cmsSaveEntity;
+    saveEntityApi = baseSaveEntity;
   }
   if (deleteEntityApi == undefined) {
-    deleteEntityApi = cmsDeleteEntity;
+    deleteEntityApi = baseDeleteEntity;
   }
   if (queryOptionAuthApi == undefined) {
     queryOptionAuthApi = cmsQueryOptionAuth;
@@ -298,7 +302,7 @@ const Menu: FC<{
 
   // ======useRequest start======
   //分页查询
-  const groupDataRequest = useRequest(() => cmsList('group', {}), {
+  const groupDataRequest = useRequest(() => baseList('cms', 'group', {}), {
     manual: true,
     onSuccess: (data) => {
       let groups = data.map((item: any) => {
@@ -309,7 +313,7 @@ const Menu: FC<{
   });
   //新增或保存
   const saveEntiyRequest = useRequest(
-    (params) => saveEntityApi(model, params),
+    (params) => saveEntityApi(namespace, model, params),
     {
       manual: true,
       onSuccess: (data) => {
@@ -330,7 +334,7 @@ const Menu: FC<{
   );
   //分页查询
   const pageListRequest = useRequest(
-    (page, query) => pageListApi(model, page, query),
+    (page, query) => pageListApi(namespace, model, page, query),
     {
       manual: true,
       onSuccess: (data) => {
@@ -340,32 +344,38 @@ const Menu: FC<{
     },
   );
   //主键查询
-  const queryEntityRequest = useRequest((id) => queryEntityApi(model, id), {
-    manual: true,
-    onSuccess: (data) => {
-      setEntity(data);
-      //设置父组件数据
-      extendData?.forEach((item: any) => {
-        item.setData(data[item.key]);
-        item.setDisable(nextStatus == 'view');
-      });
-      setStatus(nextStatus);
-      setAddStatus('base');
+  const queryEntityRequest = useRequest(
+    (id) => queryEntityApi(namespace, model, id),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        setEntity(data);
+        //设置父组件数据
+        extendData?.forEach((item: any) => {
+          item.setData(data[item.key]);
+          item.setDisable(nextStatus == 'view');
+        });
+        setStatus(nextStatus);
+        setAddStatus('base');
+      },
     },
-  });
+  );
   //主键删除
-  const deleteEntityRequest = useRequest((id) => deleteEntityApi(model, id), {
-    manual: true,
-    onSuccess: (data) => {
-      setSelectedRowKeys([]);
-      setDeleteConfirmVisible(false);
-      pageListRequest.run(page, query);
-      //需要刷新的api
-      refresh?.forEach((item: any) => {
-        item.run();
-      });
+  const deleteEntityRequest = useRequest(
+    (id) => deleteEntityApi(namespace, model, id),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        setSelectedRowKeys([]);
+        setDeleteConfirmVisible(false);
+        pageListRequest.run(page, query);
+        //需要刷新的api
+        refresh?.forEach((item: any) => {
+          item.run();
+        });
+      },
     },
-  });
+  );
   //查询操作权限
   const optionAuthRequest = useRequest(() => queryOptionAuthApi(model), {
     manual: true,
@@ -487,9 +497,11 @@ const Menu: FC<{
     style?: IStyle,
     displayAddStatus?: IAddStatus,
   ) => {
+    //判断是否需要render
     if (style != undefined && style.display == false) {
       return;
     }
+    //判断在那个页面显示
     let hidden = displayAddStatus ? displayAddStatus != addStatus : false;
     if (style != undefined && style.hidden == true) {
       hidden = true;
@@ -502,7 +514,7 @@ const Menu: FC<{
       disable = true;
     }
 
-    let content;
+    let content: any;
 
     //自定义节点
     if (item.node) {
@@ -543,6 +555,11 @@ const Menu: FC<{
       );
     }
 
+    //markdown
+    else if (item.type == 'markdown') {
+      content = <Markdown />;
+    }
+
     //数字输入
     else if (item.type == 'number') {
       content = <InputNumber style={{ minWidth: 200 }} readOnly={disable} />;
@@ -556,7 +573,7 @@ const Menu: FC<{
       content = <Input readOnly={disable} />;
     }
 
-    return (
+    const formItemNode = (
       <Form.Item
         label={item.name}
         name={item.code}
@@ -567,6 +584,34 @@ const Menu: FC<{
         {content}
       </Form.Item>
     );
+
+    //动态节点
+    if (style != undefined && style.displayCondition != undefined) {
+      const condition = style.displayCondition;
+      //是否更新条件
+      const shouldUpdate = (prevValues: any, currentValues: any) => {
+        for (const key in condition) {
+          if (prevValues[key] !== currentValues[key]) {
+            return true;
+          }
+        }
+        return false;
+      };
+      return (
+        <Form.Item key={item.code} noStyle shouldUpdate={shouldUpdate}>
+          {({ getFieldValue }) => {
+            for (const key in condition) {
+              if (getFieldValue(key) != condition[key]) {
+                return null;
+              }
+            }
+            return formItemNode;
+          }}
+        </Form.Item>
+      );
+    }
+
+    return formItemNode;
   };
 
   //查询选项
@@ -804,7 +849,7 @@ const Menu: FC<{
   // ======render node end======
 
   //debug
-  console.log(model + ' page render');
+  console.log(namespace + '-' + model + ' page render');
   console.log('entity', entity);
 
   //新增页面
@@ -938,4 +983,4 @@ const Menu: FC<{
   );
 };
 
-export default Menu;
+export default CurdPage;

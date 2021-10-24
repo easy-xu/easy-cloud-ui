@@ -22,7 +22,7 @@ const Knowledage: FC<IRouteComponentProps> = ({
 
   var config = {
     data: data,
-    wordField: 'value',
+    wordField: 'name',
     weightField: 'childCount',
     color: '#122c6a',
     wordStyle: {

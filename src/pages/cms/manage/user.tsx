@@ -1,15 +1,16 @@
 import { FC, useState } from 'react';
-import CmsCurd, { formLayout, IFields, IStatus } from '@/components/CmsCurd';
-import { cmsList, cmsMenuTree, cmsResetPassword } from '@/services/cms';
+import CurdPage, { formLayout, IFields, IStatus } from '@/components/CurdPage';
+import { cmsResetPassword } from '@/services/cms';
 import { useRequest } from 'umi';
 import { Checkbox, Form, Input, Space, Button, InputNumber } from 'antd';
 import FixRow from '@/components/FixRow';
+import { baseList } from '@/services/base';
 
 const User: FC = (props: any) => {
   const [roleData, setRoleData] = useState([]);
   const [roleCheckedDisable, setRoleCheckedDisable] = useState<boolean>(false);
   const [checkedRoleKeys, setCheckedRoleKeys] = useState<React.Key[]>([]);
-  const roleDataRequest = useRequest(() => cmsList('role', {}), {
+  const roleDataRequest = useRequest(() => baseList('cms', 'role', {}), {
     onSuccess: (data) => {
       const roleData = data.map((item: any) => {
         return { label: item.name, value: item.id };
@@ -28,7 +29,7 @@ const User: FC = (props: any) => {
   const [groupCheckedDisable, setGroupCheckedDisable] =
     useState<boolean>(false);
   const [checkedGroupKeys, setCheckedGroupKeys] = useState<React.Key[]>([]);
-  const groupDataRequest = useRequest(() => cmsList('group', {}), {
+  const groupDataRequest = useRequest(() => baseList('cms', 'group', {}), {
     onSuccess: (data) => {
       const groupData = data.map((item: any) => {
         return { label: item.name, value: item.id };
@@ -262,7 +263,8 @@ const User: FC = (props: any) => {
 
   return (
     <div>
-      <CmsCurd
+      <CurdPage
+        namespace="cms"
         model="user"
         name="用户"
         fields={fields}

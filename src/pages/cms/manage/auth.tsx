@@ -1,8 +1,9 @@
 import { FC, useState } from 'react';
-import CmsCurd, { IFields } from '@/components/CmsCurd';
-import { cmsList, cmsMenuTree } from '@/services/cms';
+import CurdPage, { IFields } from '@/components/CurdPage';
+import { cmsMenuTree } from '@/services/cms';
 import { useRequest } from 'umi';
 import { Tree, Checkbox } from 'antd';
+import { baseList } from '@/services/base';
 
 const Auth: FC = (props: any) => {
   const [menuTreeData, setMenuTreeData] = useState([]);
@@ -37,7 +38,7 @@ const Auth: FC = (props: any) => {
   const [optionCheckedDisable, setOptionCheckedDisable] =
     useState<boolean>(false);
   const [checkedOptionKeys, setCheckedOptionKeys] = useState<React.Key[]>([]);
-  const optionDataRequest = useRequest(() => cmsList('option', {}), {
+  const optionDataRequest = useRequest(() => baseList('cms', 'option', {}), {
     onSuccess: (data) => {
       const optionData = data.map((item: any) => {
         return { label: item.name, value: item.id };
@@ -129,7 +130,8 @@ const Auth: FC = (props: any) => {
   ];
 
   return (
-    <CmsCurd
+    <CurdPage
+      namespace="cms"
       model="auth"
       name="权限"
       fields={fields}

@@ -1,18 +1,5 @@
 import { FC, useState } from 'react';
-import CmsCurd, { IFields } from '@/components/CmsCurd';
-import { cmsList } from '@/services/cms';
-import { useRequest } from 'umi';
-import {
-  DashboardOutlined,
-  BankOutlined,
-  BellOutlined,
-  AuditOutlined,
-  CalendarOutlined,
-  ContactsOutlined,
-  DatabaseOutlined,
-  SettingOutlined,
-  TeamOutlined,
-} from '@ant-design/icons';
+import CurdPage, { IFields } from '@/components/CurdPage';
 
 const Option: FC = (props: any) => {
   const fields: IFields = [
@@ -55,7 +42,9 @@ const Option: FC = (props: any) => {
     },
   ];
 
-  return <CmsCurd model="option" name="操作" fields={fields} />;
+  return (
+    <CurdPage namespace="cms" model="option" name="操作" fields={fields} />
+  );
 };
 // @ts-ignore
 Option.title = '操作页面';

@@ -44,9 +44,9 @@ const KnowlageLayout: FC<IRouteComponentProps> = ({
 
   const getNodes = (nodes: any) => {
     return nodes?.map((node: any) => {
-      if (node.type == 'F') {
+      if (node.type == 'N') {
         return (
-          <SubMenu key={node.id} title={node.value}>
+          <SubMenu key={node.id} title={node.name}>
             {getNodes(node.children)}
           </SubMenu>
         );
@@ -54,7 +54,7 @@ const KnowlageLayout: FC<IRouteComponentProps> = ({
         return (
           <Menu.Item key={node.id}>
             <Link key={node.id} to={'/knowledge/detail?id=' + node.id}>
-              {node.value}
+              {node.name}
             </Link>
           </Menu.Item>
         );

@@ -19,30 +19,6 @@ export function cmsMenuTree(params: any) {
   return postRequest('/api/cms/menu/tree', params);
 }
 
-//新增接口
-export function cmsSaveEntity(model: string, params: any) {
-  return postRequest(`/api/cms/${model}/save`, params);
-}
-
-//分页查询接口
-export function cmsPageList(model: string, page: any, query: any) {
-  return postRequest(`/api/cms/${model}/page-list`, {
-    page: page,
-    query: query,
-  });
-}
-//列表查询接口
-export function cmsList(model: string, query: any) {
-  return postRequest(`/api/cms/${model}/list`, query);
-}
-//详情查询接口
-export function cmsQueryEntity(model: string, id: number) {
-  return postRequest(`/api/cms/${model}/query`, { id: id });
-}
-//删除接口
-export function cmsDeleteEntity(model: string, id: number) {
-  return postRequest(`/api/cms/${model}/delete`, { id: id });
-}
 //查询当前用户指定菜单操作权限
 export function cmsQueryOptionAuth(menuCode: string) {
   return postRequest(`/api/cms/auth/user-menu-option`, { menuCode: menuCode });

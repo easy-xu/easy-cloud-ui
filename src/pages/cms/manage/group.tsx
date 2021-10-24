@@ -1,5 +1,5 @@
 import { FC } from 'react';
-import CmsCurd, { IFields } from '@/components/CmsCurd';
+import CurdPage, { IFields } from '@/components/CurdPage';
 
 const Group: FC = (props: any) => {
   const fields: IFields = [
@@ -42,7 +42,7 @@ const Group: FC = (props: any) => {
     },
   ];
 
-  return <CmsCurd model="group" name="分组" fields={fields} />;
+  return <CurdPage namespace="cms" model="group" name="分组" fields={fields} />;
 };
 // @ts-ignore
 Group.title = '分组页面';

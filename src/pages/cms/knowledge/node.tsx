@@ -1,32 +1,21 @@
 import { FC, useState } from 'react';
 import CurdPage, { IFields } from '@/components/CurdPage';
 import { useRequest } from 'umi';
-import {
-  DashboardOutlined,
-  BankOutlined,
-  BellOutlined,
-  AuditOutlined,
-  CalendarOutlined,
-  ContactsOutlined,
-  DatabaseOutlined,
-  SettingOutlined,
-  TeamOutlined,
-} from '@ant-design/icons';
 import { baseList } from '@/services/base';
 
-const Menu: FC = (props: any) => {
+const Knowledge: FC = (props: any) => {
   //页面状态
   const [folders, setFolders] = useState<any>([]);
 
-  //查询菜单文件夹
-  const menuFolderRequest = useRequest(
-    () => baseList('cms', 'menu', { type: 'F' }),
+  //查询知识点文件夹
+  const knowledgeFolderRequest = useRequest(
+    () => baseList('knowledge', 'node', { type: 'F' }),
     {
       onSuccess: (data) => {
         let folders = data.map((item: any) => {
           return { code: item.id, name: item.name };
         });
-        folders.splice(0, 0, { code: 0, name: '根目录' });
+        folders.splice(0, 0, { code: 0, name: '根节点' });
         setFolders(folders);
       },
     },
@@ -45,13 +34,13 @@ const Menu: FC = (props: any) => {
       },
     },
     {
-      name: '菜单名称',
+      name: '节点名称',
       code: 'name',
       type: 'string',
       rules: [{ required: true }],
     },
     {
-      name: '文件夹',
+      name: '父节点',
       code: 'parentId',
       type: 'select',
       rules: [{ required: true }],
@@ -60,35 +49,6 @@ const Menu: FC = (props: any) => {
         search: {
           width: 200,
         },
-      },
-    },
-
-    {
-      name: '路径字符',
-      code: 'code',
-      type: 'string',
-      rules: [{ required: true }],
-      style: {
-        search: { display: false },
-      },
-    },
-    {
-      name: '菜单图标',
-      code: 'icon',
-      type: 'select',
-      select: [
-        { code: 'DashboardOutlined', node: <DashboardOutlined /> },
-        { code: 'SettingOutlined', node: <SettingOutlined /> },
-        { code: 'BankOutlined', node: <BankOutlined /> },
-        { code: 'BellOutlined', node: <BellOutlined /> },
-        { code: 'AuditOutlined', node: <AuditOutlined /> },
-        { code: 'CalendarOutlined', node: <CalendarOutlined /> },
-        { code: 'ContactsOutlined', node: <ContactsOutlined /> },
-        { code: 'DatabaseOutlined', node: <DatabaseOutlined /> },
-        { code: 'TeamOutlined', node: <TeamOutlined /> },
-      ],
-      style: {
-        search: { display: false },
       },
     },
     {
@@ -106,9 +66,31 @@ const Menu: FC = (props: any) => {
       type: 'select',
       rules: [{ required: true }],
       select: [
-        { code: 'F', name: '目录', color: 'yellow' },
-        { code: 'M', name: '菜单', color: 'green' },
+        { code: 'N', name: '节点', color: 'yellow' },
+        { code: 'C', name: '内容', color: 'green' },
       ],
+    },
+    {
+      name: '内容主键',
+      code: 'contentId',
+      type: 'number',
+      style: {
+        search: { display: false },
+        table: { display: false },
+        add: { displayCondition: { type: 'C' }, hidden: true },
+        edit: { displayCondition: { type: 'C' }, hidden: true },
+      },
+    },
+    {
+      name: '内容',
+      code: 'content',
+      type: 'markdown',
+      style: {
+        search: { display: false },
+        table: { display: false },
+        add: { displayCondition: { type: 'C' } },
+        edit: { displayCondition: { type: 'C' } },
+      },
     },
     {
       name: '隐藏',
@@ -135,14 +117,14 @@ const Menu: FC = (props: any) => {
 
   return (
     <CurdPage
-      namespace="cms"
-      model="menu"
-      name="菜单"
+      namespace="knowledge"
+      model="node"
+      name="知识点"
       fields={fields}
-      refresh={[menuFolderRequest]}
+      refresh={[knowledgeFolderRequest]}
     />
   );
 };
 // @ts-ignore
-Menu.title = '菜单页面';
-export default Menu;
+Knowledge.title = '知识点页面';
+export default Knowledge;

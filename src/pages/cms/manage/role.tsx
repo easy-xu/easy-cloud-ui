@@ -1,14 +1,14 @@
 import { FC, useState } from 'react';
-import CmsCurd, { IFields } from '@/components/CmsCurd';
-import { cmsList, cmsMenuTree } from '@/services/cms';
+import CurdPage, { IFields } from '@/components/CurdPage';
 import { useRequest } from 'umi';
 import { Tree, Checkbox } from 'antd';
+import { baseList } from '@/services/base';
 
 const Role: FC = (props: any) => {
   const [authData, setAuthData] = useState([]);
   const [authCheckedDisable, setAuthCheckedDisable] = useState<boolean>(false);
   const [checkedAuthKeys, setCheckedAuthKeys] = useState<React.Key[]>([]);
-  const authDataRequest = useRequest(() => cmsList('auth', {}), {
+  const authDataRequest = useRequest(() => baseList('cms', 'auth', {}), {
     onSuccess: (data) => {
       const authData = data.map((item: any) => {
         return { label: item.name, value: item.id };
@@ -81,7 +81,8 @@ const Role: FC = (props: any) => {
   ];
 
   return (
-    <CmsCurd
+    <CurdPage
+      namespace="cms"
       model="role"
       name="角色"
       fields={fields}
