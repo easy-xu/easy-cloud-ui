@@ -95,4 +95,6 @@ const UserLogin: FC = () => {
 
 // @ts-ignore
 UserLogin.noLayout = true;
+//@ts-ignore
+UserLogin.title = '用户登录';
 export default UserLogin;

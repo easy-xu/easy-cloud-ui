@@ -104,4 +104,6 @@ const UserSignin: FC = () => {
 
 // @ts-ignore
 UserSignin.noLayout = true;
+// @ts-ignore
+UserSignin.title = '用户注册';
 export default UserSignin;

@@ -3,7 +3,7 @@ import { IRouteComponentProps, useRequest } from 'umi';
 import { knowledgeNodeWordCloud } from '@/services/knowledge';
 import FixedWordCloud from '@/components/FixedWordCloud';
 
-const Knowledage: FC<IRouteComponentProps> = ({
+const Knowledge: FC<IRouteComponentProps> = ({
   children,
   location,
   route,
@@ -32,4 +32,6 @@ const Knowledage: FC<IRouteComponentProps> = ({
   );
 };
 
-export default Knowledage;
+//@ts-ignore
+Knowledge.title = '知识图谱';
+export default Knowledge;

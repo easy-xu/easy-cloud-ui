@@ -148,5 +148,6 @@ const Questionnaire: FC = (props: any) => {
     </div>
   );
 };
-
+//@ts-ignore
+Questionnaire.title = '问卷详情';
 export default Questionnaire;

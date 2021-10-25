@@ -80,5 +80,6 @@ const Knowledge: FC<IRouteComponentProps> = ({
     </FixRow>
   );
 };
-
+//@ts-ignore
+Knowledge.title = '知识图谱';
 export default Knowledge;

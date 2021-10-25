@@ -18,4 +18,5 @@ const Forbidden = () => {
   );
 };
 
+Forbidden.title = '未找到';
 export default Forbidden;

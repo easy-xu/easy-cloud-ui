@@ -8,7 +8,7 @@ import FixRow from '@/components/FixRow';
 const { Meta } = Card;
 const { Title, Paragraph } = Typography;
 
-const CardList: FC = () => {
+const QuestionnaireList: FC = () => {
   //查询列表
   const [page, setPage] = useState<any>({ current: 1 });
 
@@ -84,5 +84,6 @@ const CardList: FC = () => {
     </div>
   );
 };
-
-export default CardList;
+//@ts-ignore
+QuestionnaireList.title = '问卷列表';
+export default QuestionnaireList;

@@ -244,5 +244,6 @@ const Questions: FC = (props: any) => {
     </div>
   );
 };
-
+//@ts-ignore
+Questions.title = '问卷问题';
 export default Questions;

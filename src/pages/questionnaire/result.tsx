@@ -244,5 +244,6 @@ const Result: FC = (props: any) => {
     </div>
   );
 };
-
+//@ts-ignore
+Result.title = '问卷结果';
 export default Result;

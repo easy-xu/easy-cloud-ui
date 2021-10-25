@@ -15,4 +15,5 @@ const NotFound = () => {
   );
 };
 
+NotFound.title = '未找到';
 export default NotFound;

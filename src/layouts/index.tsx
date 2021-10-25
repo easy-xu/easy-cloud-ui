@@ -90,7 +90,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
       <Link to="/questionnaire/list">测一测</Link>
     </Menu.Item>,
     <Menu.Item key="knowledge">
-      <Link to="/knowledge">学习笔记</Link>
+      <Link to="/knowledge">知识图谱</Link>
     </Menu.Item>,
   ];
   if (user.isLogin) {
