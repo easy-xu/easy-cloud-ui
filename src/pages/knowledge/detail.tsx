@@ -36,7 +36,7 @@ const Knowledge: FC<IRouteComponentProps> = ({
 
   useEffect(() => {
     knowledgeDataRequest.run();
-  }, []);
+  }, [dataId]);
 
   return (
     <FixRow>
