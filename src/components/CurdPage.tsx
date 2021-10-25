@@ -601,7 +601,7 @@ const CurdPage: FC<{
         <Form.Item key={item.code} noStyle shouldUpdate={shouldUpdate}>
           {({ getFieldValue }) => {
             for (const key in condition) {
-              if (getFieldValue(key) != condition[key]) {
+              if (condition[key].indexOf(getFieldValue(key)) == -1) {
                 return null;
               }
             }

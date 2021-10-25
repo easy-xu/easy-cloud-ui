@@ -9,7 +9,7 @@ const Knowledge: FC = (props: any) => {
 
   //查询知识点文件夹
   const knowledgeFolderRequest = useRequest(
-    () => baseList('knowledge', 'node', { type: 'N' }),
+    () => baseList('knowledge', 'node', { types: ['N', 'NC'] }),
     {
       onSuccess: (data) => {
         let folders = data.map((item: any) => {
@@ -66,7 +66,8 @@ const Knowledge: FC = (props: any) => {
       type: 'select',
       rules: [{ required: true }],
       select: [
-        { code: 'N', name: '节点', color: 'yellow' },
+        { code: 'N', name: '节点', color: 'red' },
+        { code: 'NC', name: '节点内容', color: 'yellow' },
         { code: 'C', name: '内容', color: 'green' },
       ],
     },
@@ -77,8 +78,8 @@ const Knowledge: FC = (props: any) => {
       style: {
         search: { display: false },
         table: { display: false },
-        add: { displayCondition: { type: 'C' }, hidden: true },
-        edit: { displayCondition: { type: 'C' }, hidden: true },
+        add: { displayCondition: { type: ['C', 'NC'] }, hidden: true },
+        edit: { displayCondition: { type: ['C', 'NC'] }, hidden: true },
       },
     },
     {
@@ -88,8 +89,8 @@ const Knowledge: FC = (props: any) => {
       style: {
         search: { display: false },
         table: { display: false },
-        add: { displayCondition: { type: 'C' } },
-        edit: { displayCondition: { type: 'C' } },
+        add: { displayCondition: { type: ['C', 'NC'] } },
+        edit: { displayCondition: { type: ['C', 'NC'] } },
       },
     },
     {

@@ -7,6 +7,9 @@ import FixRow from '@/components/FixRow';
 import Markdown from '@/components/Markdown';
 import { baseQueryEntity } from '@/services/base';
 import { Redirect } from 'umi';
+import { knowledgeNodeWordCloud } from '@/services/knowledge';
+import FixedWordCloud from '@/components/FixedWordCloud';
+import Loading from '@/components/Loading';
 const { Title, Paragraph, Text, Link } = Typography;
 
 const Knowledge: FC<IRouteComponentProps> = ({
@@ -22,6 +25,8 @@ const Knowledge: FC<IRouteComponentProps> = ({
     return <Redirect to="/knowledge"></Redirect>;
   }
 
+  const [status, setStatus] = useState('');
+
   const [markdown, setMarkdown] = useState<string>('');
   const knowledgeDataRequest = useRequest(
     //@ts-ignore
@@ -29,18 +34,49 @@ const Knowledge: FC<IRouteComponentProps> = ({
     {
       manual: true,
       onSuccess: (data) => {
-        setMarkdown(data.markdown);
+        if (data.markdown == undefined) {
+          setStatus('wordcloud');
+          WordCloudDataRequest.run(data.id);
+        } else {
+          setStatus('markdown');
+          setMarkdown(data.markdown);
+        }
+      },
+    },
+  );
+
+  const [data, setData] = useState([]);
+  const WordCloudDataRequest = useRequest(
+    (parentId) => knowledgeNodeWordCloud({ parentId: parentId }),
+    {
+      manual: true,
+      onSuccess: (data) => {
+        setData(data);
       },
     },
   );
 
   useEffect(() => {
+    setData([]);
+    setMarkdown('');
+    setStatus('');
     knowledgeDataRequest.run();
   }, [dataId]);
 
   return (
     <FixRow>
-      <Markdown disable={true} value={markdown} />
+      {status == 'markdown' ? (
+        <Markdown disable={true} value={markdown} />
+      ) : status == 'wordcloud' ? (
+        <FixedWordCloud
+          data={data}
+          onClick={(item: any) => {
+            history.push('/knowledge/detail?id=' + item.id);
+          }}
+        />
+      ) : (
+        <Loading />
+      )}
     </FixRow>
   );
 };
