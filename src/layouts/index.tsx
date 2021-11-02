@@ -10,7 +10,7 @@ import {
   ConfigProvider,
   Row,
   Col,
-  Popover,
+  Image,
 } from 'antd';
 import { UserOutlined, LoginOutlined } from '@ant-design/icons';
 
@@ -29,7 +29,7 @@ import { enquireScreen } from 'enquire-js';
 //@ts-ignore
 import Footer from '../Home/Footer1';
 //@ts-ignore
-import { Footer10DataSource, Nav00DataSource } from '../Home/data.source';
+import { Nav00DataSource } from '../Home/data.source';
 import '../Home/less/antMotionStyle.less';
 
 import { Card, Typography } from 'antd';
@@ -37,13 +37,6 @@ import Header from '@/components/Header';
 const { Title, Paragraph, Text } = Typography;
 const { Content } = Layout;
 const { SubMenu } = Menu;
-
-let isMobile;
-enquireScreen((b: boolean) => {
-  isMobile = b;
-});
-
-let historyPath: string | undefined = undefined;
 
 const BaseLayout: FC<IRouteComponentProps> = ({
   children,
@@ -72,15 +65,19 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     history.push('/user/login');
   }
 
-  if (!user) {
-    return <Loading />;
-  }
-
   useEffect(() => {
-    enquireScreen((b: any) => {
+    console.log('useEffect');
+    enquireScreen((b: boolean) => {
+      console.log('bbb2', !!b);
       setIsMobile(!!b);
     });
   }, []);
+
+  console.log(isMobile);
+
+  if (!user) {
+    return <Loading />;
+  }
 
   let menuNodes = [
     <Menu.Item key="index">
@@ -92,6 +89,21 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     <Menu.Item key="knowledge">
       <Link to="/knowledge">知识图谱</Link>
     </Menu.Item>,
+    <Menu.Item key="wx">
+      <Dropdown
+        placement="bottomCenter"
+        overlay={
+          <div>
+            <Image
+              width="172px"
+              src="https://simple-cloud-1256275568.cos.ap-shanghai.myqcloud.com/%E5%85%AC%E4%BC%97%E5%8F%B7%E4%BA%8C%E7%BB%B4%E7%A0%81.jpg"
+            ></Image>
+          </div>
+        }
+      >
+        <div>公众号</div>
+      </Dropdown>
+    </Menu.Item>,
   ];
   if (user.isLogin) {
     menuNodes = [
@@ -99,6 +111,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
       <Menu.Item key="cms">
         <Link to="/cms">控制台</Link>
       </Menu.Item>,
+
       <Menu.Item key="avatar">
         <Dropdown
           placement="bottomCenter"
@@ -160,7 +173,6 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         <Content>
           <div className="layout-content">{children}</div>
         </Content>
-
         <Button onClick={clearCache}>清除缓存</Button>
       </Layout>
       <BackTop />

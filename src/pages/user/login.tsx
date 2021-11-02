@@ -17,7 +17,7 @@ const UserLogin: FC = () => {
       onSuccess: (result) => {
         login(result);
         //跳转首页
-        history.push('/');
+        history.push('/cms');
       },
     },
   );
