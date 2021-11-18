@@ -10,6 +10,8 @@ const IndexPage: FC = () => {
     isMobile: model.isMobile,
   }));
 
+  console.log('process.env', process.env);
+
   return <Home isMobile={isMobile} />;
 };
 //@ts-ignore

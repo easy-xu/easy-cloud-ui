@@ -2,7 +2,7 @@ import { defineConfig } from 'umi';
 
 export default defineConfig({
   define: {
-    ENV: 'test',
+    ENV: 'dev',
     HOST: 'localhost',
   },
 });

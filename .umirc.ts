@@ -15,9 +15,4 @@ export default defineConfig({
   dva: {},
   webpack5: {},
   mfsu: {},
-
-  define: {
-    ENV: 'test',
-    BASE_URL: 'http://localhost:8080/',
-  },
 });
