@@ -1,8 +1,9 @@
 {
   "private": true,
   "scripts": {
-    "start": "umi dev",
-    "build": "umi build",
+    "start": "cross-env UMI_ENV=dev umi dev",
+    "build-dev": "cross-env UMI_ENV=dev umi build",
+    "build-prd": "cross-env UMI_ENV=prd umi build",
     "postinstall": "umi generate tmp",
     "prettier": "prettier --write '**/*.{js,jsx,tsx,ts,less,md,json}'",
     "test": "umi-test",
@@ -22,6 +23,7 @@
   "dependencies": {
     "@ant-design/charts": "^1.2.14",
     "@ant-design/pro-layout": "^6.5.0",
+    "cross-env": "^7.0.3",
     "easymde": "^2.15.0",
     "enquire-js": "^0.2.1",
     "localStorage": "^1.0.4",

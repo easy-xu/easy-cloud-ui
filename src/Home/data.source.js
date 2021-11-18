@@ -211,7 +211,7 @@ export const Content30DataSource = {
           title: { className: 'content3-title', children: '数据库' },
           content: {
             className: 'content3-content',
-            children: 'Mysql',
+            children: '关系型数据库Mysql、文档型数据库MongoDB',
           },
         },
       },
@@ -230,7 +230,7 @@ export const Content30DataSource = {
           title: { className: 'content3-title', children: '中间件' },
           content: {
             className: 'content3-content',
-            children: 'Redis、Mq',
+            children: '缓存Redis、消息队列Mq',
           },
         },
       },
@@ -297,7 +297,7 @@ export const Footer10DataSource = {
           children: [
             {
               name: 'content0',
-              children: 'Animation specification and components of Ant Design.',
+              children: '持续建设中',
             },
           ],
         },

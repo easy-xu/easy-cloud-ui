@@ -5,14 +5,19 @@ export default defineConfig({
   nodeModulesTransform: {
     type: 'none',
   },
-  proxy: {
-    '/api': {
-      target: 'http://localhost:8080/',
-      changeOrigin: true,
-    },
-  },
+  // proxy: {
+  //   '/api': {
+  //     target: 'http://localhost:8080/',
+  //     changeOrigin: true,
+  //   },
+  // },
   fastRefresh: {},
   dva: {},
   webpack5: {},
   mfsu: {},
+
+  define: {
+    ENV: 'test',
+    BASE_URL: 'http://localhost:8080/',
+  },
 });

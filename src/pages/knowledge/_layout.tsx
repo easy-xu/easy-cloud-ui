@@ -9,7 +9,7 @@ import {
 
 import FixRow from '@/components/FixRow';
 import { knowledgeNodeTree } from '@/services/knowledge';
-import { Layout, Menu, Anchor, Button, Spin, Row, Col } from 'antd';
+import { Layout, Menu, Anchor, Button, Spin, Row, Col, Drawer } from 'antd';
 const { Sider, Content, Footer } = Layout;
 const { SubMenu } = Menu;
 import './index.less';
@@ -30,6 +30,7 @@ const KnowlageLayout: FC<IRouteComponentProps> = ({
   }));
 
   const [nodeTree, setNodeTree] = useState([]);
+  const [menuVisible, setMenuVisible] = useState(false);
 
   const nodeTreeRequest = useRequest(() => knowledgeNodeTree({}), {
     manual: true,
@@ -82,21 +83,41 @@ const KnowlageLayout: FC<IRouteComponentProps> = ({
     </Menu>
   );
 
-  const topMenu = isMobile ? menuNode : '';
+  const topMenu = isMobile ? (
+    <div className="kl-top-menu-div">
+      <Button
+        type="primary"
+        onClick={() => {
+          setMenuVisible(true);
+        }}
+      >
+        图谱菜单
+      </Button>
+      <Drawer
+        title="图谱菜单"
+        placement="right"
+        onClose={() => {
+          setMenuVisible(false);
+        }}
+        visible={menuVisible}
+      >
+        {menuNode}
+      </Drawer>
+    </div>
+  ) : (
+    ''
+  );
 
+  const leftMenu = isMobile ? (
+    ''
+  ) : (
+    <Sider className="kl-sider" width={200}>
+      <Anchor>{menuNode}</Anchor>
+    </Sider>
+  );
   return (
     <Layout className="layout">
-      <Sider
-        className="kl-sider"
-        width={200}
-        collapsible
-        breakpoint="md"
-        trigger={null}
-        collapsedWidth="0"
-      >
-        <Anchor>{menuNode}</Anchor>
-      </Sider>
-
+      {leftMenu}
       <Content>
         {topMenu}
         <div className="kl-layout-content">{children}</div>
