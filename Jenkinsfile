@@ -23,7 +23,7 @@ pipeline {
     }
     stage('打包') {
       steps {
-        sh 'npm run build'
+        sh 'npm run build-prd'
       }
     }
     stage('构建镜像并推送到 CODING Docker 制品库') {
