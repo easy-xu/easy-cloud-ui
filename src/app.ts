@@ -9,7 +9,7 @@ export const request: RequestConfig = {
       return {
         ...resData,
         success: resData.code == 200,
-        errorMessage: resData ? resData.message : '网络错误',
+        errorMessage: resData.message ? resData.message : '服务器错误',
       };
     },
   },
