@@ -10,20 +10,22 @@ export function pageListQuestionnaire(page: any) {
 }
 //初始化回答记录
 export function initAnswer(questionnaireId: number) {
-  return postRequest('/answer/init', { questionnaireId: questionnaireId });
+  return postRequest('/questionnaire/answer/init', {
+    questionnaireId: questionnaireId,
+  });
 }
 //查询回答状态
 export function statusAnswer(answerId: number) {
-  return postRequest('/answer/status', { id: answerId });
+  return postRequest('/questionnaire/answer/status', { id: answerId });
 }
 
 //查询单个问题
 export function queryQuestion(questionId: number) {
-  return postRequest('/question/query', { id: questionId });
+  return postRequest('/questionnaire/question/query', { id: questionId });
 }
 
 export function queryQuestionByIndex(questionnaireId: number, index: number) {
-  return postRequest('/question/index', {
+  return postRequest('/questionnaire/question/index', {
     questionnaireId: questionnaireId,
     questionIndex: index,
   });
@@ -31,7 +33,7 @@ export function queryQuestionByIndex(questionnaireId: number, index: number) {
 
 //查询答案
 export function queryAnswer(answerId?: number, questionnaireId?: number) {
-  return postRequest('/answer/query', {
+  return postRequest('/questionnaire/answer/query', {
     id: answerId,
     questionnaireId: questionnaireId,
   });
@@ -39,19 +41,19 @@ export function queryAnswer(answerId?: number, questionnaireId?: number) {
 
 //保存问题答案
 export function saveAnswerQuestion(params: any) {
-  return postRequest('/answer/question/save', params);
+  return postRequest('/questionnaire/answer/question/save', params);
 }
 
 //查询问题答案
 export function queryAnswerQuestion(answerId: number, questionId: number) {
-  return postRequest('/answer/question/query', {
+  return postRequest('/questionnaire/answer/question/query', {
     answerId: answerId,
     questionId: questionId,
   });
 }
 //查询回答结论
 export function listAnswerResult(answerId: number) {
-  return postRequest('/result/list', { answerId: answerId });
+  return postRequest('/questionnaire/result/list', { answerId: answerId });
 }
 
 //导入问卷
