@@ -1,137 +1,163 @@
 import React from 'react';
-export const Nav00DataSource = {
-  wrapper: { className: 'header0 home-page-wrapper' },
+
+const cos_host = 'https://simple-cloud-1256275568.cos.ap-shanghai.myqcloud.com';
+
+export const Nav30DataSource = {
+  wrapper: { className: 'header3 home-page-wrapper' },
   page: { className: 'home-page' },
   logo: {
-    className: 'header0-logo',
+    className: 'header3-logo',
     children: '/assets/logo.png',
   },
   Menu: {
-    className: 'header0-menu',
-  },
-  mobileMenu: { className: 'header0-mobile-menu' },
-};
-export const Banner50DataSource = {
-  wrapper: { className: 'home-page-wrapper banner5' },
-  page: { className: 'home-page banner5-page' },
-  childWrapper: {
-    className: 'banner5-title-wrapper',
+    className: 'header3-menu',
     children: [
-      { name: 'title', children: 'EasyCode', className: 'banner5-title' },
       {
-        name: 'explain',
-        className: 'banner5-explain',
-        children: '(建设中)',
-      },
-      {
-        name: 'content',
-        className: 'banner5-content',
-        children: '更快的开发，更快的交付',
-      },
-      {
-        name: 'button',
-        className: 'banner5-button-wrapper',
+        name: 'item0',
+        className: 'header3-item',
         children: {
-          href: '/cms',
-          className: 'banner5-button',
-          type: 'primary',
-          children: '开始使用',
+          href: '/',
+          children: [{ children: '首页', name: 'text' }],
         },
+      },
+      {
+        name: 'item1',
+        className: 'header3-item',
+        children: {
+          children: [{ children: '在线演示', name: 'text' }],
+        },
+        subItem: [
+          {
+            name: 'sub1-0',
+            className: 'item-sub',
+            children: {
+              className: 'item-sub-item',
+              href: '/cms',
+              children: [
+                {
+                  name: 'image0',
+                  className: 'item-image',
+                  children: cos_host + '/favicon.ico',
+                },
+                {
+                  name: 'title',
+                  className: 'item-title',
+                  children: '后台管理系统',
+                },
+                {
+                  name: 'content',
+                  className: 'item-content',
+                  children: '面向微服务、前后端分离',
+                },
+              ],
+            },
+          },
+        ],
+      },
+      {
+        name: 'item2',
+        className: 'header3-item',
+        children: {
+          children: [{ children: '其他', name: 'text' }],
+        },
+        subItem: [
+          {
+            name: 'sub2-0',
+            className: 'item-sub',
+            children: {
+              className: 'item-sub-item',
+              href: '/questionnaire/list',
+              children: [
+                {
+                  name: 'image0',
+                  className: 'item-image',
+                  children: cos_host + '/favicon.ico',
+                },
+                {
+                  name: 'title',
+                  className: 'item-title',
+                  children: '问卷测试',
+                },
+                {
+                  name: 'content',
+                  className: 'item-content',
+                  children: '免费性格、职业测试',
+                },
+              ],
+            },
+          },
+          {
+            name: 'sub2-1',
+            className: 'item-sub',
+            children: {
+              className: 'item-sub-item',
+              href: '/knowledge',
+              children: [
+                {
+                  name: 'image0',
+                  className: 'item-image',
+                  children: cos_host + '/favicon.ico',
+                },
+                {
+                  name: 'title',
+                  className: 'item-title',
+                  children: '知识图谱',
+                },
+                {
+                  name: 'content',
+                  className: 'item-content',
+                  children: 'MarkDown整理工具, 知识点云图展示',
+                },
+              ],
+            },
+          },
+        ],
       },
     ],
   },
-  image: {
-    className: 'banner5-image',
-    children:
-      'https://gw.alipayobjects.com/mdn/rms_ae7ad9/afts/img/A*-wAhRYnWQscAAAAAAAAAAABkARQnAQ',
-  },
+  mobileMenu: { className: 'header3-mobile-menu' },
 };
-export const Content00DataSource = {
-  wrapper: { className: 'home-page-wrapper content0-wrapper' },
-  page: { className: 'home-page content0' },
-  OverPack: { playScale: 0.3, className: '' },
-  titleWrapper: {
-    className: 'title-wrapper',
-    children: [{ name: 'title', children: '内容与服务' }],
-  },
-  childWrapper: {
-    className: 'content0-block-wrapper',
+export const Banner10DataSource = {
+  wrapper: { className: 'banner1' },
+  BannerAnim: {
     children: [
       {
-        name: 'block0',
-        className: 'content0-block',
-        md: 8,
-        xs: 24,
-        children: {
-          className: 'content0-block-item',
-          children: [
-            {
-              name: 'image',
-              className: 'content0-block-icon',
-              children:
-                'https://zos.alipayobjects.com/rmsportal/WBnVOjtIlGWbzyQivuyq.png',
-            },
-            {
-              name: 'title',
-              className: 'content0-block-title',
-              children: '个人学习',
-            },
-            { name: 'content', children: '...' },
-          ],
+        name: 'elem0',
+        BannerElement: { className: 'banner-user-elem' },
+        textWrapper: { className: 'banner1-text-wrapper' },
+        bg: { className: 'bg bg0' },
+        title: {
+          className: 'banner1-title',
+          children: <span>EasyCloud</span>,
+        },
+        content: {
+          className: 'banner1-content',
+          children: '面向微服务、前后端分离后台管理系统',
+        },
+        button: {
+          className: 'banner1-button',
+          children: 'GitHub',
+          type: 'primary',
+          href: 'https://github.com/easy-xu?tab=repositories',
+          target: '_blank',
         },
       },
-      {
-        name: 'block1',
-        className: 'content0-block',
-        md: 8,
-        xs: 24,
-        children: {
-          className: 'content0-block-item',
-          children: [
-            {
-              name: 'image',
-              className: 'content0-block-icon',
-              children:
-                'https://zos.alipayobjects.com/rmsportal/YPMsLQuCEXtuEkmXTTdk.png',
-            },
-            {
-              name: 'title',
-              className: 'content0-block-title',
-              children: '知识分享',
-            },
-            {
-              name: 'content',
-              children: '...',
-            },
-          ],
-        },
-      },
-      {
-        name: 'block2',
-        className: 'content0-block',
-        md: 8,
-        xs: 24,
-        children: {
-          className: 'content0-block-item',
-          children: [
-            {
-              name: 'image',
-              className: 'content0-block-icon',
-              children:
-                'https://zos.alipayobjects.com/rmsportal/EkXWVvAaFJKCzhMmQYiX.png',
-            },
-            {
-              name: 'title',
-              className: 'content0-block-title',
-              children: '技术实践',
-            },
-            {
-              name: 'content',
-              children: '...',
-            },
-          ],
-        },
-      },
+      // {
+      //   name: 'elem1',
+      //   BannerElement: { className: 'banner-user-elem' },
+      //   textWrapper: { className: 'banner1-text-wrapper' },
+      //   bg: { className: 'bg bg1' },
+      //   title: {
+      //     className: 'banner1-title',
+      //     children:
+      //       'https://zos.alipayobjects.com/rmsportal/HqnZZjBjWRbjyMr.png',
+      //   },
+      //   content: {
+      //     className: 'banner1-content',
+      //     children: '一个高效的页面动画解决方案',
+      //   },
+      //   button: { className: 'banner1-button', children: 'Learn More' },
+      // },
     ],
   },
 };
@@ -276,77 +302,9 @@ export const Content30DataSource = {
     ],
   },
 };
-export const Footer10DataSource = {
-  wrapper: { className: 'home-page-wrapper footer1-wrapper' },
-  OverPack: { className: 'footer1', playScale: 0.2 },
-  block: {
-    className: 'home-page',
-    gutter: 0,
-    children: [
-      {
-        name: 'block0',
-        xs: 24,
-        md: 6,
-        className: 'block',
-        title: {
-          className: 'logo',
-          children: '/assets/logo.png',
-        },
-        childWrapper: {
-          className: 'slogan',
-          children: [
-            {
-              name: 'content0',
-              children: '持续建设中',
-            },
-          ],
-        },
-      },
-      {
-        name: 'block1',
-        xs: 24,
-        md: 6,
-        className: 'block',
-        title: { children: '产品' },
-        childWrapper: {
-          children: [
-            { name: 'link0', href: '#', children: '产品更新记录' },
-            { name: 'link1', href: '#', children: 'API文档' },
-            { name: 'link2', href: '#', children: '快速入门' },
-            { name: 'link3', href: '#', children: '参考指南' },
-          ],
-        },
-      },
-      {
-        name: 'block2',
-        xs: 24,
-        md: 6,
-        className: 'block',
-        title: { children: '关于' },
-        childWrapper: {
-          children: [
-            { href: '#', name: 'link0', children: 'FAQ' },
-            { href: '#', name: 'link1', children: '联系我们' },
-          ],
-        },
-      },
-      {
-        name: 'block3',
-        xs: 24,
-        md: 6,
-        className: 'block',
-        title: { children: '资源' },
-        childWrapper: {
-          children: [
-            { href: '#', name: 'link0', children: 'Ant Design' },
-            { href: '#', name: 'link1', children: 'Ant Motion' },
-          ],
-        },
-      },
-    ],
-  },
-  copyrightWrapper: { className: 'copyright-wrapper' },
-  copyrightPage: { className: 'home-page' },
+export const Footer00DataSource = {
+  wrapper: { className: 'home-page-wrapper footer0-wrapper' },
+  OverPack: { className: 'home-page footer0', playScale: 0.05 },
   copyright: {
     className: 'copyright',
     children: <span>©2021 by 为了呆毛 All Rights Reserved</span>,
