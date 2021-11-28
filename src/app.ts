@@ -6,6 +6,7 @@ export const request: RequestConfig = {
   timeout: 10000,
   errorConfig: {
     adaptor: (resData) => {
+      console.log('resData', resData);
       return {
         ...resData,
         success: resData.code == 200,

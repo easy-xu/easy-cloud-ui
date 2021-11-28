@@ -176,7 +176,7 @@ export const Content30DataSource = {
       {
         name: 'content',
         className: 'title-content',
-        children: '前后端分离、面向微服务',
+        children: '面向微服务、前后端分离',
       },
     ],
   },

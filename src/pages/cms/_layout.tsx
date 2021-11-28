@@ -10,11 +10,12 @@ import {
 import { Layout, Menu, Anchor, Button, Spin, Row, Col } from 'antd';
 import * as Icon from '@ant-design/icons';
 
-const { Sider, Content, Footer } = Layout;
+const { Sider, Content, Footer, Header } = Layout;
 const { SubMenu } = Menu;
 import './index.less';
 import { cmsMenuTree } from '@/services/cms';
 import Loading from '@/components/Loading';
+import CustHeader from '@/components/CustHeader';
 
 const CmsLayout: FC<IRouteComponentProps> = ({
   children,
@@ -145,22 +146,27 @@ const CmsLayout: FC<IRouteComponentProps> = ({
 
   return (
     <Layout className="layout">
-      <Sider
-        className="cms-sider"
-        width={200}
-        collapsible
-        breakpoint="md"
-        trigger={null}
-        onBreakpoint={showTopMenu}
-        collapsedWidth="0"
-      >
-        <Anchor>{menuNode}</Anchor>
-      </Sider>
+      <Header>
+        <CustHeader />
+      </Header>
+      <Layout>
+        <Sider
+          className="cms-sider"
+          width={200}
+          collapsible
+          breakpoint="md"
+          trigger={null}
+          onBreakpoint={showTopMenu}
+          collapsedWidth="0"
+        >
+          <Anchor>{menuNode}</Anchor>
+        </Sider>
 
-      <Content>
-        {topMenu}
-        <div className="cms-layout-content">{children}</div>
-      </Content>
+        <Content>
+          {topMenu}
+          <div className="cms-layout-content">{children}</div>
+        </Content>
+      </Layout>
     </Layout>
   );
 };
