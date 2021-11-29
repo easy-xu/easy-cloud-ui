@@ -48,7 +48,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     initUser();
   }, []);
 
-  if (!user) {
+  if (!user || !user.token) {
     return <Loading />;
   }
 
