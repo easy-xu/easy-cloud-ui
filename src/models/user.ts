@@ -72,13 +72,13 @@ export default function userModel() {
   }, []);
 
   function saveUser(user0: IUser) {
-    //设置state
-    setUser(user0);
     //设置缓存
     storage.setLocalItem('user', user0);
     storage.setSessionItem('user', user0);
     //设置token
     setToken(user0.token);
+    //设置state
+    setUser(user0);
   }
 
   return {
