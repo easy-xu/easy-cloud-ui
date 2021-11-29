@@ -1,9 +1,10 @@
 import React, { FC } from 'react';
 
 import './Home/less/antMotionStyle.less';
-import { Menu, Divider, Row, Col } from 'antd';
+import { Menu, Divider, Row, Col, Avatar } from 'antd';
 import { Link, useModel } from 'umi';
 import Loading from './Loading';
+import { UserOutlined } from '@ant-design/icons';
 const { Item, SubMenu } = Menu;
 
 const CustHeader: React.FC<{ children?: any }> = ({ children }) => {
@@ -19,7 +20,18 @@ const CustHeader: React.FC<{ children?: any }> = ({ children }) => {
   const pathname = window.location.pathname;
 
   const userMenu = user.isLogin ? (
-    <SubMenu key="sub1" title={user.nickname}>
+    <SubMenu
+      key="sub1"
+      icon={
+        <Avatar style={{ backgroundColor: '#7265e6' }}>
+          {user.nickname
+            ? user.nickname.length > 2
+              ? user.nickname?.substr(0, 2)
+              : user.nickname
+            : ''}
+        </Avatar>
+      }
+    >
       <Menu.Item key="s1">
         <Link to="/user/info">个人信息</Link>
       </Menu.Item>

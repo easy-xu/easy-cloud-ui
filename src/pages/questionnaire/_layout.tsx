@@ -18,7 +18,9 @@ const PageLayout: FC<IRouteComponentProps> = ({
   return (
     <Layout className="layout">
       <Header>
-        <CustHeader />
+        <FixRow>
+          <CustHeader />
+        </FixRow>
       </Header>
       <Layout>
         <div className="div-main">

@@ -16,6 +16,7 @@ import './index.less';
 import { cmsMenuTree } from '@/services/cms';
 import Loading from '@/components/Loading';
 import CustHeader from '@/components/CustHeader';
+import FixRow from '@/components/FixRow';
 
 const CmsLayout: FC<IRouteComponentProps> = ({
   children,
