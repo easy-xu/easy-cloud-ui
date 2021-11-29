@@ -1,14 +1,9 @@
-/* eslint no-undef: 0 */
-/* eslint arrow-parens: 0 */
 import React, { FC } from 'react';
 
-//@ts-ignore
-import Nav3 from './Home/Nav3';
-//@ts-ignore
-import { Nav30DataSource } from './Home/data.source';
 import './Home/less/antMotionStyle.less';
 import { Menu, Divider, Row, Col } from 'antd';
 import { Link, useModel } from 'umi';
+import Loading from './Loading';
 const { Item, SubMenu } = Menu;
 
 const CustHeader: React.FC<{ children?: any }> = ({ children }) => {
@@ -17,34 +12,42 @@ const CustHeader: React.FC<{ children?: any }> = ({ children }) => {
     logout: model.logout,
   }));
 
-  if (!user.isLogin) {
-    return <Link to="/user/login"></Link>;
+  if (!user) {
+    return <Loading />;
   }
 
-  const dataSource = Nav30DataSource;
+  const pathname = window.location.pathname;
+
+  const userMenu = user.isLogin ? (
+    <SubMenu key="sub1" title={user.username}>
+      <Menu.Item key="s1">
+        <Link to="/user/info">个人信息</Link>
+      </Menu.Item>
+      <Menu.Item key="s2" onClick={logout}>
+        退出
+      </Menu.Item>
+    </SubMenu>
+  ) : (
+    <Menu.Item key="2">
+      <Link to={'/user/login?redirect=' + pathname}>登录</Link>
+    </Menu.Item>
+  );
 
   return (
     <div className="div-cust-header">
       <Row>
         <Col span={8}>
           <Link to="/">
-            <img src={dataSource.logo.children} height="36px" alt="logo" />
+            <img src="/assets/logo.png" height="36px" alt="logo" />
           </Link>
         </Col>
-        <Col span={8} offset={8}>
+        <Col span={16}>
           <div>
             <Menu mode="horizontal">
               <Menu.Item key="1">
                 <Link to="/">首页</Link>
               </Menu.Item>
-              <SubMenu key="sub1" title={user.username}>
-                <Menu.Item key="s1">
-                  <Link to="/user/info">个人信息</Link>
-                </Menu.Item>
-                <Menu.Item key="s2" onClick={logout}>
-                  退出
-                </Menu.Item>
-              </SubMenu>
+              {userMenu}
             </Menu>
           </div>
         </Col>

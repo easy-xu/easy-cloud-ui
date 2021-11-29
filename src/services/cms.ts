@@ -9,6 +9,10 @@ export function initDevice() {
 export function loginApi(params: any) {
   return postRequest('/cms/user/login', params);
 }
+//退出接口
+export function logoutApi() {
+  return postRequest('/cms/user/logout', {});
+}
 //注册接口
 export function signinRequest(params: any) {
   return postRequest('/cms/user/signIn', params);

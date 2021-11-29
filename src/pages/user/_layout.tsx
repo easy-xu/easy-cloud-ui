@@ -3,7 +3,6 @@ import { IRouteComponentProps, useModel } from 'umi';
 import { Layout } from 'antd';
 
 const { Header } = Layout;
-import './index.less';
 import FixRow from '@/components/FixRow';
 import CustHeader from '@/components/CustHeader';
 import Loading from '@/components/Loading';

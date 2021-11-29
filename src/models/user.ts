@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { useRequest } from 'umi';
 import storage from '@/utils/storage';
-import { loginApi, initDevice } from '@/services/cms';
+import { loginApi, initDevice, logoutApi } from '@/services/cms';
 import { setToken } from '@/utils/api';
 
 interface IUser {
@@ -21,6 +21,13 @@ export default function userModel() {
     manual: true,
     onSuccess: (result) => {
       saveUser({ ...result, isLogin: true });
+    },
+  });
+  //用户退出请求
+  const logoutRequest = useRequest(() => logoutApi(), {
+    manual: true,
+    onSuccess: (result) => {
+      saveUser({ ...result, isLogin: false });
     },
   });
 
@@ -61,12 +68,7 @@ export default function userModel() {
 
   //用户退出
   const logout = useCallback(() => {
-    //只保留设备编号
-    const user0 = {
-      deviceNo: user.deviceNo,
-      isLogin: false,
-    };
-    saveUser(user0);
+    logoutRequest.run();
   }, []);
 
   function saveUser(user0: IUser) {

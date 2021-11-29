@@ -1,12 +1,25 @@
 import React, { FC } from 'react';
 import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useRequest, history, useModel, Link, Redirect } from 'umi';
+import {
+  useRequest,
+  history,
+  useModel,
+  Link,
+  Redirect,
+  IRouteComponentProps,
+} from 'umi';
 
 import './login.less';
 import Loading from '@/components/Loading';
 
-const UserLogin: FC = () => {
+const UserLogin: FC<IRouteComponentProps> = ({
+  children,
+  location,
+  route,
+  history,
+  match,
+}) => {
   const { user, login } = useModel('user', (model) => ({
     user: model.user,
     login: model.login,
@@ -20,12 +33,10 @@ const UserLogin: FC = () => {
     console.log('Failed:', errorInfo);
   };
 
-  if (!user) {
-    return <Loading></Loading>;
-  }
-
+  const redirect = location.query.redirect;
   if (user.isLogin) {
-    return <Redirect to="/cms"></Redirect>;
+    //@ts-ignore
+    return <Redirect to={redirect ? redirect : '/cms'}></Redirect>;
   }
 
   return (

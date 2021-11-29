@@ -10,9 +10,10 @@ import {
 import FixRow from '@/components/FixRow';
 import { knowledgeNodeTree } from '@/services/knowledge';
 import { Layout, Menu, Anchor, Button, Spin, Row, Col, Drawer } from 'antd';
-const { Sider, Content, Footer } = Layout;
+const { Sider, Content, Header, Footer } = Layout;
 const { SubMenu } = Menu;
 import './index.less';
+import CustHeader from '@/components/CustHeader';
 
 const KnowlageLayout: FC<IRouteComponentProps> = ({
   children,
@@ -117,11 +118,16 @@ const KnowlageLayout: FC<IRouteComponentProps> = ({
   );
   return (
     <Layout className="layout">
-      {leftMenu}
-      <Content>
-        {topMenu}
-        <div className="kl-layout-content">{children}</div>
-      </Content>
+      <Header>
+        <CustHeader />
+      </Header>
+      <Layout>
+        {leftMenu}
+        <Content>
+          {topMenu}
+          <div className="kl-layout-content">{children}</div>
+        </Content>
+      </Layout>
     </Layout>
   );
 };

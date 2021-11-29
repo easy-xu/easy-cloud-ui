@@ -307,6 +307,8 @@ export const Footer00DataSource = {
   OverPack: { className: 'home-page footer0', playScale: 0.05 },
   copyright: {
     className: 'copyright',
-    children: <span>©2021 by 为了呆毛 All Rights Reserved</span>,
+    children: (
+      <span>鲁ICP备2021040208号 ©2021 by 为了呆毛 All Rights Reserved</span>
+    ),
   },
 };
