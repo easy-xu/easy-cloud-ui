@@ -1,17 +1,17 @@
 import { getRequest, postRequest } from '@/utils/api';
 
 //首次访问获取用户id
-export function visitedRequest() {
-  return getRequest('/cms/open/hello');
+export function initDevice() {
+  return getRequest('/cms/user/device');
 }
 
 //登录接口
-export function loginRequest(params: any) {
+export function loginApi(params: any) {
   return postRequest('/cms/user/login', params);
 }
 //注册接口
 export function signinRequest(params: any) {
-  return postRequest('/user/signIn', params);
+  return postRequest('/cms/user/signIn', params);
 }
 
 //菜单树接口

@@ -1,75 +1,87 @@
 import { useState, useCallback } from 'react';
 import { useRequest } from 'umi';
 import storage from '@/utils/storage';
-import { visitedRequest } from '@/services/cms';
+import { loginApi, initDevice } from '@/services/cms';
 import { setToken } from '@/utils/api';
 
 interface IUser {
-  nickname: string;
+  nickname?: string;
   userNo?: string;
+  deviceNo?: string;
   username?: string;
   token?: string;
   isLogin?: boolean;
 }
 
 export default function userModel() {
-  //页面刷新查看本地session
-  let user0 = storage.getSessionItem('user');
-  console.log('session user', user0);
-  if (user0 == undefined) {
+  const [user, setUser] = useState<IUser>({ isLogin: false });
+
+  //用户登录请求
+  const loginRequest = useRequest((params) => loginApi(params), {
+    manual: true,
+    onSuccess: (result) => {
+      saveUser({ ...result, isLogin: true });
+    },
+  });
+
+  //初始化设备编号请求
+  const initDeviceRequest = useRequest(initDevice, {
+    manual: true,
+    onSuccess: (data) => {
+      const user0 = { ...data, isLogin: false };
+      saveUser(user0);
+    },
+  });
+
+  //用户初始化
+  const init = useCallback(() => {
+    //查看本地session
+    let user0 = storage.getSessionItem('user');
+    if (user0 != undefined) {
+      saveUser(user0);
+      return;
+    }
     //查看本地缓存用户
     user0 = storage.getLocalItem('user');
-    console.log('local user', user0);
-    if (user0 == undefined) {
-      //初始化为游客
-      useRequest(visitedRequest, {
-        onSuccess: (data) => {
-          user0 = data;
-          user0.isLogin = false;
-          console.log('init user', user0);
-          setUser(user0);
-          storage.setLocalItem('user', user0);
-          storage.setSessionItem('user', user0);
-          setToken(user0.token);
-        },
-      });
-    } else {
-      storage.setSessionItem('user', user0);
-      setToken(user0.token);
+    if (user0 != undefined) {
+      saveUser(user);
+      return;
     }
-  } else {
-    setToken(user0.token);
-  }
-
-  const [user, setUser] = useState<IUser>(user0);
+    //初始化设备编号
+    initDeviceRequest.run();
+  }, []);
 
   //用户登录
-  const login = useCallback((user) => {
-    user0 = {
-      ...user,
-      isLogin: true,
-    };
-    saveUser(user0);
+  const login = useCallback((username, password) => {
+    loginRequest.run({
+      username: username,
+      password: password,
+    });
   }, []);
 
   //用户退出
   const logout = useCallback(() => {
-    console.log('logout');
-    user0 = {
-      ...user,
+    //只保留设备编号
+    const user0 = {
+      deviceNo: user.deviceNo,
       isLogin: false,
     };
     saveUser(user0);
   }, []);
 
-  function saveUser(user: IUser) {
-    setUser(user);
-    storage.setSessionItem('user', user);
-    setToken(user.token);
+  function saveUser(user0: IUser) {
+    //设置state
+    setUser(user0);
+    //设置缓存
+    storage.setLocalItem('user', user0);
+    storage.setSessionItem('user', user0);
+    //设置token
+    setToken(user0.token);
   }
 
   return {
     user,
+    init,
     login,
     logout,
   };

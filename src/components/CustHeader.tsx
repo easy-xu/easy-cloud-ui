@@ -34,11 +34,14 @@ const CustHeader: React.FC<{ children?: any }> = ({ children }) => {
         <Col span={8} offset={8}>
           <div>
             <Menu mode="horizontal">
+              <Menu.Item key="1">
+                <Link to="/">首页</Link>
+              </Menu.Item>
               <SubMenu key="sub1" title={user.username}>
-                <Menu.Item key="1">
+                <Menu.Item key="s1">
                   <Link to="/user/info">个人信息</Link>
                 </Menu.Item>
-                <Menu.Item key="2" onClick={logout}>
+                <Menu.Item key="s2" onClick={logout}>
                   退出
                 </Menu.Item>
               </SubMenu>

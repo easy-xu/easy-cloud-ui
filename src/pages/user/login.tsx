@@ -1,34 +1,32 @@
 import React, { FC } from 'react';
 import { Form, Input, Button, Checkbox, Card, PageHeader } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { useRequest, history, useModel } from 'umi';
-import { loginRequest } from '@/services/cms';
+import { useRequest, history, useModel, Link, Redirect } from 'umi';
 
 import './login.less';
+import Loading from '@/components/Loading';
 
 const UserLogin: FC = () => {
-  const { login } = useModel('user', (model) => ({ login: model.login }));
-
-  //用户登录
-  const { data, error, loading, run } = useRequest(
-    (params) => loginRequest(params),
-    {
-      manual: true,
-      onSuccess: (result) => {
-        login(result);
-        //跳转首页
-        history.push('/cms');
-      },
-    },
-  );
+  const { user, login } = useModel('user', (model) => ({
+    user: model.user,
+    login: model.login,
+  }));
 
   const onFinish = (values: any) => {
-    run(values);
+    login(values.username, values.password);
   };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);
   };
+
+  if (!user) {
+    return <Loading></Loading>;
+  }
+
+  if (user.isLogin) {
+    return <Redirect to="/cms"></Redirect>;
+  }
 
   return (
     <div className="login-div">
@@ -71,7 +69,6 @@ const UserLogin: FC = () => {
           </Form.Item>
           <Form.Item>
             <Button
-              loading={loading}
               type="primary"
               htmlType="submit"
               className="login-form-button"

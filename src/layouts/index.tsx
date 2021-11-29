@@ -25,9 +25,9 @@ const BaseLayout: FC<IRouteComponentProps> = ({
   history,
   match,
 }) => {
-  const { user, logout } = useModel('user', (model) => ({
+  const { user, initUser } = useModel('user', (model) => ({
     user: model.user,
-    logout: model.logout,
+    initUser: model.init,
   }));
 
   const { isMobile, setIsMobile } = useModel('system', (model) => ({
@@ -44,6 +44,8 @@ const BaseLayout: FC<IRouteComponentProps> = ({
     enquireScreen((b: boolean) => {
       setIsMobile(!!b);
     });
+    //初始化用户信息
+    initUser();
   }, []);
 
   if (!user) {
@@ -56,7 +58,11 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         <Content>
           <div className="layout-content">{children}</div>
         </Content>
-        {/* <Button onClick={clearCache}>清除缓存</Button> */}
+        {user.username == 'admin' ? (
+          <Button onClick={clearCache}>清除缓存</Button>
+        ) : (
+          ''
+        )}
       </Layout>
       <BackTop />
     </ConfigProvider>
