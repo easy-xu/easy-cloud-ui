@@ -19,7 +19,7 @@ const CustHeader: React.FC<{ children?: any }> = ({ children }) => {
   const pathname = window.location.pathname;
 
   const userMenu = user.isLogin ? (
-    <SubMenu key="sub1" title={user.username}>
+    <SubMenu key="sub1" title={user.nickname}>
       <Menu.Item key="s1">
         <Link to="/user/info">个人信息</Link>
       </Menu.Item>

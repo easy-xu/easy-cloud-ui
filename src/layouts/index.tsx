@@ -58,11 +58,7 @@ const BaseLayout: FC<IRouteComponentProps> = ({
         <Content>
           <div className="layout-content">{children}</div>
         </Content>
-        {user.username == 'admin' ? (
-          <Button onClick={clearCache}>清除缓存</Button>
-        ) : (
-          ''
-        )}
+        {/* <Button onClick={clearCache}>清除缓存</Button> */}
       </Layout>
       <BackTop />
     </ConfigProvider>
