@@ -42,7 +42,11 @@ const UserLogin: FC<IRouteComponentProps> = ({
   return (
     <div className="login-div">
       <Card>
-        <PageHeader className="site-page-header" title="用户登录" />
+        <PageHeader
+          className="site-page-header"
+          title="用户登录"
+          subTitle="演示用户：demo/demo"
+        />
         <Form
           name="normal_login"
           className="login-form"
