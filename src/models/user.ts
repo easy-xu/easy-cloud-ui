@@ -44,13 +44,13 @@ export default function userModel() {
   const init = useCallback(() => {
     //查看本地session
     let user0 = storage.getSessionItem('user');
-    if (user0 != undefined) {
+    if (!user0 && !user0.token) {
       saveUser(user0);
       return;
     }
     //查看本地缓存用户
     user0 = storage.getLocalItem('user');
-    if (user0 != undefined) {
+    if (!user0 && !user0.token) {
       saveUser(user);
       return;
     }
