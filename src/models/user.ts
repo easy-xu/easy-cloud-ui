@@ -51,7 +51,7 @@ export default function userModel() {
     //查看本地缓存用户
     user0 = storage.getLocalItem('user');
     if (!user0 && !user0.token) {
-      saveUser(user);
+      saveUser(user0);
       return;
     }
     //初始化设备编号
