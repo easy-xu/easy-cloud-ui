@@ -181,6 +181,8 @@ const CurdPage: FC<{
   const [page, setPage] = useState<IPage>(initPata);
   //查询条件
   const [query, setQuery] = useState<any>({});
+  const [queryForm] = Form.useForm();
+
   //列表数据
   const [records, setRecords] = useState<any[]>([]);
   //操作权限
@@ -385,12 +387,18 @@ const CurdPage: FC<{
   });
   // ======useRequest end======
 
-  // ======useEffect end======
+  // ======useEffect start======
   useEffect(() => {
     optionAuthRequest.run();
     groupDataRequest.run();
     pageListRequest.run(page, query);
   }, []);
+
+  useEffect(() => {
+    if (!query || Object.keys(query).length == 0) {
+      queryForm.resetFields();
+    }
+  }, [query]);
 
   useEffect(() => {
     if (extendOptionPage == undefined && status != 'search') {
@@ -406,6 +414,13 @@ const CurdPage: FC<{
   // ======click function start======
   //查询条件更新
   const queryChange = (changedValues: any, allValues: any) => {
+    if (allValues) {
+      for (let key of Object.keys(allValues)) {
+        if (allValues[key] == '') {
+          allValues[key] = undefined;
+        }
+      }
+    }
     setQuery(allValues);
   };
   //分页更新
@@ -770,14 +785,24 @@ const CurdPage: FC<{
   //查询按钮
   const queryButton =
     optionAuth.indexOf('query') > -1 ? (
-      <Button
-        type="primary"
-        icon={<SearchOutlined />}
-        shape="round"
-        onClick={queryClick}
-      >
-        查询
-      </Button>
+      <Space>
+        <Button
+          type="primary"
+          icon={<SearchOutlined />}
+          shape="round"
+          onClick={queryClick}
+        >
+          查询
+        </Button>
+        <Button
+          shape="round"
+          onClick={() => {
+            setQuery({});
+          }}
+        >
+          重置
+        </Button>
+      </Space>
     ) : (
       ''
     );
@@ -851,6 +876,7 @@ const CurdPage: FC<{
   //debug
   console.log(model + '-' + entity + ' page render');
   console.log('entity', entityData);
+  console.log('query', query);
 
   //新增页面
   if (status == 'add' || status == 'edit' || status == 'view') {
@@ -907,6 +933,7 @@ const CurdPage: FC<{
       <div className="cms-main">
         <div className="cms-query">
           <Form
+            form={queryForm}
             layout="inline"
             name="search"
             labelCol={{ span: 8 }}
