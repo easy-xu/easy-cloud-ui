@@ -116,9 +116,9 @@ const default_pageSize = 5;
 let nextStatus: IStatus = 'search';
 
 const CurdPage: FC<{
-  namespace: string;
   model: string;
-  name: string;
+  entity: string;
+  pageTitle: string;
   fields: IFields;
   queryEntityApi?: any;
   pageListApi?: any;
@@ -130,9 +130,9 @@ const CurdPage: FC<{
   extendOption?: any[];
   extendOptionPage?: any;
 }> = ({
-  namespace,
   model,
-  name,
+  entity,
+  pageTitle,
   fields,
   queryEntityApi,
   pageListApi,
@@ -176,7 +176,7 @@ const CurdPage: FC<{
   const [deleteConfirmVisible, setDeleteConfirmVisible] =
     useState<boolean>(false);
   //新增-修改对象
-  const [entity, setEntity] = useState<any>({});
+  const [entityData, setEntityData] = useState<any>({});
   //分页信息
   const [page, setPage] = useState<IPage>(initPata);
   //查询条件
@@ -313,11 +313,11 @@ const CurdPage: FC<{
   });
   //新增或保存
   const saveEntiyRequest = useRequest(
-    (params) => saveEntityApi(namespace, model, params),
+    (params) => saveEntityApi(model, entity, params),
     {
       manual: true,
       onSuccess: (data) => {
-        setEntity({});
+        setEntityData({});
         setSelectedRowKeys([]);
         //清除父组件数据
         extendData?.forEach((item: any) => {
@@ -334,7 +334,7 @@ const CurdPage: FC<{
   );
   //分页查询
   const pageListRequest = useRequest(
-    (page, query) => pageListApi(namespace, model, page, query),
+    (page, query) => pageListApi(model, entity, page, query),
     {
       manual: true,
       onSuccess: (data) => {
@@ -345,11 +345,11 @@ const CurdPage: FC<{
   );
   //主键查询
   const queryEntityRequest = useRequest(
-    (id) => queryEntityApi(namespace, model, id),
+    (id) => queryEntityApi(model, entity, id),
     {
       manual: true,
       onSuccess: (data) => {
-        setEntity(data);
+        setEntityData(data);
         //设置父组件数据
         extendData?.forEach((item: any) => {
           item.setData(data[item.key]);
@@ -362,7 +362,7 @@ const CurdPage: FC<{
   );
   //主键删除
   const deleteEntityRequest = useRequest(
-    (id) => deleteEntityApi(namespace, model, id),
+    (id) => deleteEntityApi(model, entity, id),
     {
       manual: true,
       onSuccess: (data) => {
@@ -377,7 +377,7 @@ const CurdPage: FC<{
     },
   );
   //查询操作权限
-  const optionAuthRequest = useRequest(() => queryOptionAuthApi(model), {
+  const optionAuthRequest = useRequest(() => queryOptionAuthApi(entity), {
     manual: true,
     onSuccess: (data) => {
       setOptionAuth(data);
@@ -423,7 +423,7 @@ const CurdPage: FC<{
   };
   //新增按钮
   const addClick = () => {
-    setEntity({});
+    setEntityData({});
     //清除父组件数据
     extendData?.forEach((item: any) => {
       item.clear();
@@ -849,8 +849,8 @@ const CurdPage: FC<{
   // ======render node end======
 
   //debug
-  console.log(namespace + '-' + model + ' page render');
-  console.log('entity', entity);
+  console.log(model + '-' + entity + ' page render');
+  console.log('entity', entityData);
 
   //新增页面
   if (status == 'add' || status == 'edit' || status == 'view') {
@@ -860,7 +860,7 @@ const CurdPage: FC<{
           ghost={false}
           onBack={openFirstPage}
           title={addTitle}
-          subTitle={name + '页面'}
+          subTitle={pageTitle}
           extra={[
             <Button
               key="1"
@@ -887,7 +887,7 @@ const CurdPage: FC<{
           ]}
         >
           <Form
-            initialValues={entity}
+            initialValues={entityData}
             name={status + '_' + addStatus}
             {...formLayout}
             onFinish={addSubmitClick}
@@ -975,7 +975,7 @@ const CurdPage: FC<{
         ghost={false}
         onBack={openFirstPage}
         title={extendOptionPage?.name}
-        subTitle={name + '页面'}
+        subTitle={pageTitle}
       >
         {extendOptionPage?.node}
       </PageHeader>

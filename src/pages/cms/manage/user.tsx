@@ -264,9 +264,9 @@ const User: FC = (props: any) => {
   return (
     <div>
       <CurdPage
-        namespace="cms"
-        model="user"
-        name="用户"
+        model="cms"
+        entity="user"
+        pageTitle="用户页面"
         fields={fields}
         extendData={[
           {

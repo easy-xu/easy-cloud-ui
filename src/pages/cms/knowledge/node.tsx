@@ -118,9 +118,9 @@ const Knowledge: FC = (props: any) => {
 
   return (
     <CurdPage
-      namespace="knowledge"
-      model="node"
-      name="知识点"
+      model="knowledge"
+      entity="node"
+      pageTitle="知识点页面"
       fields={fields}
       refresh={[knowledgeFolderRequest]}
     />

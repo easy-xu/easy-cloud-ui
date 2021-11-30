@@ -82,9 +82,9 @@ const Role: FC = (props: any) => {
 
   return (
     <CurdPage
-      namespace="cms"
-      model="role"
-      name="角色"
+      model="cms"
+      entity="role"
+      pageTitle="角色页面"
       fields={fields}
       extendData={[
         {

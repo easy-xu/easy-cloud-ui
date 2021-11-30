@@ -135,9 +135,9 @@ const Menu: FC = (props: any) => {
 
   return (
     <CurdPage
-      namespace="cms"
-      model="menu"
-      name="菜单"
+      model="cms"
+      entity="menu"
+      pageTitle="菜单页面"
       fields={fields}
       refresh={[menuFolderRequest]}
     />

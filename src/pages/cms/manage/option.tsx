@@ -43,7 +43,12 @@ const Option: FC = (props: any) => {
   ];
 
   return (
-    <CurdPage namespace="cms" model="option" name="操作" fields={fields} />
+    <CurdPage
+      model="cms"
+      entity="option"
+      pageTitle="操作页面"
+      fields={fields}
+    />
   );
 };
 // @ts-ignore

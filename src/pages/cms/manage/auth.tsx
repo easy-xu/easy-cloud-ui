@@ -130,9 +130,9 @@ const Auth: FC = (props: any) => {
 
   return (
     <CurdPage
-      namespace="cms"
-      model="auth"
-      name="权限"
+      model="cms"
+      entity="auth"
+      pageTitle="权限页面"
       fields={fields}
       extendData={[
         {

@@ -42,7 +42,9 @@ const Group: FC = (props: any) => {
     },
   ];
 
-  return <CurdPage namespace="cms" model="group" name="分组" fields={fields} />;
+  return (
+    <CurdPage model="cms" entity="group" pageTitle="分组页面" fields={fields} />
+  );
 };
 // @ts-ignore
 Group.title = '分组页面';

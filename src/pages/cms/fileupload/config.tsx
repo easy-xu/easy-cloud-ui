@@ -35,9 +35,9 @@ const FileServerConfig: FC = (props: any) => {
 
   return (
     <CurdPage
-      namespace="file"
-      model="config"
-      name="文件服务器"
+      model="file"
+      entity="config"
+      pageTitle="文件服务器页面"
       fields={fields}
     />
   );
