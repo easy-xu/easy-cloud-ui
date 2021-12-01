@@ -19,37 +19,16 @@ const SysApiLog: FC = (props: any) => {
       name: '请求流水号',
       code: 'requestId',
       type: 'string',
-      style: {
-        search: { display: true },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
-      },
-      rules: [{ required: false }],
     },
     {
       name: '用户编号',
       code: 'userNo',
       type: 'string',
-      style: {
-        search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
-      },
-      rules: [{ required: false }],
     },
     {
       name: '设备编号',
       code: 'deviceNo',
       type: 'string',
-      style: {
-        search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
-      },
-      rules: [{ required: false }],
     },
     {
       name: '接口编码',
@@ -57,11 +36,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'string',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
     {
       name: '接口地址',
@@ -69,11 +44,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'string',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
     {
       name: '业务编号',
@@ -81,11 +52,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'string',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
     {
       name: '系统编号',
@@ -93,11 +60,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'string',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
     {
       name: '接口耗时',
@@ -105,11 +68,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'number',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
     {
       name: '结果编码',
@@ -117,11 +76,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'number',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
     {
       name: '结果描述',
@@ -129,11 +84,7 @@ const SysApiLog: FC = (props: any) => {
       type: 'string',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
   ];
 
@@ -143,6 +94,8 @@ const SysApiLog: FC = (props: any) => {
       entity="apilog"
       pageTitle="接口日志页面"
       fields={fields}
+      isAuthData={false}
+      option={[]}
     />
   );
 };

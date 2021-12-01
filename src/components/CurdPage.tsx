@@ -111,7 +111,7 @@ export const formLayout = {
   },
 };
 
-const default_pageSize = 5;
+const default_pageSize = 8;
 
 let nextStatus: IStatus = 'search';
 
@@ -120,12 +120,14 @@ const CurdPage: FC<{
   entity: string;
   pageTitle: string;
   fields: IFields;
+  isAuthData?: boolean;
   queryEntityApi?: any;
   pageListApi?: any;
   saveEntityApi?: any;
   deleteEntityApi?: any;
   queryOptionAuthApi?: any;
   refresh?: any[];
+  option?: string[];
   extendData?: any[];
   extendOption?: any[];
   extendOptionPage?: any;
@@ -134,16 +136,29 @@ const CurdPage: FC<{
   entity,
   pageTitle,
   fields,
+  isAuthData,
   queryEntityApi,
   pageListApi,
   saveEntityApi,
   deleteEntityApi,
   queryOptionAuthApi,
   refresh,
+  option,
   extendData,
   extendOption,
   extendOptionPage,
 }) => {
+  if (isAuthData == undefined) {
+    isAuthData = true;
+  }
+
+  if (option == undefined) {
+    option = ['add', 'edit', 'delete'];
+  }
+  if (extendOption == undefined) {
+    extendOption = [];
+  }
+
   if (queryEntityApi == undefined) {
     queryEntityApi = baseQueryEntity;
   }
@@ -190,56 +205,62 @@ const CurdPage: FC<{
   //分组数据
   const [groupData, setGroupData] = useState<any[]>([]);
 
+  const groupAuthFields = isAuthData
+    ? [
+        {
+          name: '分组',
+          code: 'groupId',
+          type: 'select',
+          select: groupData,
+          style: {
+            search: { display: false },
+          },
+        },
+        {
+          name: '所有者权限',
+          code: 'ownMode',
+          type: 'select',
+          select: [
+            { code: '-', name: '无权限', color: 'gray' },
+            { code: 'r', name: '可读权限', color: 'yellow' },
+            { code: 'w', name: '可写权限', color: 'green' },
+          ],
+          style: {
+            search: { display: false },
+          },
+        },
+        {
+          name: '同分组权限',
+          code: 'groupMode',
+          type: 'select',
+          select: [
+            { code: '-', name: '无权限', color: 'gray' },
+            { code: 'r', name: '可读权限', color: 'yellow' },
+            { code: 'w', name: '可写权限', color: 'green' },
+          ],
+          style: {
+            search: { display: false },
+          },
+        },
+        {
+          name: '其他组权限',
+          code: 'otherMode',
+          type: 'select',
+          select: [
+            { code: '-', name: '无权限', color: 'gray' },
+            { code: 'r', name: '可读权限', color: 'yellow' },
+            { code: 'w', name: '可写权限', color: 'green' },
+          ],
+          style: {
+            search: { display: false },
+          },
+        },
+      ]
+    : [];
+
   //数据分组权限字段
   const propertyFields = [
-    {
-      name: '分组',
-      code: 'groupId',
-      type: 'select',
-      select: groupData,
-      style: {
-        search: { display: false },
-      },
-    },
-    {
-      name: '所有者权限',
-      code: 'ownMode',
-      type: 'select',
-      select: [
-        { code: '-', name: '无权限', color: 'gray' },
-        { code: 'r', name: '可读权限', color: 'yellow' },
-        { code: 'w', name: '可写权限', color: 'green' },
-      ],
-      style: {
-        search: { display: false },
-      },
-    },
-    {
-      name: '同分组权限',
-      code: 'groupMode',
-      type: 'select',
-      select: [
-        { code: '-', name: '无权限', color: 'gray' },
-        { code: 'r', name: '可读权限', color: 'yellow' },
-        { code: 'w', name: '可写权限', color: 'green' },
-      ],
-      style: {
-        search: { display: false },
-      },
-    },
-    {
-      name: '其他组权限',
-      code: 'otherMode',
-      type: 'select',
-      select: [
-        { code: '-', name: '无权限', color: 'gray' },
-        { code: 'r', name: '可读权限', color: 'yellow' },
-        { code: 'w', name: '可写权限', color: 'green' },
-      ],
-      style: {
-        search: { display: false },
-      },
-    },
+    ...groupAuthFields,
     {
       name: '创建人员编号',
       code: 'createBy',
@@ -809,7 +830,7 @@ const CurdPage: FC<{
 
   //新增按钮
   const addButtion =
-    optionAuth.indexOf('add') > -1 ? (
+    optionAuth.indexOf('add') > -1 && option.indexOf('add') > -1 ? (
       <Button
         type="primary"
         icon={<PlusOutlined />}
@@ -824,7 +845,7 @@ const CurdPage: FC<{
 
   //修改按钮
   const editButtion =
-    optionAuth.indexOf('edit') > -1 ? (
+    optionAuth.indexOf('edit') > -1 && option.indexOf('edit') > -1 ? (
       <Button
         disabled={selectedRowKeys.length != 1}
         icon={<EditOutlined />}
@@ -839,7 +860,7 @@ const CurdPage: FC<{
 
   //删除按钮
   const deleteButtion =
-    optionAuth.indexOf('delete') > -1 ? (
+    optionAuth.indexOf('delete') > -1 && option.indexOf('delete') > -1 ? (
       <Button
         disabled={selectedRowKeys.length != 1}
         danger
@@ -854,7 +875,7 @@ const CurdPage: FC<{
     );
 
   //额外的按钮
-  const extendOptionButton = extendOption?.map((item) => {
+  const extendOptionButton = extendOption.map((item) => {
     return optionAuth.indexOf(item.requireAuth) > -1 ? (
       <Button
         key={item.key}
@@ -969,7 +990,7 @@ const CurdPage: FC<{
             current: page.current,
             total: page.total,
             pageSize: page.pageSize,
-            pageSizeOptions: ['5', '10', '20', '50'],
+            pageSizeOptions: ['5', '8', '10', '20'],
           }}
         />
         <Modal

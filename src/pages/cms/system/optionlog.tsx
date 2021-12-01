@@ -19,25 +19,11 @@ const SysOptionLog: FC = (props: any) => {
       name: '用户编号',
       code: 'userNo',
       type: 'string',
-      style: {
-        search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
-      },
-      rules: [{ required: false }],
     },
     {
       name: '设备编号',
       code: 'deviceNo',
       type: 'string',
-      style: {
-        search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
-      },
-      rules: [{ required: false }],
     },
     {
       name: '操作名称',
@@ -45,11 +31,7 @@ const SysOptionLog: FC = (props: any) => {
       type: 'string',
       style: {
         search: { display: false },
-        table: { display: true },
-        add: { display: true },
-        edit: { display: true },
       },
-      rules: [{ required: false }],
     },
   ];
 
@@ -59,6 +41,8 @@ const SysOptionLog: FC = (props: any) => {
       entity="optionlog"
       pageTitle="操作记录页面"
       fields={fields}
+      isAuthData={false}
+      option={[]}
     />
   );
 };
