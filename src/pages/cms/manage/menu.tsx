@@ -1,5 +1,6 @@
 import { FC, useState } from 'react';
 import CurdPage, { IFields } from '@/components/CurdPage';
+import AuthEntityPage from '@/components/AuthEntityPage';
 import { useRequest } from 'umi';
 import {
   DashboardOutlined,
@@ -14,69 +15,96 @@ import {
 } from '@ant-design/icons';
 import { baseList } from '@/services/base';
 
-const Menu: FC = (props: any) => {
-  //页面状态
-  const [folders, setFolders] = useState<any>([]);
-
-  //查询菜单文件夹
-  const menuFolderRequest = useRequest(
+const CmsMenu: FC = (props: any) => {
+  const [parentIds, setParentIds] = useState<any>([]);
+  const parentIdsRequest = useRequest(
     () => baseList('cms', 'menu', { type: 'F' }),
     {
       onSuccess: (data) => {
-        let folders = data.map((item: any) => {
+        let parentIds = data.map((item: any) => {
           return { code: item.id, name: item.name };
         });
-        folders.splice(0, 0, { code: 0, name: '根目录' });
-        setFolders(folders);
+        parentIds.splice(0, 0, { code: 0, name: '根目录' });
+        setParentIds(parentIds);
       },
     },
   );
 
   const fields: IFields = [
     {
-      name: '主键',
-      code: 'id',
-      type: 'number',
-      style: {
-        search: { display: false },
-        table: { display: false },
-        add: { hidden: true },
-        edit: { hidden: true },
-      },
-    },
-    {
+      subPage: 'base',
       name: '菜单名称',
       code: 'name',
       type: 'string',
-      rules: [{ required: true }],
+      style: { search: { display: true } },
+      rules: [{ required: true }, { type: 'string', max: 50 }],
     },
     {
-      name: '文件夹',
-      code: 'parentId',
-      type: 'select',
-      rules: [{ required: true }],
-      select: folders,
-      style: {
-        search: {
-          width: 200,
-        },
-      },
-    },
-
-    {
+      subPage: 'base',
       name: '路径字符',
       code: 'code',
       type: 'string',
-      rules: [{ required: true }],
-      style: {
-        search: { display: false },
-      },
+      style: { search: { display: false } },
+      rules: [{ required: true }, { type: 'string', max: 200 }],
     },
     {
+      subPage: 'base',
+      name: '父菜单',
+      code: 'parentId',
+      type: 'select',
+      select: parentIds,
+      style: { search: { display: true } },
+      rules: [{ required: true }],
+    },
+    {
+      subPage: 'base',
+      name: '显示顺序',
+      code: 'orderNum',
+      type: 'number',
+      initial: 0,
+      style: { search: { display: false } },
+    },
+    // {
+    //   subPage: 'base',
+    //   name: '组件路径',
+    //   code: 'component',
+    //   type: 'string',
+    //   style: { search: { display: false } },
+    //   rules: [{ type: 'string', max: 255 }],
+    // },
+    {
+      subPage: 'base',
+      name: '菜单类型',
+      code: 'type',
+      type: 'select',
+      initial: 'M',
+      select: [
+        { code: 'F', name: '目录' },
+        { code: 'M', name: '菜单' },
+      ],
+      style: { search: { display: true } },
+      rules: [{ required: true }],
+    },
+    {
+      subPage: 'base',
+      name: '菜单状态',
+      code: 'visible',
+      type: 'select',
+      initial: '0',
+      select: [
+        { code: '0', name: '显示' },
+        { code: '1', name: '隐藏' },
+      ],
+      style: { search: { display: false } },
+    },
+    {
+      subPage: 'base',
       name: '菜单图标',
       code: 'icon',
       type: 'select',
+      style: { search: { display: false } },
       select: [
+        { code: '', name: '无' },
         { code: 'DashboardOutlined', node: <DashboardOutlined /> },
         { code: 'SettingOutlined', node: <SettingOutlined /> },
         { code: 'BankOutlined', node: <BankOutlined /> },
@@ -87,62 +115,27 @@ const Menu: FC = (props: any) => {
         { code: 'DatabaseOutlined', node: <DatabaseOutlined /> },
         { code: 'TeamOutlined', node: <TeamOutlined /> },
       ],
-      style: {
-        search: { display: false },
-      },
     },
     {
-      name: '显示排序',
-      code: 'orderNum',
-      type: 'number',
-      rules: [{ required: true }],
-      style: {
-        search: { display: false },
-      },
-    },
-    {
-      name: '类型',
-      code: 'type',
-      type: 'select',
-      rules: [{ required: true }],
-      select: [
-        { code: 'F', name: '目录', color: 'yellow' },
-        { code: 'M', name: '菜单', color: 'green' },
-      ],
-    },
-    {
-      name: '隐藏',
-      code: 'visible',
-      type: 'select',
-      select: [
-        { code: '0', name: '显示', color: 'green' },
-        { code: '1', name: '隐藏', color: 'gray' },
-      ],
-      style: {
-        search: { display: false },
-      },
-    },
-    {
-      name: '状态',
-      code: 'deleted',
-      type: 'select',
-      select: [
-        { code: '0', name: '启用', color: 'green' },
-        { code: '1', name: '停用', color: 'red' },
-      ],
+      subPage: 'base',
+      name: '备注',
+      code: 'remark',
+      type: 'textarea',
+      style: { search: { display: false }, table: { display: false } },
+      rules: [{ type: 'string', max: 500 }],
     },
   ];
 
   return (
-    <CurdPage
+    <AuthEntityPage
       model="cms"
       entity="menu"
       pageTitle="菜单页面"
       fields={fields}
-      refresh={[menuFolderRequest]}
+      option={['add', 'edit', 'delete']}
     />
   );
 };
 // @ts-ignore
-Menu.title = '菜单页面';
-export default Menu;
+CmsMenu.title = '菜单页面';
+export default CmsMenu;

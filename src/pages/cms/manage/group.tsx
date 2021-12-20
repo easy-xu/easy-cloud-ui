@@ -1,51 +1,45 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
 import CurdPage, { IFields } from '@/components/CurdPage';
+import AuthEntityPage from '@/components/AuthEntityPage';
+import { useRequest } from 'umi';
+import { baseList, baseTree } from '@/services/base';
+import { toTreeData, toListData } from '@/utils/baseUtil';
 
-const Group: FC = (props: any) => {
+const CmsGroup: FC = (props: any) => {
   const fields: IFields = [
-    {
-      name: '主键',
-      code: 'id',
-      type: 'number',
-      style: {
-        search: { display: false },
-        table: { display: false },
-        add: { hidden: true },
-        edit: { hidden: true },
-      },
-    },
     {
       name: '分组名称',
       code: 'name',
       type: 'string',
-      rules: [{ required: true }],
+      style: { search: { display: true } },
+      rules: [{ required: true }, { type: 'string', max: 30 }],
     },
-
     {
-      name: '分组字符',
+      name: '分组字符串',
       code: 'code',
       type: 'string',
-      rules: [{ required: true }],
-      style: {
-        search: { display: false },
-      },
+      style: { search: { display: true } },
+      rules: [{ required: true }, { type: 'string', max: 100 }],
     },
-
     {
-      name: '状态',
-      code: 'deleted',
-      type: 'select',
-      select: [
-        { code: '0', name: '启用', color: 'green' },
-        { code: '1', name: '停用', color: 'red' },
-      ],
+      name: '备注',
+      code: 'remark',
+      type: 'textarea',
+      style: { search: { display: false }, table: { display: false } },
+      rules: [{ type: 'string', max: 500 }],
     },
   ];
 
   return (
-    <CurdPage model="cms" entity="group" pageTitle="分组页面" fields={fields} />
+    <AuthEntityPage
+      model="cms"
+      entity="group"
+      pageTitle="分组页面"
+      fields={fields}
+      option={['add', 'edit', 'delete']}
+    />
   );
 };
 // @ts-ignore
-Group.title = '分组页面';
-export default Group;
+CmsGroup.title = '分组页面';
+export default CmsGroup;

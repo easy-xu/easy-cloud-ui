@@ -13,10 +13,10 @@ import * as Icon from '@ant-design/icons';
 const { Sider, Content, Footer, Header } = Layout;
 const { SubMenu } = Menu;
 import './index.less';
-import { cmsMenuTree } from '@/services/cms';
 import Loading from '@/components/Loading';
 import CustHeader from '@/components/CustHeader';
 import FixRow from '@/components/FixRow';
+import { baseTree } from '@/services/base';
 
 const CmsLayout: FC<IRouteComponentProps> = ({
   children,
@@ -42,8 +42,7 @@ const CmsLayout: FC<IRouteComponentProps> = ({
   const [small, setSmall] = useState<boolean>(false);
 
   const menuTreeRequest = useRequest(
-    () => cmsMenuTree({ userNo: user.userNo }),
-    //() => cmsMenuTree({}),
+    () => baseTree('cms', 'menu', { userNo: user.userNo }),
     {
       manual: true,
       onSuccess: (data) => {

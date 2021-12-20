@@ -1,4 +1,4 @@
-import { FC, ReactElement, useEffect, useState } from 'react';
+import { FC, ReactElement, SetStateAction, useEffect, useState } from 'react';
 import {
   InputNumber,
   Form,
@@ -8,7 +8,8 @@ import {
   Select,
   Table,
   Space,
-  Card,
+  Checkbox,
+  Tree,
   Tag,
   Modal,
   Tabs,
@@ -27,14 +28,17 @@ import { useRequest } from 'umi';
 import FixRow from '@/components/FixRow';
 import {
   basePageList,
-  baseSaveEntity,
+  baseEditEntity,
+  baseAddEntity,
   baseDeleteEntity,
   baseQueryEntity,
   baseList,
+  baseGetEntity,
 } from '@/services/base';
 import Loading from './Loading';
 import { cmsQueryOptionAuth } from '@/services/cms';
 import Markdown from './Markdown';
+import FormTree, { ITree } from './FormTree';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -66,9 +70,11 @@ export declare type IOption = {
 export declare type Breakpoint = 'xxl' | 'xl' | 'lg' | 'md' | 'sm' | 'xs';
 
 export declare type IField = {
-  name?: string;
-  code?: string;
+  subPage?: string;
+  name: string;
+  code: string | string[];
   type?: string;
+  initial?: any;
   responsive?: Breakpoint[];
   rules?: any[];
   style?: {
@@ -79,18 +85,40 @@ export declare type IField = {
     view?: IStyle;
   };
   select?: IOption[];
+  checks?: IOption[];
+  radio?: IOption[];
+  tree?: ITree[];
   node?: ReactElement;
 };
 
 export declare type IFields = IField[];
 
 export declare type IStatus = 'search' | 'add' | 'edit' | 'view' | string;
-export declare type IAddStatus = 'base' | 'property';
+export declare type ISubPageStatus = 'base' | 'property';
 
 export declare type IPage = {
   current: number;
   pageSize: number;
   total?: number;
+};
+
+export declare type ICurdPage = {
+  model: string;
+  entity: string;
+  pageTitle: string;
+  fields: IFields;
+  queryEntityApi?: any;
+  pageListApi?: any;
+  addEntityApi?: any;
+  editEntityApi?: any;
+  deleteEntityApi?: any;
+  queryOptionAuthApi?: any;
+  refresh?: any[];
+  option?: string[];
+  extendData?: any[];
+  extendOption?: any[];
+  extendOptionPage?: any;
+  queryVersion?: string;
 };
 
 //表单布局样式
@@ -115,66 +143,24 @@ const default_pageSize = 8;
 
 let nextStatus: IStatus = 'search';
 
-const CurdPage: FC<{
-  model: string;
-  entity: string;
-  pageTitle: string;
-  fields: IFields;
-  isAuthData?: boolean;
-  queryEntityApi?: any;
-  pageListApi?: any;
-  saveEntityApi?: any;
-  deleteEntityApi?: any;
-  queryOptionAuthApi?: any;
-  refresh?: any[];
-  option?: string[];
-  extendData?: any[];
-  extendOption?: any[];
-  extendOptionPage?: any;
-}> = ({
+const CurdPage: FC<ICurdPage> = ({
   model,
   entity,
   pageTitle,
-  fields,
-  isAuthData,
-  queryEntityApi,
-  pageListApi,
-  saveEntityApi,
-  deleteEntityApi,
-  queryOptionAuthApi,
+  fields = [],
+  queryEntityApi = baseGetEntity,
+  pageListApi = basePageList,
+  addEntityApi = baseAddEntity,
+  editEntityApi = baseEditEntity,
+  deleteEntityApi = baseDeleteEntity,
+  queryOptionAuthApi = cmsQueryOptionAuth,
   refresh,
-  option,
-  extendData,
-  extendOption,
+  option = ['add', 'edit', 'delete'],
+  extendData = [],
+  extendOption = [],
   extendOptionPage,
+  queryVersion,
 }) => {
-  if (isAuthData == undefined) {
-    isAuthData = true;
-  }
-
-  if (option == undefined) {
-    option = ['add', 'edit', 'delete'];
-  }
-  if (extendOption == undefined) {
-    extendOption = [];
-  }
-
-  if (queryEntityApi == undefined) {
-    queryEntityApi = baseQueryEntity;
-  }
-  if (pageListApi == undefined) {
-    pageListApi = basePageList;
-  }
-  if (saveEntityApi == undefined) {
-    saveEntityApi = baseSaveEntity;
-  }
-  if (deleteEntityApi == undefined) {
-    deleteEntityApi = baseDeleteEntity;
-  }
-  if (queryOptionAuthApi == undefined) {
-    queryOptionAuthApi = cmsQueryOptionAuth;
-  }
-
   const initPata = {
     current: 1,
     pageSize: default_pageSize,
@@ -182,9 +168,9 @@ const CurdPage: FC<{
   };
 
   //页面状态
-  const [status, setStatus] = useState<IStatus>('search');
-  //新增页面状态
-  const [addStatus, setAddStatus] = useState<IAddStatus>('base');
+  const [pageStatus, setPageStatus] = useState<IStatus>('search');
+  //子页面状态
+  const [subPageStatus, setSubPageStatus] = useState<ISubPageStatus>('base');
   //列表选择
   const [selectedRowKeys, setSelectedRowKeys] = useState<number[]>([]);
   //删除确认弹窗
@@ -202,165 +188,48 @@ const CurdPage: FC<{
   const [records, setRecords] = useState<any[]>([]);
   //操作权限
   const [optionAuth, setOptionAuth] = useState<any[]>([]);
-  //分组数据
-  const [groupData, setGroupData] = useState<any[]>([]);
-
-  const groupAuthFields = isAuthData
-    ? [
-        {
-          name: '分组',
-          code: 'groupId',
-          type: 'select',
-          select: groupData,
-          style: {
-            search: { display: false },
-          },
-        },
-        {
-          name: '所有者权限',
-          code: 'ownMode',
-          type: 'select',
-          select: [
-            { code: '-', name: '无权限', color: 'gray' },
-            { code: 'r', name: '可读权限', color: 'yellow' },
-            { code: 'w', name: '可写权限', color: 'green' },
-          ],
-          style: {
-            search: { display: false },
-          },
-        },
-        {
-          name: '同分组权限',
-          code: 'groupMode',
-          type: 'select',
-          select: [
-            { code: '-', name: '无权限', color: 'gray' },
-            { code: 'r', name: '可读权限', color: 'yellow' },
-            { code: 'w', name: '可写权限', color: 'green' },
-          ],
-          style: {
-            search: { display: false },
-          },
-        },
-        {
-          name: '其他组权限',
-          code: 'otherMode',
-          type: 'select',
-          select: [
-            { code: '-', name: '无权限', color: 'gray' },
-            { code: 'r', name: '可读权限', color: 'yellow' },
-            { code: 'w', name: '可写权限', color: 'green' },
-          ],
-          style: {
-            search: { display: false },
-          },
-        },
-      ]
-    : [];
-
-  //数据分组权限字段
-  const propertyFields = [
-    ...groupAuthFields,
-    {
-      name: '创建人员编号',
-      code: 'createBy',
-      type: 'string',
-      style: {
-        search: { display: false },
-        add: { display: false },
-        edit: { disable: true },
-      },
-    },
-    {
-      name: '创建人员昵称',
-      code: 'createByNickname',
-      type: 'string',
-      style: {
-        search: { display: false },
-        add: { display: false },
-        edit: { disable: true },
-      },
-    },
-    {
-      name: '创建时间',
-      code: 'createTime',
-      type: 'string',
-      style: {
-        search: { display: false },
-        add: { display: false },
-        edit: { disable: true },
-      },
-    },
-    {
-      name: '修改人员编号',
-      code: 'updateBy',
-      type: 'string',
-      style: {
-        search: { display: false },
-        add: { display: false },
-        edit: { display: false },
-      },
-    },
-    {
-      name: '修改人员昵称',
-      code: 'updateByNickname',
-      type: 'string',
-      style: {
-        search: { display: false },
-        add: { display: false },
-        edit: { display: false },
-      },
-    },
-    {
-      name: '修改时间',
-      code: 'updateTime',
-      type: 'string',
-      style: {
-        search: { display: false },
-        add: { display: false },
-        edit: { display: false },
-      },
-    },
-  ];
 
   // ======useRequest start======
-  //分页查询
-  const groupDataRequest = useRequest(() => baseList('cms', 'group', {}), {
-    manual: true,
-    onSuccess: (data) => {
-      let groups = data.map((item: any) => {
-        return { code: item.id, name: item.name };
-      });
-      setGroupData(groups);
-    },
-  });
+  //查询页面刷新
+  const doReSearch = () => {
+    setEntityData({});
+    setSelectedRowKeys([]);
+    //清除父组件数据
+    extendData?.forEach((item: any) => {
+      item.clear();
+    });
+    setPageStatus('search');
+    pageListRequest.run(page, query);
+    //需要刷新的api
+    refresh?.forEach((item: any) => {
+      item.run();
+    });
+  };
   //新增或保存
-  const saveEntiyRequest = useRequest(
-    (params) => saveEntityApi(model, entity, params),
+  const addEntiyRequest = useRequest(
+    (params: any) => addEntityApi(model, entity, params),
     {
       manual: true,
-      onSuccess: (data) => {
-        setEntityData({});
-        setSelectedRowKeys([]);
-        //清除父组件数据
-        extendData?.forEach((item: any) => {
-          item.clear();
-        });
-        setStatus('search');
-        pageListRequest.run(page, query);
-        //需要刷新的api
-        refresh?.forEach((item: any) => {
-          item.run();
-        });
+      onSuccess: (data: any) => {
+        doReSearch();
+      },
+    },
+  );
+  const editEntiyRequest = useRequest(
+    (params: any) => editEntityApi(model, entity, params),
+    {
+      manual: true,
+      onSuccess: (data: any) => {
+        doReSearch();
       },
     },
   );
   //分页查询
   const pageListRequest = useRequest(
-    (page, query) => pageListApi(model, entity, page, query),
+    (page: IPage, query: any) => pageListApi(model, entity, page, query),
     {
       manual: true,
-      onSuccess: (data) => {
+      onSuccess: (data: any) => {
         setPage(data.page);
         setRecords(data.records);
       },
@@ -368,27 +237,27 @@ const CurdPage: FC<{
   );
   //主键查询
   const queryEntityRequest = useRequest(
-    (id) => queryEntityApi(model, entity, id),
+    (id: number) => queryEntityApi(model, entity, id),
     {
       manual: true,
-      onSuccess: (data) => {
+      onSuccess: (data: any) => {
         setEntityData(data);
         //设置父组件数据
         extendData?.forEach((item: any) => {
           item.setData(data[item.key]);
           item.setDisable(nextStatus == 'view');
         });
-        setStatus(nextStatus);
-        setAddStatus('base');
+        setPageStatus(nextStatus);
+        setSubPageStatus('base');
       },
     },
   );
   //主键删除
   const deleteEntityRequest = useRequest(
-    (id) => deleteEntityApi(model, entity, id),
+    (id: number) => deleteEntityApi(model, entity, id),
     {
       manual: true,
-      onSuccess: (data) => {
+      onSuccess: (data: any) => {
         setSelectedRowKeys([]);
         setDeleteConfirmVisible(false);
         pageListRequest.run(page, query);
@@ -402,7 +271,7 @@ const CurdPage: FC<{
   //查询操作权限
   const optionAuthRequest = useRequest(() => queryOptionAuthApi(entity), {
     manual: true,
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       setOptionAuth(data);
     },
   });
@@ -411,9 +280,8 @@ const CurdPage: FC<{
   // ======useEffect start======
   useEffect(() => {
     optionAuthRequest.run();
-    groupDataRequest.run();
     pageListRequest.run(page, query);
-  }, []);
+  }, [queryVersion]);
 
   useEffect(() => {
     if (!query || Object.keys(query).length == 0) {
@@ -422,12 +290,12 @@ const CurdPage: FC<{
   }, [query]);
 
   useEffect(() => {
-    if (extendOptionPage == undefined && status != 'search') {
-      setStatus('search');
+    if (extendOptionPage == undefined && pageStatus != 'search') {
+      setPageStatus('search');
       pageListRequest.run(page, query);
     }
-    if (extendOptionPage != undefined && extendOptionPage.key != status) {
-      setStatus(extendOptionPage.key);
+    if (extendOptionPage != undefined && extendOptionPage.key != pageStatus) {
+      setPageStatus(extendOptionPage.key);
     }
   }, [extendOptionPage]);
   // ======useEffect end======
@@ -437,7 +305,7 @@ const CurdPage: FC<{
   const queryChange = (changedValues: any, allValues: any) => {
     if (allValues) {
       for (let key of Object.keys(allValues)) {
-        if (allValues[key] == '') {
+        if (allValues[key] === '') {
           allValues[key] = undefined;
         }
       }
@@ -465,20 +333,25 @@ const CurdPage: FC<{
       item.clear();
       item.setDisable(false);
     });
-    setStatus('add');
-    setAddStatus('base');
+    setPageStatus('add');
+    setSubPageStatus('base');
   };
-  //新增确认按钮
-  const addSubmitClick = (values: any) => {
+  //新增或修改确认按钮
+  const pageSubmitClick = (values: any) => {
     //补充父组件数据
     extendData?.forEach((item: any) => {
       values[item.key] = item.data;
     });
-    saveEntiyRequest.run(values);
+    if (pageStatus == 'add') {
+      addEntiyRequest.run(values);
+    }
+    if (pageStatus == 'edit') {
+      editEntiyRequest.run(values);
+    }
   };
   //显示条件分页界面
   const openFirstPage = () => {
-    setStatus('search');
+    setPageStatus('search');
   };
   //修改按钮
   const eidtClick = () => {
@@ -513,40 +386,42 @@ const CurdPage: FC<{
   const getStyle = (item: IField) => {
     //未声明或者指定显示
     let style = undefined;
-    if (status == 'search' && item.style && item.style.search) {
+    if (pageStatus == 'search' && item.style && item.style.search) {
       style = item.style.search;
     }
-    if (status == 'add' && item.style && item.style.add) {
+    if (pageStatus == 'add' && item.style && item.style.add) {
       style = item.style.add;
     }
-    if (status == 'edit' && item.style && item.style.edit) {
+    if (pageStatus == 'edit' && item.style && item.style.edit) {
       style = item.style.edit;
     }
-    if (status == 'view' && item.style && item.style.view) {
+    if (pageStatus == 'view' && item.style && item.style.view) {
       style = item.style.view;
     }
     return style;
   };
 
-  const formItem = (
-    item: IField,
-    style?: IStyle,
-    displayAddStatus?: IAddStatus,
-  ) => {
+  const formItem = (item: IField, style?: IStyle) => {
     //判断是否需要render
     if (style != undefined && style.display == false) {
       return;
     }
-    //判断在那个页面显示
-    let hidden = displayAddStatus ? displayAddStatus != addStatus : false;
+    //判断在那个子页面显示
+    if (!item.subPage) {
+      item.subPage = 'base';
+    }
+    let hidden = pageStatus == 'search' ? false : subPageStatus != item.subPage;
+
     if (style != undefined && style.hidden == true) {
       hidden = true;
     }
+
     let disable = false;
     if (style != undefined && style.disable == true) {
       disable = true;
     }
-    if (status == 'view') {
+    //详情页面全部不可修改
+    if (pageStatus == 'view') {
       disable = true;
     }
 
@@ -560,7 +435,7 @@ const CurdPage: FC<{
     else if (item.type == 'select' && item.select != undefined) {
       content = (
         <Select
-          style={{ minWidth: style?.width ? style.width : 100 }}
+          style={{ minWidth: style?.width ? style.width : 150 }}
           disabled={disable}
           allowClear
         >
@@ -576,19 +451,36 @@ const CurdPage: FC<{
     }
 
     //单选框
-    else if (item.type == 'radio' && item.select != undefined) {
+    else if (item.type == 'radio' && item.radio != undefined) {
       content = (
-        <Radio.Group name={item.name}>
-          {item.select.map((option: IOption) => {
+        <Radio.Group name={item.name} disabled={disable}>
+          {item.radio.map((option: IOption) => {
             return (
               <Radio key={option.code} value={option.code}>
-                {' '}
                 {option.node ? option.node : option.name}
               </Radio>
             );
           })}
         </Radio.Group>
       );
+    }
+    //多选框
+    else if (item.type == 'checks' && item.checks != undefined) {
+      content = (
+        <Checkbox.Group name={item.name} disabled={disable}>
+          {item.checks.map((option: IOption) => {
+            return (
+              <Checkbox key={option.code} value={option.code}>
+                {option.node ? option.node : option.name}
+              </Checkbox>
+            );
+          })}
+        </Checkbox.Group>
+      );
+    }
+    //树
+    else if (item.type == 'tree' && item.tree != undefined) {
+      content = <FormTree disabled={disable} treeData={item.tree} />;
     }
 
     //markdown
@@ -604,18 +496,25 @@ const CurdPage: FC<{
     else if (item.type == 'password') {
       content = <Input.Password readOnly={disable} />;
     }
+    //文本域
+    else if (item.type == 'textarea') {
+      content = <Input.TextArea rows={3} readOnly={disable} />;
+    }
     //默认普通输入框
     else {
       content = <Input readOnly={disable} />;
     }
 
+    const key = item.code.toString();
+
     const formItemNode = (
       <Form.Item
         label={item.name}
         name={item.code}
-        key={item.code}
+        key={key}
         hidden={hidden}
-        rules={status == 'search' ? [] : item.rules}
+        initialValue={pageStatus == 'add' ? item.initial : undefined}
+        rules={pageStatus == 'search' ? [] : item.rules}
       >
         {content}
       </Form.Item>
@@ -634,7 +533,7 @@ const CurdPage: FC<{
         return false;
       };
       return (
-        <Form.Item key={item.code} noStyle shouldUpdate={shouldUpdate}>
+        <Form.Item key={key} noStyle shouldUpdate={shouldUpdate}>
           {({ getFieldValue }) => {
             for (const key in condition) {
               if (condition[key].indexOf(getFieldValue(key)) == -1) {
@@ -694,6 +593,8 @@ const CurdPage: FC<{
         title: item.name,
         dataIndex: item.code,
         key: item.code,
+        //自动省略
+        ellipsis: true,
         responsive: responsive,
         render: (text: any, record: any) => {
           //选择类型回显
@@ -752,18 +653,13 @@ const CurdPage: FC<{
     onChange: onSelectChange,
   };
 
-  //新增页面字段
-  const addFieldNodes = fields.map((item: IField) => {
-    return formItem(item, getStyle(item), 'base');
+  //子页面字段
+  const fieldNodes = fields.map((item: IField) => {
+    return formItem(item, getStyle(item));
   });
 
-  const addPropertyFieldNodes = propertyFields.map((item: IField) => {
-    //未声明或者指定显示
-    return formItem(item, getStyle(item), 'property');
-  });
-
-  //新增页面按钮
-  let addOptionNodes = (
+  //子页面按钮
+  let subOptionNodes = (
     <Form.Item>
       <div className="cms-add-options">
         <FixRow>
@@ -781,14 +677,14 @@ const CurdPage: FC<{
   );
 
   //标题
-  let addTitle = '新增';
+  let subTitle = '新增';
 
-  if (status == 'edit') {
-    addTitle = '修改';
+  if (pageStatus == 'edit') {
+    subTitle = '修改';
   }
-  if (status == 'view') {
-    addTitle = '详情';
-    addOptionNodes = (
+  if (pageStatus == 'view') {
+    subTitle = '详情';
+    subOptionNodes = (
       <Form.Item>
         <div className="cms-add-options">
           <FixRow>
@@ -819,6 +715,7 @@ const CurdPage: FC<{
           shape="round"
           onClick={() => {
             setQuery({});
+            setPage({ current: 1, pageSize: default_pageSize });
           }}
         >
           重置
@@ -878,6 +775,7 @@ const CurdPage: FC<{
   const extendOptionButton = extendOption.map((item) => {
     return optionAuth.indexOf(item.requireAuth) > -1 ? (
       <Button
+        {...item.props}
         key={item.key}
         disabled={selectedRowKeys.length != 1}
         shape="round"
@@ -895,26 +793,27 @@ const CurdPage: FC<{
   // ======render node end======
 
   //debug
-  console.log(model + '-' + entity + ' page render');
+  console.log('page render', model + '-' + entity);
   console.log('entity', entityData);
   console.log('query', query);
+  console.log('fields', fields);
 
-  //新增页面
-  if (status == 'add' || status == 'edit' || status == 'view') {
+  //子页面
+  if (pageStatus == 'add' || pageStatus == 'edit' || pageStatus == 'view') {
     return (
       <div className="cms-main">
         <PageHeader
           ghost={false}
           onBack={openFirstPage}
-          title={addTitle}
+          title={subTitle}
           subTitle={pageTitle}
           extra={[
             <Button
               key="1"
-              type={addStatus == 'base' ? 'primary' : 'default'}
+              type={subPageStatus == 'base' ? 'primary' : 'default'}
               icon={<ProfileOutlined />}
               onClick={() => {
-                setAddStatus('base');
+                setSubPageStatus('base');
               }}
               shape="round"
             >
@@ -922,10 +821,10 @@ const CurdPage: FC<{
             </Button>,
             <Button
               key="2"
-              type={addStatus == 'property' ? 'primary' : 'default'}
+              type={subPageStatus == 'property' ? 'primary' : 'default'}
               icon={<ControlOutlined />}
               onClick={() => {
-                setAddStatus('property');
+                setSubPageStatus('property');
               }}
               shape="round"
             >
@@ -935,21 +834,20 @@ const CurdPage: FC<{
         >
           <Form
             initialValues={entityData}
-            name={status + '_' + addStatus}
+            name={pageStatus + '_' + subPageStatus}
             {...formLayout}
-            onFinish={addSubmitClick}
+            onFinish={pageSubmitClick}
             autoComplete="off"
           >
-            {addFieldNodes}
-            {addPropertyFieldNodes}
-            {addOptionNodes}
+            {fieldNodes}
+            {subOptionNodes}
           </Form>
         </PageHeader>
       </div>
     );
   }
 
-  if (status == 'search') {
+  if (pageStatus == 'search') {
     return (
       <div className="cms-main">
         <div className="cms-query">

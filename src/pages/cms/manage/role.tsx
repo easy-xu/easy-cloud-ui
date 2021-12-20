@@ -1,103 +1,59 @@
 import { FC, useState } from 'react';
 import CurdPage, { IFields } from '@/components/CurdPage';
+import AuthEntityPage from '@/components/AuthEntityPage';
 import { useRequest } from 'umi';
-import { Tree, Checkbox } from 'antd';
-import { baseList } from '@/services/base';
+import { baseList, baseTree } from '@/services/base';
+import { toTreeData, toListData } from '@/utils/baseUtil';
 
-const Role: FC = (props: any) => {
-  const [authData, setAuthData] = useState([]);
-  const [authCheckedDisable, setAuthCheckedDisable] = useState<boolean>(false);
-  const [checkedAuthKeys, setCheckedAuthKeys] = useState<React.Key[]>([]);
-  const authDataRequest = useRequest(() => baseList('cms', 'auth', {}), {
+const CmsRole: FC = (props: any) => {
+  const [authIds, setAuthIds] = useState<any>([]);
+  const authIdsRequest = useRequest(() => baseList('cms', 'auth', {}), {
     onSuccess: (data) => {
-      const authData = data.map((item: any) => {
-        return { label: item.name, value: item.id };
-      });
-      setAuthData(authData);
+      setAuthIds(toListData(data, 'id', 'name'));
     },
   });
 
-  function onAuthChecked(checkedValues: any) {
-    setCheckedAuthKeys(checkedValues);
-  }
-
-  const authCheckedClear = () => {
-    setCheckedAuthKeys([]);
-  };
-
   const fields: IFields = [
-    {
-      name: '主键',
-      code: 'id',
-      type: 'number',
-      style: {
-        search: { display: false },
-        table: { display: false },
-        add: { hidden: true },
-        edit: { hidden: true },
-      },
-    },
-
     {
       name: '角色名称',
       code: 'name',
       type: 'string',
-      rules: [{ required: true }],
+      style: { search: { display: true } },
+      rules: [{ required: true }, { type: 'string', max: 30 }],
     },
     {
-      name: '角色字符',
+      name: '角色字符串',
       code: 'code',
       type: 'string',
-      rules: [{ required: true }],
-      style: {
-        search: { display: false },
-      },
+      style: { search: { display: true } },
+      rules: [{ required: true }, { type: 'string', max: 100 }],
     },
     {
-      name: '权限操作',
+      name: '备注',
+      code: 'remark',
+      type: 'textarea',
+      style: { search: { display: false }, table: { display: false } },
+      rules: [{ type: 'string', max: 500 }],
+    },
+    {
+      name: '权限',
       code: 'authIds',
-      type: 'tree',
-      style: {
-        search: { display: false },
-        table: { display: false },
-      },
-      node: (
-        <Checkbox.Group
-          disabled={authCheckedDisable}
-          options={authData}
-          onChange={onAuthChecked}
-        />
-      ),
-    },
-    {
-      name: '状态',
-      code: 'deleted',
-      type: 'select',
-      select: [
-        { code: '0', name: '启用', color: 'green' },
-        { code: '1', name: '停用', color: 'red' },
-      ],
+      type: 'checks',
+      checks: authIds,
+      style: { search: { display: false }, table: { display: false } },
     },
   ];
 
   return (
-    <CurdPage
+    <AuthEntityPage
       model="cms"
       entity="role"
       pageTitle="角色页面"
       fields={fields}
-      extendData={[
-        {
-          key: 'authIds',
-          data: checkedAuthKeys,
-          setDisable: setAuthCheckedDisable,
-          setData: setCheckedAuthKeys,
-          clear: authCheckedClear,
-        },
-      ]}
+      option={['add', 'edit', 'delete']}
     />
   );
 };
 // @ts-ignore
-Role.title = '角色页面';
-export default Role;
+CmsRole.title = '角色页面';
+export default CmsRole;

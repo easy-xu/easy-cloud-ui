@@ -1,76 +1,37 @@
 import { FC, useState } from 'react';
-import CurdPage, { formLayout, IFields, IStatus } from '@/components/CurdPage';
-import { cmsResetPassword } from '@/services/cms';
+import CurdPage, { formLayout, IFields } from '@/components/CurdPage';
+import AuthEntityPage from '@/components/AuthEntityPage';
 import { useRequest } from 'umi';
+import { baseList, baseTree } from '@/services/base';
+import { toTreeData, toListData } from '@/utils/baseUtil';
+import { cmsResetPassword } from '@/services/cms';
 import { Checkbox, Form, Input, Space, Button, InputNumber } from 'antd';
 import FixRow from '@/components/FixRow';
-import { baseList } from '@/services/base';
 
-const User: FC = (props: any) => {
-  const [roleData, setRoleData] = useState([]);
-  const [roleCheckedDisable, setRoleCheckedDisable] = useState<boolean>(false);
-  const [checkedRoleKeys, setCheckedRoleKeys] = useState<React.Key[]>([]);
-  const roleDataRequest = useRequest(() => baseList('cms', 'role', {}), {
+const CmsUser: FC = (props: any) => {
+  const [roleIds, setRoleIds] = useState<any>([]);
+  const roleIdsRequest = useRequest(() => baseList('cms', 'role', {}), {
     onSuccess: (data) => {
-      const roleData = data.map((item: any) => {
-        return { label: item.name, value: item.id };
-      });
-      setRoleData(roleData);
+      setRoleIds(toListData(data, 'id', 'name'));
     },
   });
-  function onRoleChecked(checkedValues: any) {
-    setCheckedRoleKeys(checkedValues);
-  }
-  const roleCheckedClear = () => {
-    setCheckedRoleKeys([]);
-  };
-
-  const [groupData, setGroupData] = useState([]);
-  const [groupCheckedDisable, setGroupCheckedDisable] =
-    useState<boolean>(false);
-  const [checkedGroupKeys, setCheckedGroupKeys] = useState<React.Key[]>([]);
-  const groupDataRequest = useRequest(() => baseList('cms', 'group', {}), {
+  const [groupIds, setGroupIds] = useState<any>([]);
+  const groupIdsRequest = useRequest(() => baseList('cms', 'group', {}), {
     onSuccess: (data) => {
-      const groupData = data.map((item: any) => {
-        return { label: item.name, value: item.id };
-      });
-      setGroupData(groupData);
+      setGroupIds(toListData(data, 'id', 'name'));
     },
   });
-  function onGroupChecked(checkedValues: any) {
-    setCheckedGroupKeys(checkedValues);
-  }
-  const groupCheckedClear = () => {
-    setCheckedGroupKeys([]);
-  };
-
-  const defaultGroupData: any = groupData
-    .filter((item: any) => {
-      return checkedGroupKeys.indexOf(item.value) > -1;
-    })
-    .map((item: any) => {
-      return { name: item.label, code: item.value };
-    });
-
-  console.log('groupData', groupData);
-
-  console.log('checkedGroupKeys', checkedGroupKeys);
-  console.log('defaultGroupData', defaultGroupData);
 
   const fields: IFields = [
     {
-      name: '主键',
-      code: 'id',
-      type: 'number',
-      style: {
-        search: { display: false },
-        table: { display: false },
-        add: { hidden: true },
-        edit: { hidden: true },
-      },
+      name: '用户名',
+      code: 'username',
+      type: 'string',
+      style: { search: { display: true } },
+      rules: [{ required: true }, { type: 'string', max: 60 }],
     },
     {
-      name: '编号',
+      name: '用户编号',
       code: 'userNo',
       type: 'string',
       style: {
@@ -79,15 +40,21 @@ const User: FC = (props: any) => {
       },
     },
     {
-      name: '用户名',
-      code: 'username',
+      name: '设备编号',
+      code: 'deviceNo',
       type: 'string',
-      rules: [{ required: true }],
+      style: {
+        add: { display: false },
+        edit: { disable: true },
+      },
     },
+
     {
-      name: '昵称',
+      name: '用户昵称',
       code: 'nickname',
       type: 'string',
+      style: { search: { display: false } },
+      rules: [{ type: 'string', max: 30 }],
     },
     {
       name: '初始密码',
@@ -102,86 +69,62 @@ const User: FC = (props: any) => {
       },
     },
     {
-      name: '邮箱',
+      name: '用户邮箱',
       code: 'email',
       type: 'string',
-      style: {
-        search: { display: false },
-        table: { display: false },
-      },
-    },
-    {
-      name: '手机号',
-      code: 'phoneNumber',
-      type: 'string',
-      style: {
-        search: { display: false },
-        table: { display: false },
-      },
-    },
-    {
-      name: '用户角色',
-      code: 'roleIds',
-      type: 'checkgroup',
-      style: {
-        search: { display: false },
-        table: { display: false },
-      },
-      node: (
-        <Checkbox.Group
-          disabled={roleCheckedDisable}
-          options={roleData}
-          onChange={onRoleChecked}
-        />
-      ),
-    },
-    {
-      name: '用户分组',
-      code: 'groupIds',
-      type: 'checkgroup',
-      style: {
-        search: { display: false },
-        table: { display: false },
-      },
-      node: (
-        <Checkbox.Group
-          disabled={groupCheckedDisable}
-          options={groupData}
-          onChange={onGroupChecked}
-        />
-      ),
-    },
-    {
-      name: '当前分组',
-      code: 'defaultGroupId',
-      type: 'select',
+      style: { search: { display: false }, table: { display: false } },
       rules: [
-        { required: true },
-        // @ts-ignore
-        ({ getFieldValue }) => ({
-          // @ts-ignore
-          validator(_, value) {
-            if (!value || getFieldValue('groupIds').indexOf(value) > -1) {
-              return Promise.resolve();
-            }
-            return Promise.reject(new Error('当前分组不可用'));
-          },
-        }),
+        { type: 'string', max: 50 },
+        {
+          pattern: '^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$',
+          message: '用户邮箱格式不正确',
+        },
       ],
-      style: {
-        search: { display: false },
-        table: { display: false },
-      },
-      select: defaultGroupData,
     },
     {
-      name: '状态',
-      code: 'deleted',
-      type: 'select',
-      select: [
-        { code: '0', name: '启用', color: 'green' },
-        { code: '1', name: '停用', color: 'red' },
+      name: '手机号码',
+      code: 'phone',
+      type: 'string',
+      style: { search: { display: false }, table: { display: false } },
+      rules: [
+        {
+          pattern: '^(13[0-9]|14[5|7]|15[0-9]|18[0-9])\\d{8}$',
+          message: '手机号码格式不正确',
+        },
       ],
+    },
+    {
+      name: '用户性别',
+      code: 'sex',
+      type: 'select',
+      initial: 'N',
+      select: [
+        { code: 'F', name: '女' },
+        { code: 'M', name: '男' },
+        { code: 'N', name: '未知' },
+      ],
+      style: { search: { display: false } },
+    },
+    {
+      name: '头像地址',
+      code: 'avatar',
+      type: 'string',
+      style: { search: { display: false }, table: { display: false } },
+      rules: [{ type: 'string', max: 100 }],
+    },
+    {
+      name: '角色',
+      code: 'roleIds',
+      type: 'checks',
+      checks: roleIds,
+      style: { search: { display: false }, table: { display: false } },
+    },
+    {
+      name: '分组',
+      code: 'groupIds',
+      type: 'select',
+      select: groupIds,
+      style: { search: { display: false }, table: { display: false } },
     },
   ];
 
@@ -260,43 +203,25 @@ const User: FC = (props: any) => {
     extendOptionStatus == 'restPassword'
       ? { key: 'restPassword', name: '重置密码', node: restPasswordNode }
       : undefined;
-
   return (
-    <div>
-      <CurdPage
-        model="cms"
-        entity="user"
-        pageTitle="用户页面"
-        fields={fields}
-        extendData={[
-          {
-            key: 'roleIds',
-            data: checkedRoleKeys,
-            setDisable: setRoleCheckedDisable,
-            setData: setCheckedRoleKeys,
-            clear: roleCheckedClear,
-          },
-          {
-            key: 'groupIds',
-            data: checkedGroupKeys,
-            setDisable: setGroupCheckedDisable,
-            setData: setCheckedGroupKeys,
-            clear: groupCheckedClear,
-          },
-        ]}
-        extendOption={[
-          {
-            key: 'resetPassword',
-            name: '重置密码',
-            requireAuth: 'edit',
-            onClick: openResetPassword,
-          },
-        ]}
-        extendOptionPage={extendOptionPage}
-      />
-    </div>
+    <AuthEntityPage
+      model="cms"
+      entity="user"
+      pageTitle="用户页面"
+      fields={fields}
+      option={['add', 'edit', 'delete']}
+      extendOption={[
+        {
+          key: 'resetPassword',
+          name: '重置密码',
+          requireAuth: 'edit',
+          onClick: openResetPassword,
+        },
+      ]}
+      extendOptionPage={extendOptionPage}
+    />
   );
 };
 // @ts-ignore
-User.title = '用户页面';
-export default User;
+CmsUser.title = '用户页面';
+export default CmsUser;
